@@ -5,3 +5,5 @@ Order of operations:
 *Pull current version <git pull>
 *Resolve conflicts (Resolve and remove all <<<<, =====, and >>>> symbols.  Use <git status> to check which files need to be merged, and use <git add filename> to mark a file as resolved)
 *Push resolved version <git push>
+
+cheese
