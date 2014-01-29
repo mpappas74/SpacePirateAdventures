@@ -15,4 +15,6 @@ Order of operations:
 *Commit changes <git commit -am "Message">
 *Pull current version <git pull origin master>
 *Resolve conflicts (Resolve and remove all <<<<, =====, and >>>> symbols.  Use <git status> to check which files need to be merged, and use <git add filename> to mark a file as resolved)
+
 *Push resolved version <git push origin master>
+
