@@ -80,7 +80,7 @@ public class MainMenuScript : MonoBehaviour
 					Application.LoadLevel ("Level1");
 				} 
 				if (GUI.Button (new Rect (.5f * Screen.width - 100, .5f * Screen.height, 200, .12f * Screen.height), "Level 2")) {
-					if (GameControllerScript.getCurrentUnlockedLevel() < 2) {
+					if (GameControllerScript.Instance.getCurrentUnlockedLevel() < 2) {
 						theGuiText.text = "You haven't unlocked level 2 yet!";
 					} else {
 						Application.LoadLevel("Level2");

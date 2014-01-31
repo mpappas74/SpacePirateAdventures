@@ -33,7 +33,7 @@ public class LevelController : MonoBehaviour
 	
 	void Start ()
 	{
-		GameControllerScript.setCurrentLevel (Application.loadedLevel);
+		GameControllerScript.Instance.setCurrentLevel (Application.loadedLevel);
 		//Be careful here if we change the scene order!!!!!
 
 		placingShipObjects = new GameObject[laneRotations.Length + 1];
@@ -101,7 +101,7 @@ public class LevelController : MonoBehaviour
 	{
 		//Keep one placingBox visible to show that the ship is being built. Hold it for one minute, then replace it with a ship.
 		//We rotate both the placingBox and the ship by the movementAngle about the y axis.
-		GameObject block = (GameObject)Instantiate (GameControllerScript.getLoadingBar (), new Vector3 (9, -10, position.z), Quaternion.Euler (new Vector3 (0.0f, rotation, 0.0f)));
+		GameObject block = (GameObject)Instantiate (GameControllerScript.Instance.getLoadingBar (), new Vector3 (9, -10, position.z), Quaternion.Euler (new Vector3 (0.0f, rotation, 0.0f)));
 		float initialHeight = block.transform.localScale.z;
 		for (int i = 0; i < 5; i++) {
 			yield return new WaitForSeconds (0.2f);
@@ -110,7 +110,7 @@ public class LevelController : MonoBehaviour
 		Destroy (block);
 		GameObject theShip = (GameObject)Instantiate (curShip, position, curShip.transform.rotation);
 		theShip.transform.Rotate (Vector3.up * rotation);
-		
+		theShip.SetActive(true);
 		//An attempt at rotating the particle systems along with the ship (aka the jet propulsion). So far unsuccessful.
 		//		ParticleSystem[] particleSystems = theShip.GetComponentsInChildren<ParticleSystem> ();
 		//		foreach (ParticleSystem p in particleSystems) {
@@ -123,7 +123,7 @@ public class LevelController : MonoBehaviour
 	{
 		buttonJustPressedThisUpdate = false;
 		//If the game is over, tell the rest of the game to stop. This is true if we are out of points and have no ships left to earn us more.
-		if (mothership.health <= 0 ||(levelScore < 5 && GameObject.Find ("TinyShip(Clone)") == null && GameObject.Find ("CrazyShip(Clone)") == null && GameObject.Find ("LoadingBar(Clone)") == null && GameObject.Find ("BombShip(Clone)") == null && GameObject.Find ("ShieldShip(Clone)") == null && GameObject.Find ("Shield(Clone)") == null && GameObject.Find("StealthShip(Clone)") == null)) {
+		if (mothership.health <= 0 ||(levelScore < 5 && GameObject.FindWithTag ("TinyShip") == null && GameObject.FindWithTag ("CrazyShip") == null && GameObject.FindWithTag ("LoadingBar") == null && GameObject.FindWithTag ("BombShip") == null && GameObject.FindWithTag ("ShieldShip") == null && GameObject.FindWithTag ("Shield") == null && GameObject.FindWithTag("StealthShip") == null)) {
 			gameOver = true;
 			button.gameOver = true;
 		} else if (playerVictory) {
@@ -147,12 +147,13 @@ public class LevelController : MonoBehaviour
 					//Buttons 2 and 3 build tinyShips and crazyShips, respectively. 
 					if (button.pressed2) {
 						button.pressed2 = false;
-						currentShip = GameControllerScript.getTinyShip ();
-						currentNeutralShip = GameControllerScript.getTinyShip ();
+						currentShip = GameControllerScript.Instance.getTinyShip ();
+						currentNeutralShip = GameControllerScript.Instance.getTinyShip ();
 						
 						//OK, only going to say this once. The below ugly list of .enabled bools being changed is to make a Neutral form of the ship we are building. 
 						//This is much more logical than having separate neutralShips as different prefabs in my opinion, despite the ugly code.
 						placingShipObjects [0] = (GameObject)Instantiate (currentNeutralShip, new Vector3 (6, -3, 0), Quaternion.identity);
+						placingShipObjects [0].SetActive(true);
 						placingShipObjects [0].GetComponent<NeutralShipRotator> ().enabled = true;
 						placingShipObjects [0].GetComponent<ShipHandler> ().enabled = false;
 						placingShipObjects [0].GetComponent<CapsuleCollider> ().enabled = false;
@@ -166,10 +167,11 @@ public class LevelController : MonoBehaviour
 					}
 					if (button.pressed3) {
 						button.pressed3 = false;
-						currentShip = GameControllerScript.getCrazyShip ();
-						currentNeutralShip = GameControllerScript.getCrazyShip ();
+						currentShip = GameControllerScript.Instance.getCrazyShip ();
+						currentNeutralShip = GameControllerScript.Instance.getCrazyShip ();
 
 						placingShipObjects [0] = (GameObject)Instantiate (currentNeutralShip, new Vector3 (6, -3, 0), Quaternion.identity);
+						placingShipObjects [0].SetActive(true);
 						placingShipObjects [0].GetComponent<NeutralShipRotator> ().enabled = true;
 						placingShipObjects [0].GetComponent<ShipHandler> ().enabled = false;
 						placingShipObjects [0].GetComponent<CapsuleCollider> ().enabled = false;
@@ -183,8 +185,8 @@ public class LevelController : MonoBehaviour
 					//Button 4 generates bomb ships, and button 5 generates shield ships.
 					if (button.pressed4) {
 						button.pressed4 = false;
-						currentShip = GameControllerScript.getBombShip ();
-						currentNeutralShip = GameControllerScript.getBombShip ();
+						currentShip = GameControllerScript.Instance.getBombShip ();
+						currentNeutralShip = GameControllerScript.Instance.getBombShip ();
 
 						placingShipObjects [0] = (GameObject)Instantiate (currentNeutralShip, new Vector3 (6, -3, 0), Quaternion.identity);
 						placingShipObjects [0].GetComponent<NeutralShipRotator> ().enabled = true;
@@ -199,10 +201,11 @@ public class LevelController : MonoBehaviour
 					}
 					if (button.pressed5) {
 						button.pressed5 = false;
-						currentShip = GameControllerScript.getShieldShip ();
-						currentNeutralShip = GameControllerScript.getShieldShip ();
+						currentShip = GameControllerScript.Instance.getShieldShip ();
+						currentNeutralShip = GameControllerScript.Instance.getShieldShip ();
 
 						placingShipObjects [0] = (GameObject)Instantiate (currentNeutralShip, new Vector3 (6, -3, 0), Quaternion.identity);
+						placingShipObjects [0].SetActive(true);
 						placingShipObjects [0].GetComponent<NeutralShipRotator> ().enabled = true;
 						placingShipObjects [0].GetComponent<ShipHandler> ().enabled = false;
 						placingShipObjects [0].GetComponent<CapsuleCollider> ().enabled = false;
@@ -224,10 +227,11 @@ public class LevelController : MonoBehaviour
 					//This else corresponds to the "main" boolean, in other words, the below buttons are the sub-menu for button6.
 					if (button.pressed2) {
 						button.pressed2 = false;
-						currentShip = GameControllerScript.getStealthShip ();
-						currentNeutralShip = GameControllerScript.getStealthShip ();
+						currentShip = GameControllerScript.Instance.getStealthShip ();
+						currentNeutralShip = GameControllerScript.Instance.getStealthShip ();
 						
 						placingShipObjects [0] = (GameObject)Instantiate (currentNeutralShip, new Vector3 (6, -3, 0), Quaternion.identity);
+						placingShipObjects [0].SetActive(true);
 						placingShipObjects [0].GetComponent<NeutralShipRotator> ().enabled = true;
 						placingShipObjects [0].GetComponent<ShipHandler> ().enabled = false;
 						placingShipObjects [0].GetComponent<CapsuleCollider> ().enabled = false;
@@ -267,7 +271,7 @@ public class LevelController : MonoBehaviour
 					for (int i = 0; i < laneRotations.Length; i++) {
 						Destroy (placingShipObjects [i]);
 					}
-					currentShip = GameControllerScript.getPlacingBox ();
+					currentShip = GameControllerScript.Instance.getPlacingBox ();
 					isPlacingShip = false;
 					button.canCancelShip = false;
 					//Reset the input values. This is due to poorly designed sequencing of touches in my input script and may later be unnecessary.
@@ -301,7 +305,7 @@ public class LevelController : MonoBehaviour
 					for (int j = 1; j <= laneRotations.Length; j++) {
 						float rotation = laneRotations [j - 1];
 						float zpos = startPositions [j - 1];
-						placingShipObjects [j] = (GameObject)Instantiate (GameControllerScript.getPlacingBox (), new Vector3 (9, -10, zpos), Quaternion.Euler (rotation * Vector3.up));
+						placingShipObjects [j] = (GameObject)Instantiate (GameControllerScript.Instance.getPlacingBox (), new Vector3 (9, -10, zpos), Quaternion.Euler (rotation * Vector3.up));
 					}
 					mustAddBoxes = false;
 				}
@@ -361,10 +365,10 @@ public class LevelController : MonoBehaviour
 							levelScore -= 5;
 							StartCoroutine (BuildCurrentShip (currentShip, pos, rot));
 							//Remember, currentShip defaults to placingBox when we are no longer building a ship.
-							currentShip = GameControllerScript.getPlacingBox ();
+							currentShip = GameControllerScript.Instance.getPlacingBox ();
 						} else {
 							//If we didn't have enough points, make sure GuiTextHandler will know by changing the currentShip object.
-							currentShip = GameControllerScript.getNotEnoughMoneyObject ();
+							currentShip = GameControllerScript.Instance.getNotEnoughMoneyObject ();
 						}
 						//Destroy the placingBoxes and the neutralShip.
 						for (int i = 0; i <= laneRotations.Length; i++) {
@@ -395,7 +399,7 @@ public class LevelController : MonoBehaviour
 				//Be careful here if we change the scene order!!!!
 				if (Application.loadedLevel < 2) {
 					Application.LoadLevel (Application.loadedLevel + 1);
-					GameControllerScript.setCurrentUnlockedLevel (GameControllerScript.getCurrentUnlockedLevel () + 1);
+					GameControllerScript.Instance.setCurrentUnlockedLevel (GameControllerScript.Instance.getCurrentUnlockedLevel () + 1);
 				} else {
 					Application.LoadLevel ("MainMenu");
 				}

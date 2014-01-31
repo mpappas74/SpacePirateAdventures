@@ -22,7 +22,9 @@ public class Level2Controller : MonoBehaviour
 		lc = gameObject.GetComponent<LevelController> ();
 		StartCoroutine ("SpawnWaves");
 		hazard = (GameObject)Resources.Load("EnemyShips/EnemyTinyShip"); //The tinyShip prefab.
-		//hazard = setUpHazard(hazard);
+		hazard = (GameObject)Instantiate(hazard, new Vector3(0, -1000, 0), hazard.transform.rotation);
+		hazard.SetActive(false);
+		hazard = setUpHazard(hazard);
 	}
 	
 	private GameObject setUpHazard(GameObject theHazard){
@@ -52,7 +54,8 @@ public class Level2Controller : MonoBehaviour
 				//We spawn them at a range of z values, but always at the given x and y values. Note that Random.Range is inclusive on the lower end (-2), but not on the upper end. So it will return -2, -1, 0, 1, or 2.
 				Vector3 spawnPosition = new Vector3 (spawnValues.x, spawnValues.y, (spawnValues.z / 3) * Random.Range (-3, 4));
 				
-				Instantiate (hazard, spawnPosition, hazard.transform.rotation);
+				GameObject newHazard = (GameObject)Instantiate (hazard, spawnPosition, hazard.transform.rotation);
+				newHazard.SetActive(true);
 
 				//Now wait until the next hazard is meant to spawn.
 				yield return new WaitForSeconds (spawnWait);
