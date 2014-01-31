@@ -127,7 +127,7 @@ public class LevelController : MonoBehaviour
 			gameOver = true;
 			button.gameOver = true;
 		} else if (playerVictory) {
-			//Maybe play a victory animation or summat?
+			button.gameOver = true;
 		} else {
 			
 			
@@ -384,9 +384,9 @@ public class LevelController : MonoBehaviour
 	void OnGUI ()
 	{
 		if (playerVictory) {
-			if (GUI.Button (new Rect (.5f * Screen.width - 100, .7f * Screen.height, 200, .13f * Screen.height), "Return to Main Menu")) {
-				Application.LoadLevel ("MainMenu");
-			} 
+			//if (GUI.Button (new Rect (.5f * Screen.width - 100, .7f * Screen.height, 200, .13f * Screen.height), "Return to Main Menu")) {
+			//	Application.LoadLevel ("MainMenu");
+			//} 
 			if (GUI.Button (new Rect (.5f * Screen.width - 100, .55f * Screen.height, 200, .13f * Screen.height), "Upgrades")) {
 				Application.LoadLevel ("MainMenu");
 				//Application.LoadLevel("UpgradeScene");
