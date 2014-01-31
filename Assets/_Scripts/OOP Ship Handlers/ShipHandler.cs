@@ -160,10 +160,10 @@ public class ShipHandler : MonoBehaviour
 			if (Time.time > nextFire) {
 				nextFire = Time.time + fireLag;
 				GameObject thisBolt = (GameObject)Instantiate (bolt, shotSpawn.position, shotSpawn.rotation);
-				BoltMover boltMover = thisBolt.GetComponent<BoltMover> ();
-				boltMover.amPlayersBolt = true;
+				ProjectileHandler boltMover = thisBolt.GetComponent<ProjectileHandler> ();
+				boltMover.amPlayers = true;
 				if (gameObject.tag == "EnemyShip") {
-					boltMover.amPlayersBolt = false;
+					boltMover.amPlayers = false;
 				}
 				boltMover.damageDone = shotDamage;
 			}
