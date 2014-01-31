@@ -59,7 +59,7 @@ public class ButtonHandler : MonoBehaviour
 				if (GUI.Button (new Rect (.03f * Screen.height, .67f * Screen.height, .13f * Screen.height, .13f * Screen.height), image4)) {
 					pressed5 = true;
 				} 
-				if (GUI.Button (new Rect (.03f * Screen.height, .83f * Screen.height, .13f * Screen.height, .13f * Screen.height), image5)) {
+				if (GUI.Button (new Rect (.03f * Screen.height, .83f * Screen.height, .16f * Screen.height, .13f * Screen.height), "More")) {
 					pressed6 = true;
 				} 
 			} else if (!paused) {
@@ -67,10 +67,10 @@ public class ButtonHandler : MonoBehaviour
 				if (GUI.Button (new Rect (.03f * Screen.height, .03f * Screen.height, .2f * Screen.height, .13f * Screen.height), "Pause")) {
 					pressed1 = true;
 				} 
-				if (GUI.Button (new Rect (.03f * Screen.height, .19f * Screen.height, .13f * Screen.height, .13f * Screen.height), "A")) {
+				if (GUI.Button (new Rect (.03f * Screen.height, .19f * Screen.height, .2f * Screen.height, .13f * Screen.height), "Thief")) {
 					pressed2 = true;
 				} 
-				if (GUI.Button (new Rect (.03f * Screen.height, .35f * Screen.height, .13f * Screen.height, .13f * Screen.height), "B")) {
+				if (GUI.Button (new Rect (.03f * Screen.height, .35f * Screen.height, .2f * Screen.height, .13f * Screen.height), "Back")) {
 					pressed3 = true;
 				} 
 			} else {

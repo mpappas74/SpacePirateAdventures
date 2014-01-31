@@ -7,6 +7,7 @@ public static class GameControllerScript
 	public static GameObject crazyShip = (GameObject)Resources.Load("CrazyShip"); //The crazyShip prefab.
 	public static GameObject shieldShip = (GameObject)Resources.Load("ShieldShip"); //The shieldShip prefab.
 	public static GameObject bombShip = (GameObject)Resources.Load("BombShip"); //The bombShip prefab.
+	public static GameObject stealthShip = (GameObject)Resources.Load("StealthShip"); //The stealthShip prefab.
 	public static GameObject shield = (GameObject)Resources.Load("Shield"); //The shield prefab.
 	public static GameObject placingBox = (GameObject)Resources.Load("PlacementBox"); //The placingBox prefab.
 	public static GameObject loadingBar = (GameObject)Resources.Load("LoadingBar"); //The placingBox prefab.
@@ -98,6 +99,9 @@ public static class GameControllerScript
 	}
 	public static GameObject getBombShip(){
 		return bombShip;
+	}
+	public static GameObject getStealthShip(){
+		return stealthShip;
 	}
 	public static GameObject getShield(){
 		return shield;

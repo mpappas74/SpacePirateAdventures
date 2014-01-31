@@ -6,7 +6,7 @@ public class ShipHandler : MonoBehaviour
 {
 	//************** Common Properties of All Ships ********************//
 	public float shipHealth;
-	public float enerygShieldHealth;
+	public float energyShieldHealth;
 	public float speed;
 	public bool isDead;	//Whether the ship is dead - this allows particular ship controller scripts to handle death differently.
 	private float maxHealth; //Maximum health of the ship
@@ -25,6 +25,7 @@ public class ShipHandler : MonoBehaviour
 	private float timeDif; //A somewhat ugly variable that I added to make pausing work properly. 
 	//This keeps one from abusing pausing to make the bolts reload faster.
 	public float shotDamage = 1;
+	public float boltSurvivalTime = -1;
 
 	//************** Shield Deployment Logic ********************//
 	public bool wasClickedOn;
@@ -53,8 +54,9 @@ public class ShipHandler : MonoBehaviour
 	private float deltaUp = 0;		//How much space there is between the ship and the upper wall of the lane.
 	private float deltaDown = 0;	//How much space between the ship and lower wall.
 		
-
-	
+	//************** Turn Around On Collision Logic ********************//
+	public bool turnsAroundOnCollision;
+	public float collectedResources = 0;
 	
 
 	//***************************************** Virtual Methods ******************************************************//
@@ -75,6 +77,20 @@ public class ShipHandler : MonoBehaviour
 			DetermineCurrentLane ();
 		}
 		input = GameObject.Find ("LevelController").GetComponent<InputHandler> ();
+	}
+
+	public virtual void OnTriggerEnter (Collider other)
+	{
+		if (turnsAroundOnCollision) {
+			if (other.tag == "EnemyShip") {
+				transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
+				collectedResources += 5;
+			} else if(other.tag == "Player"){
+				GameObject.Find("LevelController").GetComponent<LevelController>().levelScore += collectedResources;
+				collectedResources = 0;
+				transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
+			}
+		}
 	}
 
 	public virtual void Update ()
@@ -116,6 +132,11 @@ public class ShipHandler : MonoBehaviour
 				}
 			}
 			transform.position += new Vector3 (0.0f, 0.0f, (upZ + downZ) / 2 - transform.position.z);			
+		}
+		if(turnsAroundOnCollision){
+			if(transform.position.x >= 80){
+				transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
+			}
 		}
 	}
 
@@ -168,6 +189,10 @@ public class ShipHandler : MonoBehaviour
 					boltMover.amPlayers = false;
 				}
 				boltMover.damageDone = shotDamage;
+				if (boltSurvivalTime > 0) {
+					boltMover.survivalTime = boltSurvivalTime;
+				}
+				boltMover.speed += speed;
 			}
 		} else {
 			//At all times, we track how much time is left before we fire again. This allows us to update nextFire in case we pause the game.

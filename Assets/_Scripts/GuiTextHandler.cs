@@ -14,7 +14,7 @@ public class GuiTextHandler : MonoBehaviour
 	private GameObject currentBuildingShip; //Whether or not we are currently building a ship, warranting an explanation.
 	private bool bonusText;	//Whether or not we are paused and therefore need additional text.
 	private GUIStyle labelStyle;	//A style variable to track whether we are using ExplanationStyle or extraExplanationStyle.
-	private string gameOverText = "You no longer have enough points to buy a ship. Game Over.";
+	private string gameOverText = "Game Over. Do better next time.";
 	public GUIStyle gameOverStyle;
 
 	// Use this for initialization

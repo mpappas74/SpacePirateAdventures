@@ -123,7 +123,7 @@ public class LevelController : MonoBehaviour
 	{
 		buttonJustPressedThisUpdate = false;
 		//If the game is over, tell the rest of the game to stop. This is true if we are out of points and have no ships left to earn us more.
-		if (mothership.health <= 0 ||(levelScore < 5 && GameObject.Find ("TinyShip(Clone)") == null && GameObject.Find ("CrazyShip(Clone)") == null && GameObject.Find ("LoadingBar(Clone)") == null && GameObject.Find ("BombShip(Clone)") == null && GameObject.Find ("ShieldShip(Clone)") == null && GameObject.Find ("Shield(Clone)") == null)) {
+		if (mothership.health <= 0 ||(levelScore < 5 && GameObject.Find ("TinyShip(Clone)") == null && GameObject.Find ("CrazyShip(Clone)") == null && GameObject.Find ("LoadingBar(Clone)") == null && GameObject.Find ("BombShip(Clone)") == null && GameObject.Find ("ShieldShip(Clone)") == null && GameObject.Find ("Shield(Clone)") == null && GameObject.Find("StealthShip(Clone)") == null)) {
 			gameOver = true;
 			button.gameOver = true;
 		} else if (playerVictory) {
@@ -224,6 +224,19 @@ public class LevelController : MonoBehaviour
 					//This else corresponds to the "main" boolean, in other words, the below buttons are the sub-menu for button6.
 					if (button.pressed2) {
 						button.pressed2 = false;
+						currentShip = GameControllerScript.getStealthShip ();
+						currentNeutralShip = GameControllerScript.getStealthShip ();
+						
+						placingShipObjects [0] = (GameObject)Instantiate (currentNeutralShip, new Vector3 (6, -3, 0), Quaternion.identity);
+						placingShipObjects [0].GetComponent<NeutralShipRotator> ().enabled = true;
+						placingShipObjects [0].GetComponent<ShipHandler> ().enabled = false;
+						placingShipObjects [0].GetComponent<CapsuleCollider> ().enabled = false;
+						placingShipObjects [0].transform.Find ("HealthBar").gameObject.GetComponent<MeshRenderer> ().enabled = false;
+						
+						isPlacingShip = true;
+						button.canCancelShip = true;
+						mustAddBoxes = true;
+						buttonJustPressedThisUpdate = true;
 						button.main = true;
 						buttonJustPressedThisUpdate = true;
 						
