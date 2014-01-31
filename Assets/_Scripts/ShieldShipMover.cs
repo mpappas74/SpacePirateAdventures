@@ -21,7 +21,7 @@ public class ShieldShipMover : MonoBehaviour
 		button = testObject.GetComponent<ButtonHandler> ();
 		//As we've seen before, getting access to ButtonHandler's booleans to know if we are paused.
 		//Similar logic with the game controller script.
-		input = GameObject.Find ("GameController").GetComponent<InputHandler> ();
+		input = GameObject.Find ("LevelController").GetComponent<InputHandler> ();
 		
 	}
 	

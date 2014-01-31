@@ -20,13 +20,10 @@ public class MainMenuScript : MonoBehaviour
 	//The titleStyle determines the format of the title.
 	public GUIStyle titleStyle;
 
-	private GameControllerScript gcs;
-
 	void Start ()
 	{
 		//Get access to our GUIText.
 		theGuiText = gameObject.GetComponent<GUIText> ();
-		gcs = GameObject.Find("GameController").GetComponent<GameControllerScript>();
 	}
 
 	void Update ()
@@ -80,10 +77,10 @@ public class MainMenuScript : MonoBehaviour
 			} else {
 				//If we are not on the main menu, we must be on the Level Selection screen.
 				if (GUI.Button (new Rect (.5f * Screen.width - 100, .35f * Screen.height, 200, .12f * Screen.height), "Level 1")) {
-					Application.LoadLevel ("MainGame");
+					Application.LoadLevel ("Level1");
 				} 
 				if (GUI.Button (new Rect (.5f * Screen.width - 100, .5f * Screen.height, 200, .12f * Screen.height), "Level 2")) {
-					if (gcs.getCurrentUnlockedLevel() < 2) {
+					if (GameControllerScript.getCurrentUnlockedLevel() < 2) {
 						theGuiText.text = "You haven't unlocked level 2 yet!";
 					} else {
 						Application.LoadLevel("Level2");

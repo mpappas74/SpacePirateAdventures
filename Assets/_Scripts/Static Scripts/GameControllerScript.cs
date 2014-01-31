@@ -1,25 +1,24 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class GameControllerScript : MonoBehaviour
+public static class GameControllerScript
 {
-	public GameObject tinyShip; //The tinyShip prefab.
-	public GameObject crazyShip; //The crazyShip prefab.
-	public GameObject shieldShip; //The shieldShip prefab.
-	public GameObject bombShip; //The bombShip prefab.
-	public GameObject shield; //The shield prefab.
-	public GameObject placingBox; //The placingBox prefab.
-	public GameObject notEnoughMoneyObject; //The notEnoughMoneyObject prefab.
-	private float score; //The total score across multiple levels.
-	private int currentUnlockedLevel; //The highest level that has currently been unlocked.
-	private int currentLevel; //The level that is currently or most recently played.
+	public static GameObject tinyShip = (GameObject)Resources.Load("TinyShip"); //The tinyShip prefab.
+	public static GameObject crazyShip = (GameObject)Resources.Load("CrazyShip"); //The crazyShip prefab.
+	public static GameObject shieldShip = (GameObject)Resources.Load("ShieldShip"); //The shieldShip prefab.
+	public static GameObject bombShip = (GameObject)Resources.Load("BombShip"); //The bombShip prefab.
+	public static GameObject shield = (GameObject)Resources.Load("Shield"); //The shield prefab.
+	public static GameObject placingBox = (GameObject)Resources.Load("PlacementBox"); //The placingBox prefab.
+	public static GameObject notEnoughMoneyObject = (GameObject)Resources.Load("NotEnoughMoneyObject"); //The notEnoughMoneyObject prefab.
+	private static float score; //The total score across multiple levels.
+	private static int currentUnlockedLevel; //The highest level that has currently been unlocked.
+	private static int currentLevel; //The level that is currently or most recently played.
 
 	//Now begins the probably huge stream of variables that determine particular ship upgrades.
-	private float tinyShipDamage;	//Damage done by a shot from the tinyShip.
+	private static float tinyShipDamage;	//Damage done by a shot from the tinyShip.
 	
-	void Awake ()
+	static GameControllerScript ()
 	{
-		DontDestroyOnLoad(transform.gameObject);
 		//Check PlayerPrefs to see if the three main things are saved. If not, set them to default levels.
 		if(PlayerPrefs.HasKey("Score")){
 			score = PlayerPrefs.GetFloat("Score");
@@ -48,73 +47,73 @@ public class GameControllerScript : MonoBehaviour
 	}
 	
 	//This method will set all relevant variables. It should be called at the end of Start() as well as any time we have upgraded and then entered a new level.
-	public void prepareAllShips(){
+	public static void prepareAllShips(){
 		tinyShip.GetComponent<TinyShipMover>().tinyShipDamage = tinyShipDamage;
 	}
 
 	//A series of getters and setters to modify the prefabs. 
 	//Setters for various ships and other gameObjects will be the upgrade methods called.
-	public void prefSetCurrentLevel(int L)
+	public static void prefSetCurrentLevel(int L)
 	{
 		currentLevel = L;
 		PlayerPrefs.SetInt("CurrentLevel", currentLevel);
 	}
-	public void prefSetCurrentUnlockedLevel(int L)
+	public static void prefSetCurrentUnlockedLevel(int L)
 	{
 		currentUnlockedLevel = L;
 		PlayerPrefs.SetInt("CurrentUnlockedLevel", currentUnlockedLevel);
 	}
-	public void prefSetScore(float s)
+	public static void prefSetScore(float s)
 	{
 		score = s;
 		PlayerPrefs.SetFloat("Score", score);
 	}
-	public void setScore(float s){
+	public static void setScore(float s){
 		score = s;
 	}
-	public void setCurrentUnlockedLevel(int L){
+	public static void setCurrentUnlockedLevel(int L){
 		currentUnlockedLevel = L;
 	}
-	public void setCurrentLevel(int L){
+	public static void setCurrentLevel(int L){
 		currentLevel = L;
 	}
-	public float getScore(){
+	public static float getScore(){
 		return score;
 	}
-	public int getCurrentLevel(){
+	public static int getCurrentLevel(){
 		return currentLevel;
 	}
-	public int getCurrentUnlockedLevel(){
+	public static int getCurrentUnlockedLevel(){
 		return currentUnlockedLevel;
 	}
-	public GameObject getTinyShip(){
+	public static GameObject getTinyShip(){
 		return tinyShip;
 	}
-	public GameObject getCrazyShip(){
+	public static GameObject getCrazyShip(){
 		return crazyShip;
 	}
-	public GameObject getShieldShip(){
+	public static GameObject getShieldShip(){
 		return shieldShip;
 	}
-	public GameObject getBombShip(){
+	public static GameObject getBombShip(){
 		return bombShip;
 	}
-	public GameObject getShield(){
+	public static GameObject getShield(){
 		return shield;
 	}
-	public GameObject getPlacingBox(){
+	public static GameObject getPlacingBox(){
 		return placingBox;
 	}
-	public GameObject getNotEnoughMoneyObject(){
+	public static GameObject getNotEnoughMoneyObject(){
 		return notEnoughMoneyObject;
 	}
 	
 	//TinyShip setter. I currently have two versions in case we don't want to save to playerPrefs every time something changes.
 	//Depending on how frequently things happen, this may or may not be the way to go.
-	public void setTinyShip(float tsD){
+	public static void setTinyShip(float tsD){
 		tinyShipDamage = tsD;
 	}
-	public void prefSetTinyShip(float tsD){
+	public static void prefSetTinyShip(float tsD){
 		tinyShipDamage = tsD;
 		PlayerPrefs.SetFloat("TinyShipDamage", tinyShipDamage);
 	}

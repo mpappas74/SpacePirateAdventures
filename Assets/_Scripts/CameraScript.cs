@@ -14,7 +14,6 @@ public class CameraScript : MonoBehaviour
 	private GameObject levelController;	//Access to the levelController object to determine if we are currently placing a ship.
 	private LevelController levelCont;	
 	private bool isPlacingShip;	//Just there for convenience. Could equally use script.isPlacingShip.
-	private GameObject gameController; //Access to the gameController object to use the input handler.
 	private InputHandler input;
 
 	// Use this for initialization
@@ -22,8 +21,7 @@ public class CameraScript : MonoBehaviour
 	{
 		levelController = GameObject.Find("LevelController");
 		levelCont = levelController.GetComponent<LevelController>();
-		gameController = GameObject.Find("GameController");
-	 	input = gameController.GetComponent<InputHandler>();
+		input = GameObject.Find("LevelController").GetComponent<InputHandler>();
 		//Save the camera's starting position to know its y and z positions, which currently don't change.
 		startingCameraPosition = transform.position;
 	}

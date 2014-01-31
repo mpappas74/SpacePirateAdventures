@@ -3,16 +3,13 @@ using System.Collections;
 
 public class BombShipScript : MonoBehaviour
 {
-
-	private GameObject gameController; //Need access to input handler to tell if trigger has been hit.
 	private InputHandler input;
 	public GameObject explosion; //Explosion animation.
 	public GameObject blastZone; //The physical blast zone in which things take damage from the bomb.
 
 	void Start ()
 	{
-		gameController = GameObject.Find("GameController");
-		input = gameController.GetComponent<InputHandler> ();
+		input = GameObject.Find("LevelController").GetComponent<InputHandler>();
 	}
 
 	void Update ()
