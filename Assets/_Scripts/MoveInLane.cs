@@ -24,6 +24,7 @@ public class MoveInLane : MonoBehaviour {
 			amInLane = false;
 		} else {
 			float minDist = 100;
+			float laneWidth = 3;
 			//Next, for each lane, figure out if we are close to any of them.
 			for (int i = 0; i < allLanes.Length; i++) {
 				GameObject curLane = allLanes [i];
@@ -51,6 +52,7 @@ public class MoveInLane : MonoBehaviour {
 				//If we can find both lower and upper walls of a lane correctly oriented around us and not too far away, we say we are in that lane.
 				if (Mathf.Abs (upDistance - downDistance) < minDist) {
 					minDist = upDistance - downDistance;
+					laneWidth = upDistance + downDistance;
 					upperWall = upW;
 					lowerWall = lwW;
 				}
@@ -59,6 +61,8 @@ public class MoveInLane : MonoBehaviour {
 				amInLane = false;
 				Debug.Log ("I'm not in a lane!");
 			}
+
+			speed = speed*(3f/laneWidth);
 		}
 	}
 
