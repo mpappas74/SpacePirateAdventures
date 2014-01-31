@@ -4,6 +4,7 @@ using System.Collections;
 public class ShipHandler : MonoBehaviour
 	//Once they have ben built, this script moves ships and has them fire.
 {
+	//************** Common Properties of All Ships ********************//
 	public float shipHealth;
 	public float enerygShieldHealth;
 	public float speed;
@@ -12,8 +13,9 @@ public class ShipHandler : MonoBehaviour
 	private float maxLength; //Maximum length of the ship's healthbar.
 	private Transform healthbar;
 	public float cost;	//How much the ship is worth in points after being destroyed.
+	private InputHandler input;
 
-  //**********************************//
+	//************** Bolt Firing Logic ********************//
 	public bool firesBolts;
 	public float fireLag; //How long to wait between shots.
 	public GameObject bolt; //Access to the bolt to instantiate shots.
@@ -23,14 +25,38 @@ public class ShipHandler : MonoBehaviour
 	private float timeDif; //A somewhat ugly variable that I added to make pausing work properly. 
 	//This keeps one from abusing pausing to make the bolts reload faster.
 	public float shotDamage = 1;
-	//**********************************//
 
+	//************** Shield Deployment Logic ********************//
+	public bool deploysShield;
+	public GameObject shield; //Access to the shield to instantiate them.
+	private Vector2 currentClickPos;
+
+	//************** SelfDestruction Logic ********************//
+	public bool selfDestructs;
+	public GameObject blastZone; //The physical blast zone in which things take damage from the bomb.
+
+	//************** PauseButton Access Variables ********************//
 	private GameObject testObject;	//The testObject holds the button information currently.
 	private ButtonHandler button;	//Access to the button script to check the booleans in it. 
 	
-
+	//************** Death Logic ********************//
 	public GameObject explosion; //Access to the explosion to instantiate it when the ship dies.
+	public float scoreValue;
 	
+	//************** Move In Lane Logic ********************//
+	public bool shouldMoveInLane;
+	private GameObject upperWall;   //The upper wall of the lane.
+	private GameObject lowerWall;	//The lower wall of the lane.
+	private bool amInLane = true;	//Whether or not the ship is actually in a lane as far as the code can tell.
+	private float deltaUp = 0;		//How much space there is between the ship and the upper wall of the lane.
+	private float deltaDown = 0;	//How much space between the ship and lower wall.
+		
+
+	
+	
+
+	//***************************************** Virtual Methods ******************************************************//
+ 
 	public virtual void Start ()
 	{
 		testObject = GameObject.Find ("EmptyButtonObject");
@@ -43,8 +69,76 @@ public class ShipHandler : MonoBehaviour
 		} else {
 			maxLength = -1;
 		}
-		
+		if (shouldMoveInLane) {
+			DetermineCurrentLane ();
+		}
+		input = GameObject.Find ("LevelController").GetComponent<InputHandler> ();
 	}
+
+	public virtual void Update ()
+	{
+		if (firesBolts) {
+			FireBolts ();
+		}
+		if(deploysShield){
+			ShieldDeploy();
+		}
+		if(selfDestructs){
+			if(input.isTrigger()){
+				Explode();
+			} else if(isDead){
+				Explode();
+			}
+		}else if (isDead) {
+			Die ();
+		}
+		//If we are in a lane, we use very similar logic to track the distance between the ship and the two walls, and keep it vertically in between the walls.
+		if (amInLane) {
+			float upZ = transform.position.z;
+			RaycastHit hit;
+			if (Physics.Raycast (transform.position, new Vector3 (0, 0, 10), out hit)) {
+				if (hit.transform.gameObject.GetInstanceID () == upperWall.GetInstanceID ()) {
+					deltaUp = hit.point.z - upZ;
+					upZ = hit.point.z;
+				} else {
+					upZ = upZ + deltaUp;
+				}
+			}
+			float downZ = transform.position.z;
+			if (Physics.Raycast (transform.position, new Vector3 (0, 0, -10), out hit)) {
+				if (hit.transform.gameObject.GetInstanceID () == lowerWall.GetInstanceID ()) {
+					deltaDown = hit.point.z - downZ;
+					downZ = hit.point.z;
+				} else {
+					downZ = downZ + deltaDown;
+				}
+			}
+			transform.position += new Vector3 (0.0f, 0.0f, (upZ + downZ) / 2 - transform.position.z);			
+		}
+	}
+
+
+	// Meanwhile, we are also moving the ship forward, presuming the game is not paused.
+	public virtual void FixedUpdate ()
+	{
+		if (button.paused) {
+			rigidbody.velocity = new Vector3 (0.0f, 0.0f, 0.0f);
+		} else {
+			rigidbody.velocity = transform.forward * speed;	
+		}
+	}
+	
+	public virtual void Die ()
+	{
+		LevelController lc = GameObject.Find("LevelController").GetComponent<LevelController>();
+		lc.levelScore += scoreValue;
+		Destroy (gameObject);
+		Instantiate (explosion, transform.position, transform.rotation);
+		audio.Play ();
+	}
+
+
+	//***************************************** Standard Methods ******************************************************//
 
 	public void DecreaseHealth (float healthChange)
 	{
@@ -60,22 +154,17 @@ public class ShipHandler : MonoBehaviour
 		}
 	}
 
-	public virtual void Die(){
-		Destroy(gameObject);
-		Instantiate (explosion, transform.position, transform.rotation);
-		audio.Play ();
-	}
-
-	public void FireBolts(){
+	public void FireBolts ()
+	{
 		if (!button.paused) {
 			if (Time.time > nextFire) {
 				nextFire = Time.time + fireLag;
 				GameObject thisBolt = (GameObject)Instantiate (bolt, shotSpawn.position, shotSpawn.rotation);
 				BoltMover boltMover = thisBolt.GetComponent<BoltMover> ();
 				boltMover.amPlayersBolt = true;
-				//if (gameObject.tag == "EnemyShip") {
-				//	boltMover.amPlayersBolt = false;
-				//}
+				if (gameObject.tag == "EnemyShip") {
+					boltMover.amPlayersBolt = false;
+				}
 				boltMover.damageDone = shotDamage;
 			}
 		} else {
@@ -84,14 +173,81 @@ public class ShipHandler : MonoBehaviour
 		}
 		timeDif = nextFire - Time.time;
 	}
-	
-	public virtual void Update(){
-		if(firesBolts){
-			FireBolts();
+
+	public void DetermineCurrentLane ()
+	{
+		//First, find all lanes that exist, period.
+		GameObject[] allLanes = GameObject.FindGameObjectsWithTag ("Lane");
+		if (allLanes.Length == 0) {
+			amInLane = false;
+		} else {
+			float minDist = 100;
+			float laneWidth = 3;
+			//Next, for each lane, figure out if we are close to any of them.
+			for (int i = 0; i < allLanes.Length; i++) {
+				GameObject curLane = allLanes [i];
+				string name = curLane.transform.name;
+				GameObject upW = GameObject.Find (name + "/UpperWall");
+				float upDistance = 0;
+				RaycastHit hit;
+				//Look up along the z direction and see if you can find this upper wall.
+				if (Physics.Raycast (transform.position, new Vector3 (0, 0, 1), out hit)) {
+					if (hit.transform.gameObject.GetInstanceID () == upW.GetInstanceID ()) {
+						upDistance = hit.distance;
+					} else {
+						upDistance = 1000;
+					}
+				}
+				GameObject lwW = GameObject.Find (name + "/LowerWall");
+				float downDistance = 0;
+				if (Physics.Raycast (transform.position, new Vector3 (0, 0, -1), out hit)) {
+					if (hit.transform.gameObject.GetInstanceID () == lwW.GetInstanceID ()) {
+						downDistance = hit.distance;
+					} else {
+						downDistance = -1000;
+					}
+				}
+				//If we can find both lower and upper walls of a lane correctly oriented around us and not too far away, we say we are in that lane.
+				if (Mathf.Abs (upDistance - downDistance) < minDist) {
+					minDist = upDistance - downDistance;
+					laneWidth = upDistance + downDistance;
+					upperWall = upW;
+					lowerWall = lwW;
+				}
+			}
+			if (minDist == 100) {
+				amInLane = false;
+				Debug.Log ("I'm not in a lane!");
+			}
+		
+			speed = speed * (3f / laneWidth);
 		}
-		if(isDead){
-			Die();
+	}
+
+	public void ShieldDeploy(){
+		if (!button.paused) {
+			if (input.Began ()) {
+				currentClickPos = input.startPos ();
+			}
+			if (input.Ended ()) {
+				if ((input.endPos () - currentClickPos).sqrMagnitude < 2) {
+					Vector3 pos = new Vector3 (currentClickPos.x, currentClickPos.y, 10.0f);
+					pos = Camera.main.ScreenToWorldPoint (pos);
+					if ((pos - transform.position).sqrMagnitude < 2) {
+						Instantiate (shield, shotSpawn.position, shotSpawn.rotation);
+						Destroy (gameObject);
+					}
+				}
+			}
 		}
+	}
+
+	//If the bomb explodes, remove it, and replace it with an explosion and blastzone.
+	public void Explode(){
+		Instantiate (explosion, transform.position, transform.rotation);
+		Instantiate (blastZone, transform.position, transform.rotation);
+		audio.Play();
+		Destroy(gameObject);
 	}
 
 }

@@ -49,7 +49,7 @@ public static class GameControllerScript
 	
 	//This method will set all relevant variables. It should be called at the end of Start() as well as any time we have upgraded and then entered a new level.
 	public static void prepareAllShips(){
-		tinyShip.GetComponent<TinyShipMover>().tinyShipDamage = tinyShipDamage;
+		tinyShip.GetComponent<ShipHandler>().shotDamage = tinyShipDamage;
 	}
 
 	//A series of getters and setters to modify the prefabs. 

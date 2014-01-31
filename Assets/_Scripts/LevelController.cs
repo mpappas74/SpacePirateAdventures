@@ -103,9 +103,7 @@ public class LevelController : MonoBehaviour
 						//This is much more logical than having separate neutralShips as different prefabs in my opinion, despite the ugly code.
 						placingShipObjects [0] = (GameObject)Instantiate (currentNeutralShip, new Vector3 (6, -3, 0), Quaternion.identity);
 						placingShipObjects [0].GetComponent<NeutralShipRotator>().enabled = true;
-						placingShipObjects [0].GetComponent<HealthTracker>().enabled = false;
-						placingShipObjects [0].GetComponent<MoveInLane>().enabled = false;
-						placingShipObjects [0].GetComponent<TinyShipMover>().enabled = false;
+						placingShipObjects [0].GetComponent<ShipHandler>().enabled = false;
 						placingShipObjects [0].GetComponent<CapsuleCollider>().enabled = false;
 						placingShipObjects [0].transform.Find("HealthBar").gameObject.GetComponent<MeshRenderer>().enabled = false;
 
@@ -122,9 +120,7 @@ public class LevelController : MonoBehaviour
 
 						placingShipObjects [0] = (GameObject)Instantiate (currentNeutralShip, new Vector3 (6, -3, 0), Quaternion.identity);
 						placingShipObjects [0].GetComponent<NeutralShipRotator>().enabled = true;
-						placingShipObjects [0].GetComponent<HealthTracker>().enabled = false;
-						placingShipObjects [0].GetComponent<MoveInLane>().enabled = false;
-						placingShipObjects [0].GetComponent<TinyShipMover>().enabled = false;
+						placingShipObjects [0].GetComponent<ShipHandler>().enabled = false;
 						placingShipObjects [0].GetComponent<CapsuleCollider>().enabled = false;
 						placingShipObjects [0].transform.Find("HealthBar").gameObject.GetComponent<MeshRenderer>().enabled = false;
 
@@ -141,9 +137,7 @@ public class LevelController : MonoBehaviour
 
 						placingShipObjects [0] = (GameObject)Instantiate (currentNeutralShip, new Vector3 (6, -3, 0), Quaternion.identity);
 						placingShipObjects [0].GetComponent<NeutralShipRotator>().enabled = true;
-						placingShipObjects [0].GetComponent<HealthTracker>().enabled = false;
-						placingShipObjects [0].GetComponent<MoveInLane>().enabled = false;
-						placingShipObjects [0].GetComponent<BombShipScript>().enabled = false;
+						placingShipObjects [0].GetComponent<ShipHandler>().enabled = false;
 						placingShipObjects [0].GetComponent<SphereCollider>().enabled = false;
 						placingShipObjects [0].transform.Find("HealthBar").gameObject.GetComponent<MeshRenderer>().enabled = false;
 						
@@ -159,9 +153,7 @@ public class LevelController : MonoBehaviour
 
 						placingShipObjects [0] = (GameObject)Instantiate (currentNeutralShip, new Vector3 (6, -3, 0), Quaternion.identity);
 						placingShipObjects [0].GetComponent<NeutralShipRotator>().enabled = true;
-						placingShipObjects [0].GetComponent<HealthTracker>().enabled = false;
-						placingShipObjects [0].GetComponent<MoveInLane>().enabled = false;
-						placingShipObjects [0].GetComponent<ShieldShipMover>().enabled = false;
+						placingShipObjects [0].GetComponent<ShipHandler>().enabled = false;
 						placingShipObjects [0].GetComponent<CapsuleCollider>().enabled = false;
 						placingShipObjects [0].transform.Find("HealthBar").gameObject.GetComponent<MeshRenderer>().enabled = false;
 						

@@ -31,7 +31,7 @@ public class BoltMover : MonoBehaviour
 			other.gameObject.GetComponent<HealthTracker>().DecreaseHealth(damageDone);
 			Destroy(gameObject);
 		} else if(!amPlayersBolt && (other.tag == "CrazyShip" || other.tag == "TinyShip" || other.tag == "BombShip")) {
-				other.gameObject.GetComponent<HealthTracker> ().DecreaseHealth (damageDone);	
+				other.gameObject.GetComponent<ShipHandler>().DecreaseHealth (damageDone);	
 				Destroy (gameObject);	//Destroy the bolt. Whether or not the ship is destroyed is handled in DecreaseHealth.
 		} else {
 			//Debug.Log(other.tag);
