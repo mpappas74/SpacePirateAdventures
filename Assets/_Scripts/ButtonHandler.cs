@@ -37,6 +37,7 @@ public class ButtonHandler : MonoBehaviour
 		
 		//If the game is over, offer a button to return to the main menu.
 		if (gameOver) {
+			paused = true;
 			if (GUI.Button (new Rect (.5f * Screen.width - 100, .7f * Screen.height, 200, .13f * Screen.height), "Return to Main Menu")) {
 				Application.LoadLevel ("MainMenu");
 			} 

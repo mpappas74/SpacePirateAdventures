@@ -29,6 +29,7 @@ public class LevelController : MonoBehaviour
 	public float[] laneRotations; //How much ship placed into each lane should be rotated. (Note that, if the ship has MoveInLane, it should follow the lane regardless of orientation.)
 	public float[] startPositions; //The starting z positions for ships to be built in the lanes which exist.
 	public bool playerVictory = false; //Has the player won?
+	private MothershipScript mothership;
 	
 	void Start ()
 	{
@@ -43,6 +44,7 @@ public class LevelController : MonoBehaviour
 		//Get access to the input handler.
 		input = GameObject.Find ("LevelController").GetComponent<InputHandler> ();
 		StartCoroutine (FixBuggyInput ());
+		mothership = GameObject.Find("Mothership").GetComponent<MothershipScript>();
 	}
 	
 	IEnumerator FixBuggyInput ()
@@ -121,7 +123,7 @@ public class LevelController : MonoBehaviour
 	{
 		buttonJustPressedThisUpdate = false;
 		//If the game is over, tell the rest of the game to stop. This is true if we are out of points and have no ships left to earn us more.
-		if (levelScore < 5 && GameObject.Find ("TinyShip(Clone)") == null && GameObject.Find ("CrazyShip(Clone)") == null && GameObject.Find ("LoadingBar(Clone)") == null && GameObject.Find ("BombShip(Clone)") == null && GameObject.Find ("ShieldShip(Clone)") == null && GameObject.Find ("Shield(Clone)") == null) {
+		if (mothership.health <= 0 ||(levelScore < 5 && GameObject.Find ("TinyShip(Clone)") == null && GameObject.Find ("CrazyShip(Clone)") == null && GameObject.Find ("LoadingBar(Clone)") == null && GameObject.Find ("BombShip(Clone)") == null && GameObject.Find ("ShieldShip(Clone)") == null && GameObject.Find ("Shield(Clone)") == null)) {
 			gameOver = true;
 			button.gameOver = true;
 		} else if (playerVictory) {

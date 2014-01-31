@@ -88,8 +88,9 @@ public class ProjectileHandler : MonoBehaviour
 			} else if (!amPlayers && (other.tag == "CrazyShip" || other.tag == "TinyShip" || other.tag == "BombShip")) {
 				other.gameObject.GetComponent<ShipHandler> ().DecreaseHealth (damageDone);	
 				Destroy (gameObject);	//Destroy the bolt. Whether or not the ship is destroyed is handled in DecreaseHealth.
-			} else {
-				//Debug.Log(other.tag);
+			} else if(!amPlayers && other.tag == "Player"){
+				other.gameObject.GetComponent<MothershipScript>().health -= damageDone;
+				Destroy(gameObject);
 			}
 		}
 		if (isExplosion) {
@@ -99,6 +100,8 @@ public class ProjectileHandler : MonoBehaviour
 				Destroy (other.gameObject);
 			} else if (other.tag == "Shield" && destroysShields) {
 				Destroy (other.gameObject);
+			} else if (other.tag == "Player"){
+				other.gameObject.GetComponent<MothershipScript>().health -= explosionDamage/2;
 			}
 		}
 		
