@@ -50,8 +50,12 @@ public class LevelController : MonoBehaviour
 	{
 		//Keep one placingBox visible to show that the ship is being built. Hold it for one minute, then replace it with a ship.
 		//We rotate both the placingBox and the ship by the movementAngle about the y axis.
-		Object block = Instantiate (GameControllerScript.getPlacingBox(), new Vector3 (9, -10, position.z), Quaternion.Euler(new Vector3(0.0f, rotation, 0.0f)));
-		yield return new WaitForSeconds (1);
+		GameObject block = (GameObject)Instantiate (GameControllerScript.getLoadingBar(), new Vector3 (9, -10, position.z), Quaternion.Euler(new Vector3(0.0f, rotation, 0.0f)));
+		float initialHeight = block.transform.localScale.z;
+		for(int i = 0; i < 5; i++){
+			yield return new WaitForSeconds (0.2f);
+			block.transform.localScale = new Vector3(block.transform.localScale.x, block.transform.localScale.y, initialHeight*(5f-i)/5f);
+		}
 		Destroy (block);
 		GameObject theShip = (GameObject)Instantiate (curShip, position, curShip.transform.rotation);
 		theShip.transform.Rotate(Vector3.up * rotation);

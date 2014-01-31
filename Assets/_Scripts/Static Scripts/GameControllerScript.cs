@@ -9,6 +9,7 @@ public static class GameControllerScript
 	public static GameObject bombShip = (GameObject)Resources.Load("BombShip"); //The bombShip prefab.
 	public static GameObject shield = (GameObject)Resources.Load("Shield"); //The shield prefab.
 	public static GameObject placingBox = (GameObject)Resources.Load("PlacementBox"); //The placingBox prefab.
+	public static GameObject loadingBar = (GameObject)Resources.Load("LoadingBar"); //The placingBox prefab.
 	public static GameObject notEnoughMoneyObject = (GameObject)Resources.Load("NotEnoughMoneyObject"); //The notEnoughMoneyObject prefab.
 	private static float score; //The total score across multiple levels.
 	private static int currentUnlockedLevel; //The highest level that has currently been unlocked.
@@ -103,6 +104,9 @@ public static class GameControllerScript
 	}
 	public static GameObject getPlacingBox(){
 		return placingBox;
+	}
+	public static GameObject getLoadingBar(){
+		return loadingBar;
 	}
 	public static GameObject getNotEnoughMoneyObject(){
 		return notEnoughMoneyObject;
