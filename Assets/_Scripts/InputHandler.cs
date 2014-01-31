@@ -164,5 +164,19 @@ public class InputHandler : MonoBehaviour
 		return false;
 	}
 
+	public void setTrigger(bool b){
+		trigger = b;
+	}
+
+	public void setEnded(bool b){
+		clickEnded = b;
+	}
+	public void setBegan(bool b){
+		clickStarted = b;
+	}
+	public void setMoved(bool b){
+		clickMoved = b;
+	}
+
 	
 }

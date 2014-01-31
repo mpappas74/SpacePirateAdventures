@@ -27,6 +27,8 @@ public class ShipHandler : MonoBehaviour
 	public float shotDamage = 1;
 
 	//************** Shield Deployment Logic ********************//
+	public bool wasClickedOn;
+	public bool wasReleasedOn;
 	public bool deploysShield;
 	public GameObject shield; //Access to the shield to instantiate them.
 	private Vector2 currentClickPos;
@@ -80,16 +82,16 @@ public class ShipHandler : MonoBehaviour
 		if (firesBolts) {
 			FireBolts ();
 		}
-		if(deploysShield){
-			ShieldDeploy();
+		if (deploysShield) {
+			ShieldDeploy ();
 		}
-		if(selfDestructs){
-			if(input.isTrigger()){
-				Explode();
-			} else if(isDead){
-				Explode();
+		if (selfDestructs) {
+			if (input.isTrigger ()) {
+				Explode ();
+			} else if (isDead) {
+				Explode ();
 			}
-		}else if (isDead) {
+		} else if (isDead) {
 			Die ();
 		}
 		//If we are in a lane, we use very similar logic to track the distance between the ship and the two walls, and keep it vertically in between the walls.
@@ -130,7 +132,7 @@ public class ShipHandler : MonoBehaviour
 	
 	public virtual void Die ()
 	{
-		LevelController lc = GameObject.Find("LevelController").GetComponent<LevelController>();
+		LevelController lc = GameObject.Find ("LevelController").GetComponent<LevelController> ();
 		lc.levelScore += scoreValue;
 		Destroy (gameObject);
 		Instantiate (explosion, transform.position, transform.rotation);
@@ -224,30 +226,25 @@ public class ShipHandler : MonoBehaviour
 		}
 	}
 
-	public void ShieldDeploy(){
+	public void ShieldDeploy ()
+	{
 		if (!button.paused) {
-			if (input.Began ()) {
-				currentClickPos = input.startPos ();
-			}
-			if (input.Ended ()) {
-				if ((input.endPos () - currentClickPos).sqrMagnitude < 2) {
-					Vector3 pos = new Vector3 (currentClickPos.x, currentClickPos.y, 10.0f);
-					pos = Camera.main.ScreenToWorldPoint (pos);
-					if ((pos - transform.position).sqrMagnitude < 2) {
-						Instantiate (shield, shotSpawn.position, shotSpawn.rotation);
-						Destroy (gameObject);
-					}
-				}
+			if (wasClickedOn && wasReleasedOn) {
+				Instantiate (shield, shotSpawn.position, shotSpawn.rotation);
+				wasClickedOn = false;
+				wasReleasedOn = false;
+				Destroy (gameObject);
 			}
 		}
 	}
 
 	//If the bomb explodes, remove it, and replace it with an explosion and blastzone.
-	public void Explode(){
+	public void Explode ()
+	{
 		Instantiate (explosion, transform.position, transform.rotation);
 		Instantiate (blastZone, transform.position, transform.rotation);
-		audio.Play();
-		Destroy(gameObject);
+		audio.Play ();
+		Destroy (gameObject);
 	}
 
 }

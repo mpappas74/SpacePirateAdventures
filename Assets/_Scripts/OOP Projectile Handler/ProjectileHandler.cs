@@ -41,8 +41,12 @@ public class ProjectileHandler : MonoBehaviour
 
 	public virtual void Start ()
 	{
+		if(audio != null){
 		audio.Play (); //When the bolt is shot, play the shooting audio.
-		rigidbody.velocity = speed * transform.forward;	//Keep the ship moving forward.
+		}
+		if(rigidbody != null){
+			rigidbody.velocity = speed * transform.forward;	//Keep the ship moving forward.
+		}
 		testObject = GameObject.Find ("EmptyButtonObject"); //Gain access to the ButtonHandler script to determine if the game is paused.
 		button = testObject.GetComponent<ButtonHandler> ();
 		if (survivalTime > 0) {
@@ -66,9 +70,9 @@ public class ProjectileHandler : MonoBehaviour
 			Destroy (gameObject);
 		}
 		//If the game is paused, don't move. Otherwise, keep moving.
-		if (button.paused) {
+		if (button.paused && rigidbody != null) {
 			rigidbody.velocity = new Vector3 (0.0f, 0.0f, 0.0f);
-		} else {
+		} else if(rigidbody != null) {
 			rigidbody.velocity = speed * transform.forward;
 		}
 	}
@@ -79,7 +83,7 @@ public class ProjectileHandler : MonoBehaviour
 			//Right now, these tags exist to keep bolts from hitting each other or the mothership,
 			// or trying to 'damage' the outer boundary that destroys all gameObjects when offscreen.
 			if (other.tag == "EnemyShip" && amPlayers) {
-				other.gameObject.GetComponent<HealthTracker> ().DecreaseHealth (damageDone);
+				other.gameObject.GetComponent<ShipHandler> ().DecreaseHealth (damageDone);
 				Destroy (gameObject);
 			} else if (!amPlayers && (other.tag == "CrazyShip" || other.tag == "TinyShip" || other.tag == "BombShip")) {
 				other.gameObject.GetComponent<ShipHandler> ().DecreaseHealth (damageDone);	
