@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityEditor;
 
 public class GameControllerScript : Singleton<GameControllerScript>
 {
@@ -34,18 +33,26 @@ public class GameControllerScript : Singleton<GameControllerScript>
 		loadingBar = (GameObject)Resources.Load("LoadingBar"); //The placingBox prefab.
 		notEnoughMoneyObject = (GameObject)Resources.Load("NotEnoughMoneyObject"); //The notEnoughMoneyObject prefab.
 		
-		tinyShip = (GameObject)Instantiate(tinyShip, new Vector3(0.0f, -1000.0f, 0.0f), tinyShip.transform.rotation);
+		//The below code is to keep clonable instances of the ships without changing the actual prefabs. When we get to 
+		//the point where we don't mind prefabs being changed (ie the game is actually deployed) we can remove this bit.
+		tinyShip = (GameObject)Instantiate(tinyShip, new Vector3(0.0f, 0.0f, 0.0f), tinyShip.transform.rotation);
 		tinyShip.SetActive(false);
-		crazyShip = (GameObject)Instantiate(crazyShip, new Vector3(0.0f, -1000.0f, 0.0f), crazyShip.transform.rotation);
+		DontDestroyOnLoad(tinyShip);
+		crazyShip = (GameObject)Instantiate(crazyShip, new Vector3(0.0f, 0.0f, 0.0f), crazyShip.transform.rotation);
 		crazyShip.SetActive(false);
-		shieldShip = (GameObject)Instantiate(shieldShip, new Vector3(0.0f, -1000.0f, 0.0f), shieldShip.transform.rotation);
+		DontDestroyOnLoad(crazyShip);
+		shieldShip = (GameObject)Instantiate(shieldShip, new Vector3(0.0f, 0.0f, 0.0f), shieldShip.transform.rotation);
 		shieldShip.SetActive(false);
-		bombShip = (GameObject)Instantiate(bombShip, new Vector3(0.0f, -1000.0f, 0.0f), bombShip.transform.rotation);
+		DontDestroyOnLoad(shieldShip);
+		bombShip = (GameObject)Instantiate(bombShip, new Vector3(0.0f, 0.0f, 0.0f), bombShip.transform.rotation);
 		bombShip.SetActive(false);
-		stealthShip = (GameObject)Instantiate(stealthShip, new Vector3(0.0f, -1000.0f, 0.0f), stealthShip.transform.rotation);
+		DontDestroyOnLoad(bombShip);
+		stealthShip = (GameObject)Instantiate(stealthShip, new Vector3(0.0f, 0.0f, 0.0f), stealthShip.transform.rotation);
 		stealthShip.SetActive(false);
-		shield = (GameObject)Instantiate(shield, new Vector3(0.0f, -1000.0f, 0.0f), shield.transform.rotation);
+		DontDestroyOnLoad(stealthShip);
+		shield = (GameObject)Instantiate(shield, new Vector3(0.0f, 0.0f, 0.0f), shield.transform.rotation);
 		shield.SetActive(false);
+		DontDestroyOnLoad(shield);
 
 		//Check PlayerPrefs to see if the three main things are saved. If not, set them to default levels.
 		if(PlayerPrefs.HasKey("Score")){
@@ -72,23 +79,6 @@ public class GameControllerScript : Singleton<GameControllerScript>
 		}
 
 		prepareAllShips();
-		setToPrefabs();
-	}
-	
-	public void setToPrefabs(){
-		Object blankPrefab1 = PrefabUtility.CreateEmptyPrefab("Assets/Prefabs/Resources/InGameTinyShip.prefab");
-		tinyShip = PrefabUtility.ReplacePrefab(tinyShip, blankPrefab1, ReplacePrefabOptions.ConnectToPrefab);
-		Object blankPrefab2 = PrefabUtility.CreateEmptyPrefab("Assets/Prefabs/Resources/InGameCrazyShip.prefab");
-		crazyShip = PrefabUtility.ReplacePrefab(crazyShip, blankPrefab2, ReplacePrefabOptions.ConnectToPrefab);
-		Object blankPrefab3 = PrefabUtility.CreateEmptyPrefab("Assets/Prefabs/Resources/InGameShieldShip.prefab");
-		shieldShip = PrefabUtility.ReplacePrefab(shieldShip, blankPrefab3, ReplacePrefabOptions.ConnectToPrefab);
-		Object blankPrefab4 = PrefabUtility.CreateEmptyPrefab("Assets/Prefabs/Resources/InGameBombShip.prefab");
-		bombShip = PrefabUtility.ReplacePrefab(bombShip, blankPrefab4, ReplacePrefabOptions.ConnectToPrefab);
-		Object blankPrefab5 = PrefabUtility.CreateEmptyPrefab("Assets/Prefabs/Resources/InGameStealthShip.prefab");
-		stealthShip = PrefabUtility.ReplacePrefab(stealthShip, blankPrefab5, ReplacePrefabOptions.ConnectToPrefab);
-		Object blankPrefab6 = PrefabUtility.CreateEmptyPrefab("Assets/Prefabs/Resources/InGameShield.prefab");
-		shield = PrefabUtility.ReplacePrefab(shield, blankPrefab6, ReplacePrefabOptions.ConnectToPrefab);
-		
 	}
 	
 	//This method will set all relevant variables. It should be called at the end of Start() as well as any time we have upgraded and then entered a new level.
