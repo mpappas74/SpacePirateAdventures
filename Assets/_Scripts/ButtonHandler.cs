@@ -8,11 +8,9 @@ public class ButtonHandler : MonoBehaviour
 	//This is the case simply because GameController has more access to other variables and objects.
 {
 	
-	//The boolean main determines whether we are at the basic button menu (ships vs walls) or the sub-menu (tiny ship vs tiny spinny ship.)
 	//The pressed booleans tell if either button has been pressed.
 	//paused, as one might guess, is true if the game is paused and we want all objects to stop moving.
 	//canCancelShip is true if we are currently building a ship and want the option to cancel it to appear.
-	public bool main;
 	public bool pressed1;
 	public bool pressed2;
 	public bool pressed3;
@@ -30,6 +28,31 @@ public class ButtonHandler : MonoBehaviour
 	public Texture image4;
 	public Texture image5;
 	
+	private Vector2 scrollPosition = Vector2.zero;
+	private float dist = 0;
+
+	private InputHandler input;
+
+	void Start(){
+		input = GameObject.Find("LevelController").GetComponent<InputHandler>();
+	}
+
+	void Update(){
+		if (input.Moved()) {
+			//The next three lines just figure out whether the building boxes are yet visible on the screen, and whether the touch was near them.					
+			Vector2 pos = input.currentDragPos();
+			if (pos.x < 0.2f*Screen.height) {
+				//Scroll an x distance proportional to the length of the moving touch, capped on either side.
+				dist = input.deltaPos().y;
+				Debug.Log(input.deltaPos().y);
+				
+			} else {
+				input.setMoved(true);
+			}
+		}
+		
+	}
+
 	void OnGUI ()
 	{
 		//Generate the buttons in locations based on screen size to keep a consistent positioning.
@@ -42,37 +65,35 @@ public class ButtonHandler : MonoBehaviour
 				Application.LoadLevel ("MainMenu");
 			} 
 		} else {
-			if (main && !paused) {
+			if (!paused) {
 				//The main, non-paused menu is the basic in-game menu. The top button is the pause button, and the remaining allow you to select various ships.
 				if (GUI.Button (new Rect (.03f * Screen.height, .03f * Screen.height, .2f * Screen.height, .13f * Screen.height), "Pause")) {
 					pressed1 = true;
 				} 
-				if (GUI.Button (new Rect (.03f * Screen.height, .19f * Screen.height, .13f * Screen.height, .13f * Screen.height), image1)) {
+	
+				scrollPosition = GUI.BeginScrollView(new Rect(0.03f*Screen.height, 0.19f*Screen.height, 0.2f*Screen.height, 0.82f*Screen.height), scrollPosition, new Rect(0.0f, 0.0f, 0.13f*Screen.height, 1.2f*Screen.height));
+				if(dist != 0){
+					scrollPosition.y = Mathf.Clamp(scrollPosition.y + dist, 0f, 10f);
+					dist = 0;
+				}
+				
+				if (GUI.Button (new Rect (0f, 0.0f * Screen.height, .13f * Screen.height, .13f * Screen.height), image1)) {
 					pressed2 = true;
-				} 
-				if (GUI.Button (new Rect (.03f * Screen.height, .35f * Screen.height, .13f * Screen.height, .13f * Screen.height), image2)) {
+				}
+				if (GUI.Button (new Rect  (0f, 0.19f * Screen.height, .13f * Screen.height, .13f * Screen.height), image2)) {
 					pressed3 = true;
 				} 
-				if (GUI.Button (new Rect (.03f * Screen.height, .51f * Screen.height, .13f * Screen.height, .13f * Screen.height), image3)) {
+				if (GUI.Button (new Rect  (0f, 0.35f * Screen.height, .13f * Screen.height, .13f * Screen.height), image3)) {
 					pressed4 = true;
 				} 
-				if (GUI.Button (new Rect (.03f * Screen.height, .67f * Screen.height, .13f * Screen.height, .13f * Screen.height), image4)) {
+				if (GUI.Button (new Rect  (0f, 0.51f * Screen.height, .13f * Screen.height, .13f * Screen.height), image4)) {
 					pressed5 = true;
 				} 
-				if (GUI.Button (new Rect (.03f * Screen.height, .83f * Screen.height, .16f * Screen.height, .13f * Screen.height), "More")) {
+				if (GUI.Button (new Rect  (0f, 0.67f * Screen.height, .2f * Screen.height, .13f * Screen.height), "Thief")) {
 					pressed6 = true;
 				} 
-			} else if (!paused) {
-				//The non-main, non-paused menu is an example of a sub-menu if there are multiple types of ships that you choose between after hitting a button on the main menu.
-				if (GUI.Button (new Rect (.03f * Screen.height, .03f * Screen.height, .2f * Screen.height, .13f * Screen.height), "Pause")) {
-					pressed1 = true;
-				} 
-				if (GUI.Button (new Rect (.03f * Screen.height, .19f * Screen.height, .2f * Screen.height, .13f * Screen.height), "Thief")) {
-					pressed2 = true;
-				} 
-				if (GUI.Button (new Rect (.03f * Screen.height, .35f * Screen.height, .2f * Screen.height, .13f * Screen.height), "Back")) {
-					pressed3 = true;
-				} 
+				GUI.EndScrollView();
+
 			} else {
 				//If the game is paused, always have the unpause and main menu buttons. Also, if we are currently building a ship, allow us to cancel it.
 				if (canCancelShip && GUI.Button (new Rect (.5f * Screen.width - 100f, .35f * Screen.height, 200f, .08f * Screen.height), "Cancel Ship")) {

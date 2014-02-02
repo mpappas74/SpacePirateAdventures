@@ -46,6 +46,8 @@ public class CameraScript : MonoBehaviour
 					//Scroll an x distance proportional to the length of the moving touch, capped on either side.
 					dist = input.deltaPos().x;
 					transform.position = new Vector3 (Mathf.Clamp (transform.position.x - dist * cameraSpeed, leftSideCap, rightSideCap), startingCameraPosition.y, startingCameraPosition.z);
+				} else {
+					input.setMoved(true);
 				}
 			}
 				
@@ -53,11 +55,21 @@ public class CameraScript : MonoBehaviour
 		} else {
 			//Same as above, but scrolling freely if we are not placing a ship.
 			
-				if (input.Moved()) {
+			if (input.Moved()) {
+				
+				//The next three lines just figure out whether the building boxes are yet visible on the screen, and whether the touch was near them.					
+				Vector3 pos = input.currentDragPos();
+				pos.z = 10.0f;
+				pos = Camera.main.ScreenToWorldPoint (pos);
+				
+				if (pos.x > 9) {
+					//Scroll an x distance proportional to the length of the moving touch, capped on either side.
 					dist = input.deltaPos().x;
 					transform.position = new Vector3 (Mathf.Clamp (transform.position.x - dist * cameraSpeed, leftSideCap, rightSideCap), startingCameraPosition.y, startingCameraPosition.z);
-				
+				} else {
+					input.setMoved(true);
 				}
+			}
 
 		
 		}

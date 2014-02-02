@@ -85,7 +85,7 @@ public class ProjectileHandler : MonoBehaviour
 			if (other.tag == "EnemyShip" && amPlayers) {
 				other.gameObject.GetComponent<ShipHandler> ().DecreaseHealth (damageDone);
 				Destroy (gameObject);
-			} else if (!amPlayers && (other.tag == "CrazyShip" || other.tag == "TinyShip" || other.tag == "BombShip")) {
+			} else if (!amPlayers && (other.tag == "CrazyShip" || other.tag == "TinyShip" || other.tag == "BombShip" || other.tag == "ShieldShip" || other.tag == "StealthShip")) {
 				other.gameObject.GetComponent<ShipHandler> ().DecreaseHealth (damageDone);	
 				Destroy (gameObject);	//Destroy the bolt. Whether or not the ship is destroyed is handled in DecreaseHealth.
 			} else if(!amPlayers && other.tag == "Player"){
@@ -94,7 +94,7 @@ public class ProjectileHandler : MonoBehaviour
 			}
 		}
 		if (isExplosion) {
-			if (other.tag == "EnemyShip" || other.tag == "CrazyShip" || other.tag == "TinyShip" || other.tag == "BombShip" || other.tag == "ShieldShip") {
+			if (other.tag == "EnemyShip" || other.tag == "CrazyShip" || other.tag == "TinyShip" || other.tag == "BombShip" || other.tag == "ShieldShip" || other.tag == "StealthShip"){
 				other.gameObject.GetComponent <ShipHandler> ().DecreaseHealth (explosionDamage);	//Inflict damage. 
 			} else if (other.tag == "Bolt" && destroysBolts) {
 				Destroy (other.gameObject);

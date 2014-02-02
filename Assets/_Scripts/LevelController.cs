@@ -143,7 +143,7 @@ public class LevelController : MonoBehaviour
 					buttonJustPressedThisUpdate = true;
 				}
 				//Otherwise, if we are not placing a ship and one of the other buttons has been pressed, do as the button commands.
-				if (button.main && !isPlacingShip) {
+				if (!isPlacingShip) {
 					//Buttons 2 and 3 build tinyShips and crazyShips, respectively. 
 					if (button.pressed2) {
 						button.pressed2 = false;
@@ -220,13 +220,6 @@ public class LevelController : MonoBehaviour
 					//button6 being the "Heavy Armor" button, and then clicking it brings up two possible heavily armored ships.
 					if (button.pressed6) {
 						button.pressed6 = false;
-						button.main = false;
-						buttonJustPressedThisUpdate = true;
-					}
-				} else if (!isPlacingShip) {
-					//This else corresponds to the "main" boolean, in other words, the below buttons are the sub-menu for button6.
-					if (button.pressed2) {
-						button.pressed2 = false;
 						currentShip = GameControllerScript.Instance.getStealthShip ();
 						currentNeutralShip = GameControllerScript.Instance.getStealthShip ();
 						
@@ -241,15 +234,6 @@ public class LevelController : MonoBehaviour
 						button.canCancelShip = true;
 						mustAddBoxes = true;
 						buttonJustPressedThisUpdate = true;
-						button.main = true;
-						buttonJustPressedThisUpdate = true;
-						
-					}
-					if (button.pressed3) {
-						button.pressed3 = false;
-						button.main = true;
-						buttonJustPressedThisUpdate = true;
-						
 					}
 				} else {
 					//This else corresponds to the time when we are placing a ship. We currently throw away all button clicks during this time. Otherwise, they are all saved up and executed in sequence upon the current ship being built.

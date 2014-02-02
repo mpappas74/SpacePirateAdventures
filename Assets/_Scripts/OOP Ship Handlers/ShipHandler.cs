@@ -68,6 +68,7 @@ public class ShipHandler : MonoBehaviour
 		//As we've seen before, getting access to ButtonHandler's booleans to know if we are paused.
 		maxHealth = shipHealth;
 		healthbar = gameObject.transform.Find ("HealthBar");
+		healthbar.localScale *= maxHealth/3;
 		if (healthbar != null) {
 			maxLength = healthbar.localScale.x;
 		} else {
@@ -85,10 +86,20 @@ public class ShipHandler : MonoBehaviour
 			if (other.tag == "EnemyShip") {
 				transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
 				collectedResources += 5;
+				foreach(Transform child in transform){
+					if(child.name == "HealthBar"){
+						child.localPosition -= new Vector3(2*child.localPosition.x, 0.0f, 0.0f);
+					}
+				}
 			} else if(other.tag == "Player"){
 				GameObject.Find("LevelController").GetComponent<LevelController>().levelScore += collectedResources;
 				collectedResources = 0;
 				transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
+				foreach(Transform child in transform){
+					if(child.name == "HealthBar"){
+						child.localPosition -= new Vector3(2*child.localPosition.x, 0.0f, 0.0f);
+					}
+				}
 			}
 		}
 	}
@@ -136,6 +147,11 @@ public class ShipHandler : MonoBehaviour
 		if(turnsAroundOnCollision){
 			if(transform.position.x >= 80){
 				transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
+				foreach(Transform child in transform){
+					if(child.name == "HealthBar"){
+						child.localPosition -= new Vector3(2*child.localPosition.x, 0.0f, 0.0f);
+					}
+				}
 			}
 		}
 	}
