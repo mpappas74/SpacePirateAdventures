@@ -32,9 +32,13 @@ public class ButtonHandler : MonoBehaviour
 	private float dist = 0;
 
 	private InputHandler input;
+	private string speedString;
 
 	void Start(){
-		input = GameObject.Find("LevelController").GetComponent<InputHandler>();
+		input = GameObject.Find("LevelController").GetComponent<InputHandler>();	
+		speedString = "Speed Up Game";
+		Time.timeScale = 0.75f;
+		Time.fixedDeltaTime *= 0.75f;
 	}
 
 	void Update(){
@@ -44,8 +48,6 @@ public class ButtonHandler : MonoBehaviour
 			if (pos.x < 0.2f*Screen.height) {
 				//Scroll an x distance proportional to the length of the moving touch, capped on either side.
 				dist = input.deltaPos().y;
-				Debug.Log(input.deltaPos().y);
-				
 			} else {
 				input.setMoved(true);
 			}
@@ -99,10 +101,21 @@ public class ButtonHandler : MonoBehaviour
 				if (canCancelShip && GUI.Button (new Rect (.5f * Screen.width - 100f, .35f * Screen.height, 200f, .08f * Screen.height), "Cancel Ship")) {
 					pressed3 = true;
 				}
-				if (GUI.Button (new Rect (.5f * Screen.width - 100f, .45f * Screen.height, 200f, .08f * Screen.height), "Unpause")) {
+				if (GUI.Button (new Rect (.5f * Screen.width - 100f, .45f * Screen.height, 200f, .08f * Screen.height), speedString)) {
+					if(speedString == "Speed Up Game"){
+						speedString = "Slow Down Game";
+						Time.timeScale *= 2f; 
+						Time.fixedDeltaTime *= 2f;
+					} else {
+						speedString = "Speed Up Game";
+						Time.timeScale *= 0.5f;
+						Time.fixedDeltaTime *= 0.5f;
+					}
+				} 
+				if (GUI.Button (new Rect (.5f * Screen.width - 100f, .55f * Screen.height, 200f, .08f * Screen.height), "Unpause")) {
 					pressed1 = true;
 				} 
-				if (GUI.Button (new Rect (.5f * Screen.width - 100f, .55f * Screen.height, 200f, .08f * Screen.height), "Main Menu")) {
+				if (GUI.Button (new Rect (.5f * Screen.width - 100f, .65f * Screen.height, 200f, .08f * Screen.height), "Main Menu")) {
 					pressed2 = true;
 				} 
 			}

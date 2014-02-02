@@ -64,7 +64,7 @@ public class ProjectileHandler : MonoBehaviour
 	}
 
 	// Update is called once per frame
-	public virtual void Update ()
+	public virtual void FixedUpdate ()
 	{
 		if (maxHealth > 0 && isDead) {
 			Destroy (gameObject);

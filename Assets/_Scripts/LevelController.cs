@@ -345,6 +345,7 @@ public class LevelController : MonoBehaviour
 						
 						//Check the score. Note that we are only checking it now so that we only decrease it if the player actually builds the ship.
 						//We also want the players able to look at ships they don't have the points to build yet.
+						button.canCancelShip = false;
 						if (levelScore >= 5) {
 							levelScore -= 5;
 							StartCoroutine (BuildCurrentShip (currentShip, pos, rot));

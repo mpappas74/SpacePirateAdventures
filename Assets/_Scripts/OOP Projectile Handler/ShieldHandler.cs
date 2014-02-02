@@ -14,8 +14,8 @@ public class ShieldHandler : ProjectileHandler {
 	}
 	
 	// Update is called once per frame
-	public override void Update () {
-		base.Update();
+	public override void FixedUpdate () {
+		base.FixedUpdate();
 	}
 	
 	public override void OnTriggerStay(Collider other){
