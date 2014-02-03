@@ -24,7 +24,7 @@ public class MothershipScript : MonoBehaviour {
 	}
 
 	void OnTriggerEnter(Collider other){
-		if(other.tag == "EnemyShip"){
+		if(other.gameObject.layer == LayerMask.NameToLayer("EnemyShips")){
 			other.gameObject.GetComponent<ShipHandler>().Die();
 			health -= 5;
 		}

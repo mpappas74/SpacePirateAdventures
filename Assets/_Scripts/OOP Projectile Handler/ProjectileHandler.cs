@@ -41,6 +41,7 @@ public class ProjectileHandler : MonoBehaviour
 
 	public virtual void Start ()
 	{
+		amPlayers = (LayerMask.NameToLayer("PlayerAttacks") == gameObject.layer);
 		if(audio != null){
 		audio.Play (); //When the bolt is shot, play the shooting audio.
 		}
@@ -82,19 +83,24 @@ public class ProjectileHandler : MonoBehaviour
 		if (doesSingleShotDamage) {
 			//Right now, these tags exist to keep bolts from hitting each other or the mothership,
 			// or trying to 'damage' the outer boundary that destroys all gameObjects when offscreen.
-			if (other.tag == "EnemyShip" && amPlayers) {
+			if (other.gameObject.layer == LayerMask.NameToLayer("EnemyShips") && amPlayers) {
 				other.gameObject.GetComponent<ShipHandler> ().DecreaseHealth (damageDone);
 				Destroy (gameObject);
-			} else if (!amPlayers && (other.tag == "CrazyShip" || other.tag == "TinyShip" || other.tag == "BombShip" || other.tag == "ShieldShip" || other.tag == "StealthShip")) {
+			} else if (!amPlayers && other.gameObject.layer == LayerMask.NameToLayer("PlayerShips")) {
+				if(other.tag == "Player"){
+					other.gameObject.GetComponent<MothershipScript>().health -= damageDone;
+					Destroy(gameObject);
+				} else{
 				other.gameObject.GetComponent<ShipHandler> ().DecreaseHealth (damageDone);	
 				Destroy (gameObject);	//Destroy the bolt. Whether or not the ship is destroyed is handled in DecreaseHealth.
-			} else if(!amPlayers && other.tag == "Player"){
-				other.gameObject.GetComponent<MothershipScript>().health -= damageDone;
+				}
+			} else if(other.gameObject.tag == "Bolt"){
+				Destroy(other.gameObject);
 				Destroy(gameObject);
 			}
 		}
 		if (isExplosion) {
-			if (other.tag == "EnemyShip" || other.tag == "CrazyShip" || other.tag == "TinyShip" || other.tag == "BombShip" || other.tag == "ShieldShip" || other.tag == "StealthShip"){
+			if (other.gameObject.layer == LayerMask.NameToLayer("EnemyShips") || other.gameObject.layer == LayerMask.NameToLayer("PlayerShips")){
 				other.gameObject.GetComponent <ShipHandler> ().DecreaseHealth (explosionDamage);	//Inflict damage. 
 			} else if (other.tag == "Bolt" && destroysBolts) {
 				Destroy (other.gameObject);
@@ -115,7 +121,7 @@ public class ProjectileHandler : MonoBehaviour
 					DecreaseHealth (other.gameObject.GetComponent<ProjectileHandler> ().damageDone);
 					Destroy (other.gameObject);
 				}
-			} else if (other.tag == "EnemyShip") {
+			} else if (other.gameObject.layer == LayerMask.NameToLayer("EnemyShips") || other.gameObject.layer == LayerMask.NameToLayer("PlayerShips")) {
 				DecreaseHealth (damageFromShip);
 				other.gameObject.GetComponent<ShipHandler>().DecreaseHealth(damageBack);
 			} else {

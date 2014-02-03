@@ -88,7 +88,7 @@ public class ShipHandler : MonoBehaviour
 		worldScale = GameObject.Find ("Background").transform.localScale;
 		worldScale = new Vector3 (1 / worldScale.x, 1, 1 / worldScale.z);
 		GameObject miniMap = GameObject.Find ("MiniMap");
-		myDot = (gameObject.tag == "EnemyShip") ? enemyDot : playerDot;
+		myDot = (gameObject.layer == LayerMask.NameToLayer("EnemyShips")) ? enemyDot : playerDot;
 		myDot = (GameObject)Instantiate (myDot, myDot.transform.position, myDot.transform.rotation);
 		myDot.transform.parent = miniMap.transform;
 		mapShift = new Vector3 (0.5f, -1.2f, 0.0f);
@@ -99,7 +99,7 @@ public class ShipHandler : MonoBehaviour
 	public virtual void OnTriggerEnter (Collider other)
 	{
 		if (turnsAroundOnCollision) {
-			if (other.tag == "EnemyShip") {
+			if (other.gameObject.layer == LayerMask.NameToLayer("EnemyShips")) {
 				transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
 				collectedResources += 5;
 				foreach (Transform child in transform) {
@@ -117,7 +117,7 @@ public class ShipHandler : MonoBehaviour
 					}
 				}
 			}
-		} else if(other.tag == "EnemyShip" && gameObject.tag != "EnemyShip") {
+		} else if(other.gameObject.layer == LayerMask.NameToLayer("EnemyShips") && gameObject.layer != LayerMask.NameToLayer("EnemyShips")) {
 			float damage = Mathf.Min(shipHealth, other.gameObject.GetComponent<ShipHandler>().shipHealth);
 			DecreaseHealth(damage);
 			other.gameObject.GetComponent<ShipHandler>().DecreaseHealth(damage);
@@ -224,9 +224,9 @@ public class ShipHandler : MonoBehaviour
 				nextFire = Time.time + fireLag;
 				GameObject thisBolt = (GameObject)Instantiate (bolt, shotSpawn.position, shotSpawn.rotation);
 				ProjectileHandler boltMover = thisBolt.GetComponent<ProjectileHandler> ();
-				boltMover.amPlayers = true;
-				if (gameObject.tag == "EnemyShip") {
-					boltMover.amPlayers = false;
+				thisBolt.layer = LayerMask.NameToLayer("PlayerAttacks");
+				if (gameObject.layer == LayerMask.NameToLayer("EnemyShips")) {
+					thisBolt.layer = LayerMask.NameToLayer("EnemyAttacks");
 				}
 				boltMover.damageDone = shotDamage;
 				if (boltSurvivalTime > 0) {
@@ -295,7 +295,11 @@ public class ShipHandler : MonoBehaviour
 	{
 		if (!button.paused) {
 			if (wasClickedOn && wasReleasedOn) {
-				Instantiate (shield, shotSpawn.position, shotSpawn.rotation);
+				GameObject theShield = (GameObject)Instantiate (shield, shotSpawn.position, shotSpawn.rotation);
+				theShield.layer = LayerMask.NameToLayer("PlayerAttacks");
+				if(gameObject.layer == LayerMask.NameToLayer("EnemyShips")){
+					theShield.layer = LayerMask.NameToLayer("EnemyAttacks");
+				}
 				wasClickedOn = false;
 				wasReleasedOn = false;
 				Destroy (gameObject);
