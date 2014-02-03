@@ -140,8 +140,10 @@ public class ShipHandler : MonoBehaviour
 			}
 		}
 		if (selfDestructs) {
-			if (input.isTrigger ()) {
-				Explode ();
+			if (wasClickedOn && wasReleasedOn) {
+				wasClickedOn = false;
+				wasReleasedOn = false;
+				Explode();
 			} else if (isDead) {
 				Explode ();
 			}

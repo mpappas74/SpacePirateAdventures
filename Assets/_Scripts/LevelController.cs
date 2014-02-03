@@ -21,7 +21,6 @@ public class LevelController : MonoBehaviour
 	private bool mustAddBoxes;		//Makes sure we only add placing boxes once per build.
 	private bool clickWasAtBoxes;	//Determines whether we actually touched a box, or just somewhere else on the screen.
 	//This object exists to be passed to the GuiTextHandler so it can tell you you don't have enough money.
-	public bool extraText;	//Whether we need extra explanatory text.
 	public bool gameOver; //Whether the game has ended for any reason. Currently the game only ends if you run out of points to build ships with.
 	private InputHandler input;	//The input handler.
 	private bool buttonJustPressedThisUpdate; //Makes sure button clicks aren't counted as multiple touches.
@@ -55,16 +54,20 @@ public class LevelController : MonoBehaviour
 		bool foundClickedShip = false;
 		while (!gameOver) {
 			GameObject[] ShieldShips = GameObject.FindGameObjectsWithTag ("ShieldShip");
-			if (GameObject.FindWithTag ("BombShip") == null) {
-				input.setTrigger (false);
-			}
+			GameObject[] BombShips = GameObject.FindGameObjectsWithTag("BombShip");
+			GameObject[] clickableShips = new GameObject[ShieldShips.Length + BombShips.Length];
+			ShieldShips.CopyTo(clickableShips, 0);
+			BombShips.CopyTo(clickableShips, ShieldShips.Length);
+			//if (GameObject.FindWithTag ("BombShip") == null) {
+			//	input.setTrigger (false);
+			//}
 			if (input.Began ()) {
 				currentClickPos = input.startPos ();
 				Vector3 pos = new Vector3 (currentClickPos.x, currentClickPos.y, 10.0f);
 				pos = Camera.main.ScreenToWorldPoint (pos);	
 				foundClickedShip = false;
-				foreach (GameObject ss in ShieldShips) {
-					if ((pos - ss.transform.position).sqrMagnitude < 4) {
+				foreach (GameObject ss in clickableShips) {
+					if ((pos - ss.transform.position).sqrMagnitude < 9) {
 						ss.GetComponent<ShipHandler> ().wasClickedOn = true;
 						foundClickedShip = true;
 						break;
@@ -76,11 +79,11 @@ public class LevelController : MonoBehaviour
 			}
 			if (foundClickedShip && input.Ended ()) {
 				foundClickedShip = false;
-				if ((input.endPos () - currentClickPos).sqrMagnitude < 4) {
+				if ((input.endPos () - currentClickPos).sqrMagnitude < 9) {
 					Vector3 pos = new Vector3 (currentClickPos.x, currentClickPos.y, 10.0f);
 					pos = Camera.main.ScreenToWorldPoint (pos);
-					foreach (GameObject ss in ShieldShips) {
-						if ((pos - ss.transform.position).sqrMagnitude < 4) {
+					foreach (GameObject ss in clickableShips) {
+						if ((pos - ss.transform.position).sqrMagnitude < 9) {
 							ss.GetComponent<ShipHandler> ().wasReleasedOn = true;
 							foundClickedShip = true;
 							break;
@@ -197,6 +200,7 @@ public class LevelController : MonoBehaviour
 						currentNeutralShip = GameControllerScript.Instance.getBombShip ();
 
 						placingShipObjects [0] = (GameObject)Instantiate (currentNeutralShip, new Vector3 (6, -3, 0), Quaternion.identity);
+						placingShipObjects [0].SetActive(true);
 						placingShipObjects [0].GetComponent<NeutralShipRotator> ().enabled = true;
 						placingShipObjects [0].GetComponent<ShipHandler> ().enabled = false;
 						placingShipObjects [0].GetComponent<SphereCollider> ().enabled = false;
@@ -262,7 +266,6 @@ public class LevelController : MonoBehaviour
 				if (button.pressed3) {
 					button.pressed3 = false;
 					button.paused = false;
-					extraText = false;
 					for (int i = 0; i <= laneRotations.Length; i++) {
 						Destroy (placingShipObjects [i]);
 					}
@@ -281,7 +284,6 @@ public class LevelController : MonoBehaviour
 					//We currently fix this by once again resetting the input values so that it doesn't think we've made a touch. 
 					button.pressed1 = false;
 					button.paused = false;
-					extraText = false;
 					input.Start ();
 					
 				}
@@ -309,7 +311,7 @@ public class LevelController : MonoBehaviour
 						//Vector3 pos = Input.mousePosition;
 						pos.z = 10.0f;
 						pos = Camera.main.ScreenToWorldPoint (pos);
-						if (pos.x >= 8 && pos.x <= 12) {
+						if (pos.x >= 4.5f && pos.x <= 12) {
 							initialClickPos = pos;
 						} else{
 							input.setBegan(true);
@@ -326,17 +328,24 @@ public class LevelController : MonoBehaviour
 						//If the touch was too far off to the right or left, you clearly didn't click on the boxes.
 						//Additionally, if the touch/click was too far to the left on the screen, you were attempting to hit a button (such as pause).
 						//So cancel this as well.
-						if (pos.x <= 4 || pos.x > 12) {
+						if (pos.x <= 4.5f || pos.x > 12) {
 							clickWasAtBoxes = false;
 						} else if (input.startPos ().x < .25 * Screen.height) {
 							clickWasAtBoxes = false;
 						}
 						//If the click was in this range, you clicked on the neutralShip, which means we need to pause the game
 						//and give extra explanation about the ship you are currently building.
-						if (pos.x < 8 && pos.x > 4) {
-							button.paused = true;
+						if (pos.x < 8 && pos.x > 4.5f) {
+							for (int i = 0; i <= laneRotations.Length; i++) {
+								Destroy (placingShipObjects [i]);
+							}
+							currentShip = GameControllerScript.Instance.getPlacingBox ();
+							isPlacingShip = false;
+							button.canCancelShip = false;
+							//Reset the input values. This is due to poorly designed sequencing of touches in my input script and may later be unnecessary.
+							//For now, though, it prevents the gameController from saving the touch position/angle information and immediately jumping on that the next time we try to build a ship.
+							input.Start ();
 							clickWasAtBoxes = false;
-							extraText = true;
 						}
 
 						//****************DUMB INPUT FIX DO NOT TOUCH FOR NOW
