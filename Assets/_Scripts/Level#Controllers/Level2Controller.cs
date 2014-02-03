@@ -2,7 +2,10 @@
 using System.Collections;
 
 public class Level2Controller : Level_Controller
-	//Level1Controller, or controllers for any other levels, are the scripts that vary for each level. They handle things like enemy wave generation.
+	//Level2Controller, or controllers for any other levels, are the scripts that vary for each level. 
+	//They inherit from Level_Controller.
+	//I've hardcoded a bunch of variables into Start - this overwrites the values they are given in the inspector. 
+
 {	
 
 	public override void Start ()

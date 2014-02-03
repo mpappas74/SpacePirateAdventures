@@ -23,12 +23,11 @@ public class LevelController : MonoBehaviour
 	//This object exists to be passed to the GuiTextHandler so it can tell you you don't have enough money.
 	public bool gameOver; //Whether the game has ended for any reason. Currently the game only ends if you run out of points to build ships with.
 	private InputHandler input;	//The input handler.
-	private bool buttonJustPressedThisUpdate; //Makes sure button clicks aren't counted as multiple touches.
-	public float levelScore;
+	public float levelScore;	//The score we have in the current level. Modify in inspector to allow levels where you start with many points.
 	public float[] laneRotations; //How much ship placed into each lane should be rotated. (Note that, if the ship has MoveInLane, it should follow the lane regardless of orientation.)
 	public float[] startPositions; //The starting z positions for ships to be built in the lanes which exist.
 	public bool playerVictory = false; //Has the player won?
-	private ShipHandler mothership;
+	private ShipHandler mothership; //Need access to the player's and enemy's mothership so that we can tell if we've won.
 	private ShipHandler enemyMothership;
 	
 	
@@ -37,6 +36,7 @@ public class LevelController : MonoBehaviour
 		GameControllerScript.Instance.setCurrentLevel (Application.loadedLevel);
 		//Be careful here if we change the scene order!!!!!
 
+		//We will need as many placingBoxes as there are lanes, and also the neutral drag ship.
 		placingShipObjects = new GameObject[laneRotations.Length + 1];
 		button = testObject.GetComponent<ButtonHandler> ();
 		//We will check during a build if the click missed the boxes and set it to false if it did.
@@ -44,13 +44,23 @@ public class LevelController : MonoBehaviour
 		gameOver = false;
 		//Get access to the input handler.
 		input = GameObject.Find ("LevelController").GetComponent<InputHandler> ();
+
+		//...yeah...the coroutine name speaks for itself. 
 		StartCoroutine (FixBuggyInput ());
+
 		mothership = GameObject.Find ("Mothership").GetComponent<ShipHandler> ();
 		enemyMothership = GameObject.Find("EnemyMothership").GetComponent<ShipHandler>();
 	}
 	
 	IEnumerator FixBuggyInput ()
 	{
+		//OK, basic summary of the below coroutine. We basically check every shield and bomb ship, since
+		//they are the ones the player can interact with. We then check if any of them have been clicked.
+		//If so, we tell the ship, and the shipHandler does the rest. If not, we have to tell input that we didn't
+		//use the click and pass it back to the input handler in case anything else (say, the camera movement script)
+		//needs to check if there has been a touch. We also wait .2 seconds between each iteration to save from this taking stupid
+		//amounts of processing.
+
 		Vector2 currentClickPos = new Vector2 (0.0f, 0.0f);
 		bool foundClickedShip = false;
 		while (!gameOver) {
@@ -127,15 +137,14 @@ public class LevelController : MonoBehaviour
 	
 	void Update ()
 	{
-		if (buttonJustPressedThisUpdate && input.Began ()) {
-			input.setBegan (true);
-			buttonJustPressedThisUpdate = false;
-		}
 		//If the game is over, tell the rest of the game to stop. This is true if we are out of points and have no ships left to earn us more.
+		//Notice the order - we only check if we have ships if we are already low on level score. There is still a worst case, but this keeps this from being too big of an efficiency drain.
 		if (mothership.isDead || (levelScore < 5 && GameObject.FindWithTag ("TinyShip") == null && GameObject.FindWithTag ("CrazyShip") == null && GameObject.FindWithTag ("LoadingBar") == null && GameObject.FindWithTag ("BombShip") == null && GameObject.FindWithTag ("ShieldShip") == null && GameObject.FindWithTag ("Shield") == null && GameObject.FindWithTag ("StealthShip") == null)) {
 			gameOver = true;
 			button.gameOver = true;
-		} else if (playerVictory || enemyMothership.isDead) {
+		} else if (playerVictory || enemyMothership.isDead) { //Similarly, if playerVictory is true (set by Level_Controller when the waves end
+																													//or the enemy's mothership is dead, you win!
+			playerVictory = true;
 			button.gameOver = true;
 		} else {
 			
@@ -149,7 +158,6 @@ public class LevelController : MonoBehaviour
 				if (button.pressed1) {
 					button.pressed1 = false;
 					button.paused = true;
-					buttonJustPressedThisUpdate = true;
 					input.setBegan (false);
 				}
 				//Otherwise, if we are not placing a ship and one of the other buttons has been pressed, do as the button commands.
@@ -160,12 +168,14 @@ public class LevelController : MonoBehaviour
 						currentShip = GameControllerScript.Instance.getTinyShip ();
 						currentNeutralShip = GameControllerScript.Instance.getTinyShip ();
 						
+						//OK, so first, we need the position of the click so we can start dragging.
+						//We also need to disable various elements of the neutralShip to keep it from firing or exploding.
+						//These buttons are all pretty damn copy-paste: at some point I'll try to make a nicer switch-case out of them.
 						Vector3 pos = new Vector3 (input.startPos().x, input.startPos().y, 10.0f);
 						pos = Camera.main.ScreenToWorldPoint (pos);
 						
 						placingShipObjects [0] = (GameObject)Instantiate (currentNeutralShip, pos, currentNeutralShip.transform.rotation);
 						placingShipObjects [0].SetActive (true);
-						placingShipObjects [0].GetComponent<NeutralShipRotator> ().enabled = false;
 						placingShipObjects [0].GetComponent<ShipHandler> ().enabled = false;
 						placingShipObjects [0].GetComponent<CapsuleCollider> ().enabled = false;
 						placingShipObjects [0].transform.Find ("HealthBar").gameObject.GetComponent<MeshRenderer> ().enabled = false;
@@ -174,7 +184,6 @@ public class LevelController : MonoBehaviour
 						//Set canCancelShip to be true so that, on pause, there is an option to cancel the build.
 						button.canCancelShip = true;
 						mustAddBoxes = true;
-						buttonJustPressedThisUpdate = true;
 						input.setBegan (false);
 					}
 					if (button.pressed3) {
@@ -194,7 +203,6 @@ public class LevelController : MonoBehaviour
 						isPlacingShip = true;
 						button.canCancelShip = true;
 						mustAddBoxes = true;
-						buttonJustPressedThisUpdate = true;
 						input.setBegan (false);
 					}
 					//Button 4 generates bomb ships, and button 5 generates shield ships.
@@ -215,7 +223,6 @@ public class LevelController : MonoBehaviour
 						isPlacingShip = true;
 						button.canCancelShip = true;
 						mustAddBoxes = true;
-						buttonJustPressedThisUpdate = true;
 						input.setBegan (false);
 					}
 					if (button.pressed5) {
@@ -235,7 +242,6 @@ public class LevelController : MonoBehaviour
 						isPlacingShip = true;
 						button.canCancelShip = true;
 						mustAddBoxes = true;
-						buttonJustPressedThisUpdate = true;
 						input.setBegan (false);
 					}
 					//Finally, the bottom button sets main to false, bringing up a sub-menu. So, we could imagine 
@@ -257,7 +263,6 @@ public class LevelController : MonoBehaviour
 						isPlacingShip = true;
 						button.canCancelShip = true;
 						mustAddBoxes = true;
-						buttonJustPressedThisUpdate = true;
 						input.setBegan (false);
 					}
 				} else {
@@ -302,7 +307,9 @@ public class LevelController : MonoBehaviour
 					Application.LoadLevel ("MainMenu");
 				}
 			}
-			//If we are currently placing a ship, enter this logic.
+
+//******************************** WE NOW MOVE FROM BUTTON LOGIC TO SHIP-BUILDING LOGIC *************************** 
+
 			if (isPlacingShip) {
 				
 				if (mustAddBoxes) {
@@ -314,34 +321,32 @@ public class LevelController : MonoBehaviour
 					}
 					mustAddBoxes = false;
 				}
+				//If we dragged the ship, move it accordingly.
 				if(input.Moved()){
 					Vector2 movePos = input.currentDragPos();
 					placingShipObjects[0].transform.position = Camera.main.ScreenToWorldPoint(new Vector3(movePos.x, movePos.y, 10.0f));
 				}
-				//We always assume a click is at the boxes unless shown otherwise.
-				clickWasAtBoxes = true;
+				
+			
 				if(input.Ended()){
 					Vector3 pos = input.endPos ();
-					//Vector3 pos = Input.mousePosition;
 					pos.z = 10.0f;
 					pos = Camera.main.ScreenToWorldPoint (pos);
 					
+					//We always assume a click is at the boxes unless shown otherwise.
+					clickWasAtBoxes = true;
+
 					//If the touch was too far off to the right or left, you clearly didn't click on the boxes.
 					//Additionally, if the touch/click was too far to the left on the screen, you were attempting to hit a button (such as pause).
 					//So cancel this as well.
-					if (pos.x <= 7f || pos.x > 12) {
+					if (pos.x <= 7 || pos.x > 12) {
 						clickWasAtBoxes = false;
 					} else if (input.endPos ().x < .25 * Screen.height) {
 						clickWasAtBoxes = false;
 					}
-					//If the click was in this range, you clicked on the neutralShip, which means we need to pause the game
-					//and give extra explanation about the ship you are currently building.
 					
-					//****************DUMB INPUT FIX DO NOT TOUCH FOR NOW
-					if(pos.x > 12){
-						input.setEnded(true);
-					}
 					
+					//Now we have to figure out which box you actually released on.
 					int closestIndex = 0;
 					float currentDiff = Mathf.Abs (pos.z - startPositions [0]);
 					for (int j = 1; j < laneRotations.Length; j++) {
@@ -351,7 +356,7 @@ public class LevelController : MonoBehaviour
 						}
 					}
 					
-					//Otherwise, you clicked the boxes. So figure out which box you clicked on.
+					//If we released the neutralShip on a box, try to build it.
 					if (clickWasAtBoxes) {
 						pos.z = startPositions [closestIndex];
 						float rot = laneRotations [closestIndex];
@@ -361,8 +366,8 @@ public class LevelController : MonoBehaviour
 						//Check the score. Note that we are only checking it now so that we only decrease it if the player actually builds the ship.
 						//We also want the players able to look at ships they don't have the points to build yet.
 						button.canCancelShip = false;
-						if (levelScore >= 5) {
-							levelScore -= 5;
+						if (levelScore >= currentShip.GetComponent<ShipHandler>().cost) {
+							levelScore -= currentShip.GetComponent<ShipHandler>().cost;
 							StartCoroutine (BuildCurrentShip (currentShip, pos, rot));
 							//Remember, currentShip defaults to placingBox when we are no longer building a ship.
 							currentShip = GameControllerScript.Instance.getPlacingBox ();
@@ -376,7 +381,7 @@ public class LevelController : MonoBehaviour
 						}
 						//We are no longer trying to place a ship.
 						isPlacingShip = false;
-					} else {
+					} else { //If we released the ship not at the boxes, cancel the build.
 						currentShip = GameControllerScript.Instance.getPlacingBox();
 						for (int i = 0; i <= laneRotations.Length; i++) {
 							Destroy (placingShipObjects [i]);
@@ -391,6 +396,8 @@ public class LevelController : MonoBehaviour
 	}
 	void OnGUI ()
 	{
+		//We don't need the MainMenu button - buttonHandler already will post that since the game is over.
+		//Here, we just add additional buttons that appear when you win/lose.
 		if (playerVictory) {
 			//if (GUI.Button (new Rect (.5f * Screen.width - 100, .7f * Screen.height, 200, .13f * Screen.height), "Return to Main Menu")) {
 			//	Application.LoadLevel ("MainMenu");
@@ -407,6 +414,13 @@ public class LevelController : MonoBehaviour
 				} else {
 					Application.LoadLevel ("MainMenu");
 				}
+			} 
+		}else if (gameOver) {
+			//if (GUI.Button (new Rect (.5f * Screen.width - 100, .7f * Screen.height, 200, .13f * Screen.height), "Return to Main Menu")) {
+			//	Application.LoadLevel ("MainMenu");
+			//} 
+			if (GUI.Button (new Rect (.5f * Screen.width - 100, .55f * Screen.height, 200, .13f * Screen.height), "Try Again?")) {
+					Application.LoadLevel (Application.loadedLevel);
 			} 
 		}
 	}

@@ -26,8 +26,9 @@ public class InputHandler : MonoBehaviour
 		clickStarted = false;	//No touch/click has started.
 		clickEnded = false;		//No touch/click has ended.
 		clickMoved = false;		//No touch/click has moved.
+		trigger = false;			//Assume no trigger has been pressed.
 		onTouchScreen = false;	//Assume we are not on a touchscreen.
-		trigger = false;
+
 		//If we are, modify that assumption.
 		if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer) {
 			onTouchScreen = true;
@@ -164,6 +165,8 @@ public class InputHandler : MonoBehaviour
 		return false;
 	}
 
+	//The set functions are hackish solutions to occasional double or zero counting of the input handler.
+	//I'm working on it.
 	public void setTrigger(bool b){
 		trigger = b;
 	}

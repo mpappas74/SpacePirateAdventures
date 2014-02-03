@@ -28,19 +28,19 @@ public class ButtonHandler : MonoBehaviour
 	public Texture image4;
 	public Texture image5;
 	
-	private Vector2 scrollPosition = Vector2.zero;
+	private Vector2 scrollPosition = Vector2.zero; //This is necessary for the scroll view that allows us to scroll along the buttons.
 
 	private InputHandler input;
-	private string speedString;
+
+	private string speedString; //This string tracks whether the game could be sped up or down.
 
 	void Start(){
 		input = GameObject.Find("LevelController").GetComponent<InputHandler>();	
+		
+		//The game defaults to the slower speed to give the player more time to react. If they choose to speed it up it will double in speed.
 		speedString = "Speed Up Game";
 		Time.timeScale = 0.75f;
 		Time.fixedDeltaTime *= 0.75f;
-	}
-
-	void Update(){
 	}
 
 	void OnGUI ()
@@ -61,19 +61,28 @@ public class ButtonHandler : MonoBehaviour
 					pressed1 = true;
 				} 
 	
+				//A scrollview is basically a box that is bigger on the inside than it looks. The first Rect declaration
+				//is the size of the view on screen, while the second is the size of the interior of the view.
+				//The two empty GUIStyle()'s are there to remove the scroll bar.
+				//The scrollview is where the build ship buttons go.
 				scrollPosition = GUI.BeginScrollView(new Rect(0.03f*Screen.height, 0.19f*Screen.height, 0.2f*Screen.height, 0.64f*Screen.height), scrollPosition, new Rect(0.0f, 0.0f, 0.13f*Screen.height, 0.8f*Screen.height), new GUIStyle(), new GUIStyle());
 				if (input.Moved()) {
-					//The next three lines just figure out whether the building boxes are yet visible on the screen, and whether the touch was near them.					
+					//If we moved, figure out if we did so along the part of the screen where the buttons are, and if the swipe was vertical.
+					//If the swipe was vertical and near the buttons, adjust the scrollPosition.
 					Vector2 pos = input.currentDragPos();
 					Vector2 delta = input.deltaPos();
 					if (pos.x < 0.2f*Screen.height && Mathf.Abs(delta.y) > Mathf.Abs(2*delta.x)) {
 						//Scroll an x distance proportional to the length of the moving touch, capped on either side.
 						scrollPosition.y += input.deltaPos().y;
 					} else {
+						//This is one of many stupid, hackish fixes to the input handler. I'm working on it.
 						input.setMoved(true);
 					}
 				}
 				
+				//All of these buttons are now RepeatButtons, which return true at all times that they are pressed down, rather than 
+				//just when they are pressed down and fully released. This is useful to allow the click and drag feature, since we
+				//don't want to force the player to click a button and then select a thing and drag it.
 				if (GUI.RepeatButton (new Rect (0f, 0.0f * Screen.height, .13f * Screen.height, .13f * Screen.height), image1)) {
 					pressed2 = true;
 				}
@@ -96,6 +105,9 @@ public class ButtonHandler : MonoBehaviour
 				if (canCancelShip && GUI.Button (new Rect (.5f * Screen.width - 100f, .35f * Screen.height, 200f, .08f * Screen.height), "Cancel Ship")) {
 					pressed3 = true;
 				}
+				//We also now how speed up/slow down buttons that allow you to change the speed of the game.
+				//Time.timeScale changes how the game processes time in terms of coroutines and the like, while
+				//Time.fixedDeltaTime changes how the game processes physics.
 				if (GUI.Button (new Rect (.5f * Screen.width - 100f, .45f * Screen.height, 200f, .08f * Screen.height), speedString)) {
 					if(speedString == "Speed Up Game"){
 						speedString = "Slow Down Game";

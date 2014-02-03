@@ -8,10 +8,10 @@ public class ProjectileHandler : MonoBehaviour
 	//************** Common Properties of All Projectiles ********************//
 	public float survivalTime; //survivalTime changes how long a bolt can last after being shot before vanishing.
 	public bool amPlayers; //amPlayers just checks whether it was fired by the player or enemy.
-	public float speed;
+	public float speed;	//If it is going to move, this is the relative speed boost of the projectile over the firing ship.
 	
 	//************** Damage Projectile Logic ********************//
-	public bool doesSingleShotDamage;
+	public bool doesSingleShotDamage; //Does this projectile impact other projectiles and ships?
 	public float damageDone; //damageDone is set by the firing ship, and controls how much damage the bolt does.
 
 	//************** Button Logic ********************//
@@ -19,17 +19,17 @@ public class ProjectileHandler : MonoBehaviour
 	private ButtonHandler button;	//Access to the button script to check the booleans in it. 
 	
 	//************** Explosion Logic ********************//
-	public bool isExplosion;
-	public float explosionDamage;
-	public bool destroysBolts;
-	public bool destroysShields;
+	public bool isExplosion; //Is this projectile an explosion?
+	public float explosionDamage; //How much damage does the explosion do?
+	public bool destroysBolts; //Does it destroy bolts?
+	public bool destroysShields; //Does it destroy shields?
 
 	//************** Health Logic ********************//
-	public bool takesDamage;
-	public bool givesDamageBack;
-	public float damageFromShip;
-	public float damageBack;
-	public float projectileHealth;
+	public bool takesDamage; //Does this projectile take damage?
+	public bool givesDamageBack; //Does it give damage on collisions?
+	public float damageFromShip; //How much damage does it take from a ship colliding with it?
+	public float damageBack; //How much does it deal back?
+	public float projectileHealth; //What is its health.
 	public bool isDead;	//Whether the ship is dead - this allows particular ship controller scripts to handle death differently.
 	private float maxHealth; //Maximum health of the ship
 	private float maxLength; //Maximum length of the ship's healthbar.
@@ -80,9 +80,8 @@ public class ProjectileHandler : MonoBehaviour
 
 	public virtual void OnTriggerStay (Collider other)
 	{
+		//Based on the physics layers, bolts can only hit projectiles and ships belonging to the other side.
 		if (doesSingleShotDamage) {
-			//Right now, these tags exist to keep bolts from hitting each other or the mothership,
-			// or trying to 'damage' the outer boundary that destroys all gameObjects when offscreen.
 			if (amPlayers && other.gameObject.layer == LayerMask.NameToLayer ("EnemyShips")) {
 					other.gameObject.GetComponent<ShipHandler> ().DecreaseHealth (damageDone);
 					Destroy (gameObject);

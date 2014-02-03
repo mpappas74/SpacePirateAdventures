@@ -5,18 +5,17 @@ public class ShipHandler : MonoBehaviour
 	//Once they have ben built, this script moves ships and has them fire.
 {
 	//************** Common Properties of All Ships ********************//
-	public float shipHealth;
-	public float energyShieldHealth;
-	public float speed;
+	public float shipHealth; //basic health
+	public float energyShieldHealth; //Energy shield health. Not yet valuable in any way.
+	public float speed; //Speed. Speaks for itself.
 	public bool isDead;	//Whether the ship is dead - this allows particular ship controller scripts to handle death differently.
 	private float maxHealth; //Maximum health of the ship
 	private float maxLength; //Maximum length of the ship's healthbar.
-	private Transform healthbar;
-	public float cost;	//How much the ship is worth in points after being destroyed.
-	private InputHandler input;
+	private Transform healthbar; //The physical healthbar above each ship.
+	public float cost;	//How much the ship costs to build.
 
 	//************** Bolt Firing Logic ********************//
-	public bool firesBolts;
+	public bool firesBolts;	//Does this ship fire bolts?
 	public float fireLag; //How long to wait between shots.
 	public GameObject bolt; //Access to the bolt to instantiate shots.
 	public Transform shotSpawn; //Where to instantiate shots relative to the ship.
@@ -24,18 +23,20 @@ public class ShipHandler : MonoBehaviour
 	//Right as we fire, this is equal to fireLag + Time.time.
 	private float timeDif; //A somewhat ugly variable that I added to make pausing work properly. 
 	//This keeps one from abusing pausing to make the bolts reload faster.
-	public float shotDamage = 1;
-	public float boltSurvivalTime = -1;
+	public float shotDamage = 1; //How much each bolt should do.
+	public float boltSurvivalTime = -1; //How long each bolt should survive. Negative values mean they last forever.
+
+	//************** Input Logic ********************//
+	public bool wasClickedOn;	//Was this ship just clicked on?
+	public bool wasReleasedOn; //Did the same click just release over the ship?
+	
 
 	//************** Shield Deployment Logic ********************//
-	public bool wasClickedOn;
-	public bool wasReleasedOn;
-	public bool deploysShield;
+	public bool deploysShield; //Does this ship deploy shields?
 	public GameObject shield; //Access to the shield to instantiate them.
-	private Vector2 currentClickPos;
 
 	//************** SelfDestruction Logic ********************//
-	public bool selfDestructs;
+	public bool selfDestructs;	//Does this ship blow itself up?
 	public GameObject blastZone; //The physical blast zone in which things take damage from the bomb.
 
 	//************** PauseButton Access Variables ********************//
@@ -44,10 +45,10 @@ public class ShipHandler : MonoBehaviour
 	
 	//************** Death Logic ********************//
 	public GameObject explosion; //Access to the explosion to instantiate it when the ship dies.
-	public float scoreValue;
+	public float scoreValue;	//How many points this ship is worth upon destruction.
 	
 	//************** Move In Lane Logic ********************//
-	public bool shouldMoveInLane;
+	public bool shouldMoveInLane;	//Should the ship follow a lane or just move directly forward?
 	private GameObject upperWall;   //The upper wall of the lane.
 	private GameObject lowerWall;	//The lower wall of the lane.
 	private bool amInLane = true;	//Whether or not the ship is actually in a lane as far as the code can tell.
@@ -55,15 +56,13 @@ public class ShipHandler : MonoBehaviour
 	private float deltaDown = 0;	//How much space between the ship and lower wall.
 		
 	//************** Turn Around On Collision Logic ********************//
-	public bool turnsAroundOnCollision;
-	public float collectedResources = 0;
+	public bool turnsAroundOnCollision;	//Should the ship turn around on collisions or fight the colliding ship?
+	public float collectedResources = 0;	//How many resources the thief ship has collected.
 	
 	//************** MiniMap Logic ********************//
-	private GameObject enemyDot;
-	private GameObject playerDot;
-	private GameObject myDot;
-	private Vector3 worldScale;
-	private Vector3 mapShift;
+	private GameObject myDot; //The actual dot representing this particular ship.
+	private Vector3 worldScale; //A scaling vector representing the relative size of the miniMap to the actual arena.
+	private Vector3 mapShift; //The shift off of the center of the map to orient the dots correctly.
 
 	//***************************************** Virtual Methods ******************************************************//
  
@@ -72,6 +71,8 @@ public class ShipHandler : MonoBehaviour
 		testObject = GameObject.Find ("EmptyButtonObject");
 		button = testObject.GetComponent<ButtonHandler> ();
 		//As we've seen before, getting access to ButtonHandler's booleans to know if we are paused.
+		
+		//Set up the healthbar. If we have one, set its initial length based on the max health of the ship.
 		maxHealth = shipHealth;
 		healthbar = gameObject.transform.Find ("HealthBar");
 		if (healthbar != null) {
@@ -80,17 +81,19 @@ public class ShipHandler : MonoBehaviour
 		} else {
 			maxLength = -1;
 		}
+		
+		//If we are moving in a lane, we've got to find the one we are in.
 		if (shouldMoveInLane) {
 			DetermineCurrentLane ();
 		}
-		input = GameObject.Find ("LevelController").GetComponent<InputHandler> ();
 
-		enemyDot = (GameObject)Resources.Load ("EnemyshipDot");
-		playerDot = (GameObject)Resources.Load ("PlayershipDot");
+		//Set up the miniMap. First calculate the scaling factor for the miniMap : world ratio.
 		worldScale = GameObject.Find ("Background").transform.localScale;
 		worldScale = new Vector3 (1 / worldScale.x, 1, 1 / worldScale.z);
+
+		//Then instantiate a dot for this ship as a child of the map and orient it correctly.
 		GameObject miniMap = GameObject.Find ("MiniMap");
-		myDot = (gameObject.layer == LayerMask.NameToLayer("EnemyShips")) ? enemyDot : playerDot;
+		myDot = (gameObject.layer == LayerMask.NameToLayer("EnemyShips")) ? (GameObject)Resources.Load ("EnemyshipDot") : (GameObject)Resources.Load ("PlayershipDot");
 		myDot = (GameObject)Instantiate (myDot, myDot.transform.position, myDot.transform.rotation);
 		myDot.transform.parent = miniMap.transform;
 		mapShift = new Vector3 (0.5f, -1.2f, 0.0f);
@@ -100,6 +103,9 @@ public class ShipHandler : MonoBehaviour
 
 	public virtual void OnTriggerEnter (Collider other)
 	{
+		//If we turn around on collisions, check if we collided with a ship. If we did, turn around, and be sure to reposition the health bar so it is still above the ship.
+		//Notice that we can just check if the ship was on the enemy or player ship layer, since, if, say, this ship was a player ship,
+		//it can't collide with the player layer, so this script will only truly react to colliding with an enemy ship, which is what we want.
 		if (turnsAroundOnCollision) {
 			if (other.gameObject.layer == LayerMask.NameToLayer("EnemyShips") || other.gameObject.layer == LayerMask.NameToLayer("PlayerShips")) {
 				transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
@@ -114,6 +120,10 @@ public class ShipHandler : MonoBehaviour
 				}
 			}
 		} else if(other.gameObject.layer == LayerMask.NameToLayer("EnemyShips") && gameObject.layer != LayerMask.NameToLayer("EnemyShips")) {
+			
+			//If we don't turn around on collisions, then collide with the other ship. The above isItAnEnemyAndI'mNot logic is to keep from double subtracting accidentally.
+			//A collision results in both ships taking damage equal to the weaker one's health.
+
 			float damage = Mathf.Min(shipHealth, other.gameObject.GetComponent<ShipHandler>().shipHealth);
 			DecreaseHealth(damage);
 			other.gameObject.GetComponent<ShipHandler>().DecreaseHealth(damage);
@@ -122,7 +132,10 @@ public class ShipHandler : MonoBehaviour
 
 	public virtual void Update ()
 	{
+		//Update your dot position.
 		myDot.transform.localPosition = Vector3.Scale (transform.position, worldScale) - mapShift;
+
+		//Run a bunch of boolean checks based on what kind of behavior this ship is meant to exhibit, and then run the corresponding function.
 		if (firesBolts) {
 			FireBolts ();
 		}
@@ -150,7 +163,7 @@ public class ShipHandler : MonoBehaviour
 		} else if (isDead) {
 			Die ();
 		}
-		//If we are in a lane, we use very similar logic to track the distance between the ship and the two walls, and keep it vertically in between the walls.
+		//If we are in a lane, we use this logic to track the distance between the ship and the two walls, and keep it vertically in between the walls.
 		if (amInLane) {
 			float upZ = transform.position.z;
 			RaycastHit hit;
@@ -196,6 +209,7 @@ public class ShipHandler : MonoBehaviour
 		}
 	}
 	
+	//If a ship dies, update the level score, explode, and then destroy both the ship and its minimap dot.
 	public virtual void Die (bool diedOnscreen = true)
 	{
 		if (diedOnscreen) {
@@ -227,6 +241,7 @@ public class ShipHandler : MonoBehaviour
 
 	public void FireBolts ()
 	{
+		//Fire bolts and place them on a layer according to whether we are an enemy or player ship.
 		if (!button.paused) {
 			if (Time.time > nextFire) {
 				nextFire = Time.time + fireLag;
@@ -240,6 +255,7 @@ public class ShipHandler : MonoBehaviour
 				if (boltSurvivalTime > 0) {
 					boltMover.survivalTime = boltSurvivalTime;
 				}
+				//Give the bolt a relative speed boost from the ship.
 				boltMover.speed += speed;
 			}
 		} else {
@@ -299,6 +315,7 @@ public class ShipHandler : MonoBehaviour
 		}
 	}
 
+	//Replace the ship with a shield at the same place.
 	public void ShieldDeploy ()
 	{
 		if (!button.paused) {

@@ -9,14 +9,13 @@ public class Level_Controller : MonoBehaviour
 	public float[] startWait;	//How long to wait before enemy ships start coming.
 	public float[] hazardCount;	//How many enemy ships to send per wave.
 	public Vector3[] spawnValues;	//Where to generate the enemy ships. (See SpawnWaves() for more.)
-	public string[] hazardNames;	//The enemyShip object.
-	private GameObject[] hazard;
+	public string[] hazardNames;	//The enemyShip types.
+	private GameObject[] hazard;	//The enemyShips
 	public float[] spawnWait;		//How long to wait between ships in a wave.
 	public float[] waveWait;		//How long to wait between waves.
-	public int[] numberWaves;
-	private int[] goneWaves;
+	public int[] numberWaves;	//How many attack waves of each type?
+	private int[] goneWaves;	//How many attack waves have happened so far?
 	private LevelController lc;
-	public Material enemyHealthBarMaterial;
 	
 	
 	public virtual void Start ()
@@ -24,9 +23,12 @@ public class Level_Controller : MonoBehaviour
 		button = testObject.GetComponent<ButtonHandler> ();
 		lc = gameObject.GetComponent<LevelController>();
 
+		//Someone sometime should really write a check that all of these arrays are the same length.
+		//But I haven't yet.
 		goneWaves = new int[numberWaves.Length];
 		hazard = new GameObject[hazardNames.Length];
 
+		//Run coroutines for each of the different described wave fronts.
 		for(int i = 0; i < hazardNames.Length; i++){
 			hazard[i] = (GameObject)Resources.Load("EnemyShips/" + hazardNames[i]); 
 			hazard[i] = (GameObject)Instantiate(hazard[i], new Vector3(0, -1000, 0), hazard[i].transform.rotation);
@@ -36,6 +38,7 @@ public class Level_Controller : MonoBehaviour
 		}
 	}
 	
+	//Sets up the hazards. Will eventually rewrite as a virtual method with overloaded inputs so the individual level controllers can change these params.
 	private GameObject setUpHazard(GameObject theHazard){
 		ShipHandler sh = theHazard.GetComponent<ShipHandler>();
 		sh.shouldMoveInLane = false;
@@ -46,6 +49,7 @@ public class Level_Controller : MonoBehaviour
 		return theHazard;
 	}
 	
+	//Determine if there are any GameObjects left in a certain physics layer (we will use this to tell if any enemies are left.)
 	private bool AreGameObjectsWithLayer(int lay){
 		GameObject[] goArray = (GameObject[])FindObjectsOfType(typeof(GameObject));
 		int count = 0;
@@ -85,6 +89,7 @@ public class Level_Controller : MonoBehaviour
 			yield return new WaitForSeconds (waveWait[j]);
 			
 		}
+		//Once the waves are over, start checking to see if the enemy has run out of ships.
 		while(AreGameObjectsWithLayer(LayerMask.NameToLayer("EnemyShips"))){
 			yield return new WaitForSeconds(1);
 		}

@@ -4,12 +4,13 @@ using System.Collections;
 public class MothershipScript : ShipHandler
 {
 
-	private bool amPlayers;
+//The mothershipScript is not too much beyond the shipHandler,
+//but the key element is that it updates the string for now.
+
 	private string mainString;
 	public GUIText shipHealthText;
 	private float wasHealth;
 
-	// Use this for initialization
 	public override void Start ()
 	{
 		energyShieldHealth = 0;
@@ -25,17 +26,14 @@ public class MothershipScript : ShipHandler
 		base.Start ();
 
 		if (gameObject.layer == LayerMask.NameToLayer ("PlayerShips")) {
-			amPlayers = true;
 			mainString = "Your mothership's ";
 		} else {
-			amPlayers = false;
 			mainString = "The enemy's ";
 		}
 		wasHealth = shipHealth;
 		shipHealthText.text = mainString + "health = " + shipHealth.ToString ();
 	}
 	
-	// Update is called once per frame
 	public override void Update ()
 	{
 		if (wasHealth != shipHealth) {

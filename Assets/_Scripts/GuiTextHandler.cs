@@ -32,7 +32,10 @@ public class GuiTextHandler : MonoBehaviour
 	{
 		//Figure out which ship we are currently building. (If we are building no ship, right now it will return a placement box.)
 		currentBuildingShip = levelCont.currentShip;
+	
 		//Figure out if we need any extraText, aka if the game has been paused warranting extra text.
+		//Currently, due to the click and drag functionality, this is no longer possible physically.
+		//However, I expect the explanation text to be replaced eventually by a ship overview menu on the pause screen, so I think it's fine.
 		bonusText = (levelCont.isPlacingShip && button.paused);
 		
 		if (!bonusText) {

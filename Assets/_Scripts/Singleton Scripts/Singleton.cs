@@ -1,5 +1,9 @@
 ﻿using UnityEngine;
 
+//Singleton is basically an effective type of class that can only have one instance.
+//This is open source code I got from online, but it's effective and solves the problem with the GameController.
+//(The issue with the gameController being static was that it prevented certain methods from being callable.)
+
 /// <summary>
 /// Be aware this will not prevent a non singleton constructor
 ///   such as `T myT = new T();`
