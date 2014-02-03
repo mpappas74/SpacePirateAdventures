@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ButtonHandler : MonoBehaviour
+public class TestButtonHandler : MonoBehaviour
 	//This script actually handles the buttons onscreen.
 	//The script is added to EmptyButtonObject, which just handles the buttons as the appear onscreen.
 	//Note that the functionality of the buttons is actually handled in GameController. 
@@ -29,20 +29,20 @@ public class ButtonHandler : MonoBehaviour
 	public Texture image5;
 	
 	private Vector2 scrollPosition = Vector2.zero;
-
+	
 	private InputHandler input;
 	private string speedString;
-
+	
 	void Start(){
 		input = GameObject.Find("LevelController").GetComponent<InputHandler>();	
 		speedString = "Speed Up Game";
 		Time.timeScale = 0.75f;
 		Time.fixedDeltaTime *= 0.75f;
 	}
-
+	
 	void Update(){
 	}
-
+	
 	void OnGUI ()
 	{
 		//Generate the buttons in locations based on screen size to keep a consistent positioning.
@@ -60,13 +60,12 @@ public class ButtonHandler : MonoBehaviour
 				if (GUI.Button (new Rect (.03f * Screen.height, .03f * Screen.height, .2f * Screen.height, .13f * Screen.height), "Pause")) {
 					pressed1 = true;
 				} 
-	
+				
 				scrollPosition = GUI.BeginScrollView(new Rect(0.03f*Screen.height, 0.19f*Screen.height, 0.2f*Screen.height, 0.64f*Screen.height), scrollPosition, new Rect(0.0f, 0.0f, 0.13f*Screen.height, 0.8f*Screen.height), new GUIStyle(), new GUIStyle());
 				if (input.Moved()) {
 					//The next three lines just figure out whether the building boxes are yet visible on the screen, and whether the touch was near them.					
 					Vector2 pos = input.currentDragPos();
-					Vector2 delta = input.deltaPos();
-					if (pos.x < 0.2f*Screen.height && Mathf.Abs(delta.y) > Mathf.Abs(2*delta.x)) {
+					if (pos.x < 0.2f*Screen.height) {
 						//Scroll an x distance proportional to the length of the moving touch, capped on either side.
 						scrollPosition.y += input.deltaPos().y;
 					} else {
@@ -77,20 +76,20 @@ public class ButtonHandler : MonoBehaviour
 				if (GUI.RepeatButton (new Rect (0f, 0.0f * Screen.height, .13f * Screen.height, .13f * Screen.height), image1)) {
 					pressed2 = true;
 				}
-				if (GUI.RepeatButton (new Rect  (0f, 0.16f * Screen.height, .13f * Screen.height, .13f * Screen.height), image2)) {
+				if (GUI.Button (new Rect  (0f, 0.16f * Screen.height, .13f * Screen.height, .13f * Screen.height), image2)) {
 					pressed3 = true;
 				} 
-				if (GUI.RepeatButton (new Rect  (0f, 0.32f * Screen.height, .13f * Screen.height, .13f * Screen.height), image3)) {
+				if (GUI.Button (new Rect  (0f, 0.32f * Screen.height, .13f * Screen.height, .13f * Screen.height), image3)) {
 					pressed4 = true;
 				} 
-				if (GUI.RepeatButton (new Rect  (0f, 0.48f * Screen.height, .13f * Screen.height, .13f * Screen.height), image4)) {
+				if (GUI.Button (new Rect  (0f, 0.48f * Screen.height, .13f * Screen.height, .13f * Screen.height), image4)) {
 					pressed5 = true;
 				} 
-				if (GUI.RepeatButton (new Rect  (0f, 0.64f * Screen.height, .2f * Screen.height, .13f * Screen.height), "Thief")) {
+				if (GUI.Button (new Rect  (0f, 0.64f * Screen.height, .2f * Screen.height, .13f * Screen.height), "Thief")) {
 					pressed6 = true;
 				} 
 				GUI.EndScrollView();
-
+				
 			} else {
 				//If the game is paused, always have the unpause and main menu buttons. Also, if we are currently building a ship, allow us to cancel it.
 				if (canCancelShip && GUI.Button (new Rect (.5f * Screen.width - 100f, .35f * Screen.height, 200f, .08f * Screen.height), "Cancel Ship")) {

@@ -48,7 +48,7 @@ public class CameraScript : MonoBehaviour
 				if (pos.x > 11) {
 					//Scroll an x distance proportional to the length of the moving touch, capped on either side.
 					dist = input.deltaPos().x;
-					dist = Mathf.Clamp(transform.position.x - dist*cameraSpeed, leftSideCap, rightSideCap) - transform.position.x;
+					dist = Mathf.Clamp(transform.position.x - dist*cameraSpeed, leftSideCap, transform.position.x) - transform.position.x;
 					transform.position = new Vector3 (transform.position.x + dist, startingCameraPosition.y, startingCameraPosition.z);
 				} else {
 					input.setMoved(true);
