@@ -117,6 +117,10 @@ public class ShipHandler : MonoBehaviour
 					}
 				}
 			}
+		} else if(other.tag == "EnemyShip" && gameObject.tag != "EnemyShip") {
+			float damage = Mathf.Min(shipHealth, other.gameObject.GetComponent<ShipHandler>().shipHealth);
+			DecreaseHealth(damage);
+			other.gameObject.GetComponent<ShipHandler>().DecreaseHealth(damage);
 		}
 	}
 

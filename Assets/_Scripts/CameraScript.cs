@@ -16,6 +16,8 @@ public class CameraScript : MonoBehaviour
 	private bool isPlacingShip;	//Just there for convenience. Could equally use script.isPlacingShip.
 	private InputHandler input;
 
+	public GameObject miniMap;
+
 	// Use this for initialization
 	void Start ()
 	{
@@ -31,6 +33,7 @@ public class CameraScript : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
+		dist = 0;
 		//If we are currently placing a ship, allow for scrolling, but only if the scroll could not be confused
 		//for a selection of a place to build the ship. In other words, if the touch is too close to the boxes, refuse to scroll.
 		isPlacingShip = levelCont.isPlacingShip;
@@ -45,7 +48,8 @@ public class CameraScript : MonoBehaviour
 				if (pos.x > 11) {
 					//Scroll an x distance proportional to the length of the moving touch, capped on either side.
 					dist = input.deltaPos().x;
-					transform.position = new Vector3 (Mathf.Clamp (transform.position.x - dist * cameraSpeed, leftSideCap, rightSideCap), startingCameraPosition.y, startingCameraPosition.z);
+					dist = Mathf.Clamp(transform.position.x - dist*cameraSpeed, leftSideCap, rightSideCap) - transform.position.x;
+					transform.position = new Vector3 (transform.position.x + dist, startingCameraPosition.y, startingCameraPosition.z);
 				} else {
 					input.setMoved(true);
 				}
@@ -65,7 +69,8 @@ public class CameraScript : MonoBehaviour
 				if (pos.x > 9) {
 					//Scroll an x distance proportional to the length of the moving touch, capped on either side.
 					dist = input.deltaPos().x;
-					transform.position = new Vector3 (Mathf.Clamp (transform.position.x - dist * cameraSpeed, leftSideCap, rightSideCap), startingCameraPosition.y, startingCameraPosition.z);
+					dist = Mathf.Clamp(transform.position.x - dist*cameraSpeed, leftSideCap, rightSideCap) - transform.position.x;
+					transform.position = new Vector3 (transform.position.x + dist, startingCameraPosition.y, startingCameraPosition.z);
 				} else {
 					input.setMoved(true);
 				}
@@ -73,9 +78,9 @@ public class CameraScript : MonoBehaviour
 
 		
 		}
-
-
-
+		if(dist != 0){
+			miniMap.transform.position = new Vector3(miniMap.transform.position.x + dist, miniMap.transform.position.y, miniMap.transform.position.z); 
+		}
 		
 	}
 }

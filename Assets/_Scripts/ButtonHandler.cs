@@ -29,7 +29,6 @@ public class ButtonHandler : MonoBehaviour
 	public Texture image5;
 	
 	private Vector2 scrollPosition = Vector2.zero;
-	private float dist = 0;
 
 	private InputHandler input;
 	private string speedString;
@@ -62,7 +61,7 @@ public class ButtonHandler : MonoBehaviour
 					pressed1 = true;
 				} 
 	
-				scrollPosition = GUI.BeginScrollView(new Rect(0.03f*Screen.height, 0.19f*Screen.height, 0.2f*Screen.height, 0.64f*Screen.height), scrollPosition, new Rect(0.0f, 0.0f, 0.13f*Screen.height, 0.8f*Screen.height));
+				scrollPosition = GUI.BeginScrollView(new Rect(0.03f*Screen.height, 0.19f*Screen.height, 0.2f*Screen.height, 0.64f*Screen.height), scrollPosition, new Rect(0.0f, 0.0f, 0.13f*Screen.height, 0.8f*Screen.height), new GUIStyle(), new GUIStyle());
 				if (input.Moved()) {
 					//The next three lines just figure out whether the building boxes are yet visible on the screen, and whether the touch was near them.					
 					Vector2 pos = input.currentDragPos();

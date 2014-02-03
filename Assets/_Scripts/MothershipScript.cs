@@ -23,4 +23,11 @@ public class MothershipScript : MonoBehaviour {
 		}
 	}
 
+	void OnTriggerEnter(Collider other){
+		if(other.tag == "EnemyShip"){
+			other.gameObject.GetComponent<ShipHandler>().Die();
+			health -= 5;
+		}
+	}
+
 }
