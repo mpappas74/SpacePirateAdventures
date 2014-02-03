@@ -42,17 +42,6 @@ public class ButtonHandler : MonoBehaviour
 	}
 
 	void Update(){
-		if (input.Moved()) {
-			//The next three lines just figure out whether the building boxes are yet visible on the screen, and whether the touch was near them.					
-			Vector2 pos = input.currentDragPos();
-			if (pos.x < 0.2f*Screen.height) {
-				//Scroll an x distance proportional to the length of the moving touch, capped on either side.
-				dist = input.deltaPos().y;
-			} else {
-				input.setMoved(true);
-			}
-		}
-		
 	}
 
 	void OnGUI ()
@@ -73,25 +62,31 @@ public class ButtonHandler : MonoBehaviour
 					pressed1 = true;
 				} 
 	
-				scrollPosition = GUI.BeginScrollView(new Rect(0.03f*Screen.height, 0.19f*Screen.height, 0.2f*Screen.height, 0.82f*Screen.height), scrollPosition, new Rect(0.0f, 0.0f, 0.13f*Screen.height, 1.2f*Screen.height));
-				if(dist != 0){
-					scrollPosition.y = Mathf.Clamp(scrollPosition.y + dist, 0f, 10f);
-					dist = 0;
+				scrollPosition = GUI.BeginScrollView(new Rect(0.03f*Screen.height, 0.19f*Screen.height, 0.2f*Screen.height, 0.64f*Screen.height), scrollPosition, new Rect(0.0f, 0.0f, 0.13f*Screen.height, 0.8f*Screen.height));
+				if (input.Moved()) {
+					//The next three lines just figure out whether the building boxes are yet visible on the screen, and whether the touch was near them.					
+					Vector2 pos = input.currentDragPos();
+					if (pos.x < 0.2f*Screen.height) {
+						//Scroll an x distance proportional to the length of the moving touch, capped on either side.
+						scrollPosition.y += input.deltaPos().y;
+					} else {
+						input.setMoved(true);
+					}
 				}
 				
 				if (GUI.Button (new Rect (0f, 0.0f * Screen.height, .13f * Screen.height, .13f * Screen.height), image1)) {
 					pressed2 = true;
 				}
-				if (GUI.Button (new Rect  (0f, 0.19f * Screen.height, .13f * Screen.height, .13f * Screen.height), image2)) {
+				if (GUI.Button (new Rect  (0f, 0.16f * Screen.height, .13f * Screen.height, .13f * Screen.height), image2)) {
 					pressed3 = true;
 				} 
-				if (GUI.Button (new Rect  (0f, 0.35f * Screen.height, .13f * Screen.height, .13f * Screen.height), image3)) {
+				if (GUI.Button (new Rect  (0f, 0.32f * Screen.height, .13f * Screen.height, .13f * Screen.height), image3)) {
 					pressed4 = true;
 				} 
-				if (GUI.Button (new Rect  (0f, 0.51f * Screen.height, .13f * Screen.height, .13f * Screen.height), image4)) {
+				if (GUI.Button (new Rect  (0f, 0.48f * Screen.height, .13f * Screen.height, .13f * Screen.height), image4)) {
 					pressed5 = true;
 				} 
-				if (GUI.Button (new Rect  (0f, 0.67f * Screen.height, .2f * Screen.height, .13f * Screen.height), "Thief")) {
+				if (GUI.Button (new Rect  (0f, 0.64f * Screen.height, .2f * Screen.height, .13f * Screen.height), "Thief")) {
 					pressed6 = true;
 				} 
 				GUI.EndScrollView();

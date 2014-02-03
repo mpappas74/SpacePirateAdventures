@@ -20,8 +20,8 @@ public class TinyShipHandler : ShipHandler {
 		base.FixedUpdate();
 	}
 
-	public override void Die(){
+	public override void Die(bool diedOnscreen = true){
 		//Add anything else BEFORE you call base.Die, as base.Die will destroy the gameObject.
-		base.Die();
+		base.Die(diedOnscreen);
 	}
 }

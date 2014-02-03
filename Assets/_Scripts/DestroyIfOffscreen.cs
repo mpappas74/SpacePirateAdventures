@@ -8,6 +8,10 @@ public class DestroyIfOffscreen : MonoBehaviour {
 	
 	void OnTriggerExit(Collider other)
 	{
-		Destroy(other.gameObject);
+		if(other.gameObject.GetComponent<ShipHandler>() != null){
+			other.gameObject.GetComponent<ShipHandler>().Die(false);
+		} else{
+			Destroy(other.gameObject);
+		}
 	}
 }

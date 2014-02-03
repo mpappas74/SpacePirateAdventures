@@ -58,6 +58,12 @@ public class ShipHandler : MonoBehaviour
 	public bool turnsAroundOnCollision;
 	public float collectedResources = 0;
 	
+	//************** MiniMap Logic ********************//
+	private GameObject enemyDot = (GameObject)Resources.Load ("EnemyshipDot");
+	private GameObject playerDot = (GameObject)Resources.Load ("PlayershipDot");
+	private GameObject myDot;
+	private Vector3 worldScale;
+	private Vector3 mapShift;
 
 	//***************************************** Virtual Methods ******************************************************//
  
@@ -68,7 +74,7 @@ public class ShipHandler : MonoBehaviour
 		//As we've seen before, getting access to ButtonHandler's booleans to know if we are paused.
 		maxHealth = shipHealth;
 		healthbar = gameObject.transform.Find ("HealthBar");
-		healthbar.localScale *= maxHealth/3;
+		healthbar.localScale *= maxHealth / 3;
 		if (healthbar != null) {
 			maxLength = healthbar.localScale.x;
 		} else {
@@ -78,6 +84,16 @@ public class ShipHandler : MonoBehaviour
 			DetermineCurrentLane ();
 		}
 		input = GameObject.Find ("LevelController").GetComponent<InputHandler> ();
+
+		worldScale = GameObject.Find ("Background").transform.localScale;
+		worldScale = new Vector3 (1 / worldScale.x, 1, 1 / worldScale.z);
+		GameObject miniMap = GameObject.Find ("MiniMap");
+		myDot = (gameObject.tag == "EnemyShip") ? enemyDot : playerDot;
+		myDot = (GameObject)Instantiate (myDot, myDot.transform.position, myDot.transform.rotation);
+		myDot.transform.parent = miniMap.transform;
+		mapShift = new Vector3 (0.5f, -1.2f, 0.0f);
+		myDot.transform.localPosition = Vector3.Scale (transform.position, worldScale) - mapShift;
+
 	}
 
 	public virtual void OnTriggerEnter (Collider other)
@@ -86,18 +102,18 @@ public class ShipHandler : MonoBehaviour
 			if (other.tag == "EnemyShip") {
 				transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
 				collectedResources += 5;
-				foreach(Transform child in transform){
-					if(child.name == "HealthBar"){
-						child.localPosition -= new Vector3(2*child.localPosition.x, 0.0f, 0.0f);
+				foreach (Transform child in transform) {
+					if (child.name == "HealthBar") {
+						child.localPosition -= new Vector3 (2 * child.localPosition.x, 0.0f, 0.0f);
 					}
 				}
-			} else if(other.tag == "Player"){
-				GameObject.Find("LevelController").GetComponent<LevelController>().levelScore += collectedResources;
+			} else if (other.tag == "Player") {
+				GameObject.Find ("LevelController").GetComponent<LevelController> ().levelScore += collectedResources;
 				collectedResources = 0;
 				transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
-				foreach(Transform child in transform){
-					if(child.name == "HealthBar"){
-						child.localPosition -= new Vector3(2*child.localPosition.x, 0.0f, 0.0f);
+				foreach (Transform child in transform) {
+					if (child.name == "HealthBar") {
+						child.localPosition -= new Vector3 (2 * child.localPosition.x, 0.0f, 0.0f);
 					}
 				}
 			}
@@ -106,6 +122,7 @@ public class ShipHandler : MonoBehaviour
 
 	public virtual void Update ()
 	{
+		myDot.transform.localPosition = Vector3.Scale (transform.position, worldScale) - mapShift;
 		if (firesBolts) {
 			FireBolts ();
 		}
@@ -144,12 +161,12 @@ public class ShipHandler : MonoBehaviour
 			}
 			transform.position += new Vector3 (0.0f, 0.0f, (upZ + downZ) / 2 - transform.position.z);			
 		}
-		if(turnsAroundOnCollision){
-			if(transform.position.x >= 80){
+		if (turnsAroundOnCollision) {
+			if (transform.position.x >= 80) {
 				transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
-				foreach(Transform child in transform){
-					if(child.name == "HealthBar"){
-						child.localPosition -= new Vector3(2*child.localPosition.x, 0.0f, 0.0f);
+				foreach (Transform child in transform) {
+					if (child.name == "HealthBar") {
+						child.localPosition -= new Vector3 (2 * child.localPosition.x, 0.0f, 0.0f);
 					}
 				}
 			}
@@ -167,13 +184,16 @@ public class ShipHandler : MonoBehaviour
 		}
 	}
 	
-	public virtual void Die ()
+	public virtual void Die (bool diedOnscreen = true)
 	{
-		LevelController lc = GameObject.Find ("LevelController").GetComponent<LevelController> ();
-		lc.levelScore += scoreValue;
+		if (diedOnscreen) {
+			LevelController lc = GameObject.Find ("LevelController").GetComponent<LevelController> ();
+			lc.levelScore += scoreValue;
+			Instantiate (explosion, transform.position, transform.rotation);
+			audio.Play ();
+		}
+		Destroy (myDot);
 		Destroy (gameObject);
-		Instantiate (explosion, transform.position, transform.rotation);
-		audio.Play ();
 	}
 
 
