@@ -29,7 +29,8 @@ public class LevelController : MonoBehaviour
 	public float[] laneRotations; //How much ship placed into each lane should be rotated. (Note that, if the ship has MoveInLane, it should follow the lane regardless of orientation.)
 	public float[] startPositions; //The starting z positions for ships to be built in the lanes which exist.
 	public bool playerVictory = false; //Has the player won?
-	private MothershipScript mothership;
+	private ShipHandler mothership;
+	private ShipHandler enemyMothership;
 	
 	void Start ()
 	{
@@ -44,7 +45,8 @@ public class LevelController : MonoBehaviour
 		//Get access to the input handler.
 		input = GameObject.Find ("LevelController").GetComponent<InputHandler> ();
 		StartCoroutine (FixBuggyInput ());
-		mothership = GameObject.Find ("Mothership").GetComponent<MothershipScript> ();
+		mothership = GameObject.Find ("Mothership").GetComponent<ShipHandler> ();
+		enemyMothership = GameObject.Find("EnemyMothership").GetComponent<ShipHandler>();
 	}
 	
 	IEnumerator FixBuggyInput ()
@@ -126,10 +128,10 @@ public class LevelController : MonoBehaviour
 			buttonJustPressedThisUpdate = false;
 		}
 		//If the game is over, tell the rest of the game to stop. This is true if we are out of points and have no ships left to earn us more.
-		if (mothership.health <= 0 || (levelScore < 5 && GameObject.FindWithTag ("TinyShip") == null && GameObject.FindWithTag ("CrazyShip") == null && GameObject.FindWithTag ("LoadingBar") == null && GameObject.FindWithTag ("BombShip") == null && GameObject.FindWithTag ("ShieldShip") == null && GameObject.FindWithTag ("Shield") == null && GameObject.FindWithTag ("StealthShip") == null)) {
+		if (mothership.isDead || (levelScore < 5 && GameObject.FindWithTag ("TinyShip") == null && GameObject.FindWithTag ("CrazyShip") == null && GameObject.FindWithTag ("LoadingBar") == null && GameObject.FindWithTag ("BombShip") == null && GameObject.FindWithTag ("ShieldShip") == null && GameObject.FindWithTag ("Shield") == null && GameObject.FindWithTag ("StealthShip") == null)) {
 			gameOver = true;
 			button.gameOver = true;
-		} else if (playerVictory) {
+		} else if (playerVictory || enemyMothership.isDead) {
 			button.gameOver = true;
 		} else {
 			

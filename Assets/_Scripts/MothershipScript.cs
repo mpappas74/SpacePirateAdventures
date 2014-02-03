@@ -1,33 +1,65 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class MothershipScript : MonoBehaviour {
+public class MothershipScript : ShipHandler
+{
 
-	public GUIText healthText;
-	public float health;
+	private bool amPlayers;
+	private string mainString;
+	public GUIText shipHealthText;
 	private float wasHealth;
 
 	// Use this for initialization
-	void Start () {
-		wasHealth = health;
-		healthText.text = "Mothership Health = " + health.ToString ();
+	public override void Start ()
+	{
+		energyShieldHealth = 0;
+		speed = 0;
+		cost = 0;
+		firesBolts = false;
+		deploysShield = false;
+		selfDestructs = false;
+		scoreValue = 0;
+		shouldMoveInLane = false;
+		turnsAroundOnCollision = false;
+		
+		base.Start ();
+
+		if (gameObject.layer == LayerMask.NameToLayer ("PlayerShips")) {
+			amPlayers = true;
+			mainString = "Your mothership's ";
+		} else {
+			amPlayers = false;
+			mainString = "The enemy's ";
+		}
+		wasHealth = shipHealth;
+		shipHealthText.text = mainString + "health = " + shipHealth.ToString ();
 	}
 	
 	// Update is called once per frame
-	void Update () {
-		if(wasHealth != health){
-			if(health <= 0){
-				health = 0;
+	public override void Update ()
+	{
+		if (wasHealth != shipHealth) {
+			wasHealth = shipHealth;
+			if (shipHealth <= 0) {
+				shipHealth = 0;
 			}
-			healthText.text = "Mothership Health = " + health.ToString();
+			shipHealthText.text = mainString + "health = " + shipHealth.ToString ();
 		}
+		base.Update ();
 	}
 
-	void OnTriggerEnter(Collider other){
-		if(other.gameObject.layer == LayerMask.NameToLayer("EnemyShips")){
-			other.gameObject.GetComponent<ShipHandler>().Die();
-			health -= 5;
-		}
+	public override void OnTriggerEnter (Collider other)
+	{
+		base.OnTriggerEnter (other);
+	}
+	
+	public override void Die (bool diedOnscreen = true)
+	{
+		base.Die (diedOnscreen);
+	}
+
+	public override void FixedUpdate(){
+		//Do nothing.
 	}
 
 }

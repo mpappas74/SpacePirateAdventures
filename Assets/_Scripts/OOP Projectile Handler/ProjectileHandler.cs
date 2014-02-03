@@ -41,11 +41,11 @@ public class ProjectileHandler : MonoBehaviour
 
 	public virtual void Start ()
 	{
-		amPlayers = (LayerMask.NameToLayer("PlayerAttacks") == gameObject.layer);
-		if(audio != null){
-		audio.Play (); //When the bolt is shot, play the shooting audio.
+		amPlayers = (LayerMask.NameToLayer ("PlayerAttacks") == gameObject.layer);
+		if (audio != null) {
+			audio.Play (); //When the bolt is shot, play the shooting audio.
 		}
-		if(rigidbody != null){
+		if (rigidbody != null) {
 			rigidbody.velocity = speed * transform.forward;	//Keep the ship moving forward.
 		}
 		testObject = GameObject.Find ("EmptyButtonObject"); //Gain access to the ButtonHandler script to determine if the game is paused.
@@ -73,7 +73,7 @@ public class ProjectileHandler : MonoBehaviour
 		//If the game is paused, don't move. Otherwise, keep moving.
 		if (button.paused && rigidbody != null) {
 			rigidbody.velocity = new Vector3 (0.0f, 0.0f, 0.0f);
-		} else if(rigidbody != null) {
+		} else if (rigidbody != null) {
 			rigidbody.velocity = speed * transform.forward;
 		}
 	}
@@ -83,36 +83,31 @@ public class ProjectileHandler : MonoBehaviour
 		if (doesSingleShotDamage) {
 			//Right now, these tags exist to keep bolts from hitting each other or the mothership,
 			// or trying to 'damage' the outer boundary that destroys all gameObjects when offscreen.
-			if (other.gameObject.layer == LayerMask.NameToLayer("EnemyShips") && amPlayers) {
-				other.gameObject.GetComponent<ShipHandler> ().DecreaseHealth (damageDone);
+			if (amPlayers && other.gameObject.layer == LayerMask.NameToLayer ("EnemyShips")) {
+					other.gameObject.GetComponent<ShipHandler> ().DecreaseHealth (damageDone);
+					Destroy (gameObject);
+			} else if (!amPlayers && other.gameObject.layer == LayerMask.NameToLayer ("PlayerShips")) {
+					other.gameObject.GetComponent<ShipHandler> ().DecreaseHealth (damageDone);	
+					Destroy (gameObject);	//Destroy the bolt. Whether or not the ship is destroyed is handled in DecreaseHealth.
+			} else if (other.gameObject.tag == "Bolt") {
+				Destroy (other.gameObject);
 				Destroy (gameObject);
-			} else if (!amPlayers && other.gameObject.layer == LayerMask.NameToLayer("PlayerShips")) {
-				if(other.tag == "Player"){
-					other.gameObject.GetComponent<MothershipScript>().health -= damageDone;
-					Destroy(gameObject);
-				} else{
-				other.gameObject.GetComponent<ShipHandler> ().DecreaseHealth (damageDone);	
-				Destroy (gameObject);	//Destroy the bolt. Whether or not the ship is destroyed is handled in DecreaseHealth.
-				}
-			} else if(other.gameObject.tag == "Bolt"){
-				Destroy(other.gameObject);
-				Destroy(gameObject);
 			}
 		}
 		if (isExplosion) {
-			if (other.gameObject.layer == LayerMask.NameToLayer("EnemyShips") || other.gameObject.layer == LayerMask.NameToLayer("PlayerShips")){
+			if (other.gameObject.layer == LayerMask.NameToLayer ("EnemyShips") || other.gameObject.layer == LayerMask.NameToLayer ("PlayerShips")) {
 				other.gameObject.GetComponent <ShipHandler> ().DecreaseHealth (explosionDamage);	//Inflict damage. 
 			} else if (other.tag == "Bolt" && destroysBolts) {
 				Destroy (other.gameObject);
 			} else if (other.tag == "Shield" && destroysShields) {
 				Destroy (other.gameObject);
-			} else if (other.tag == "Player"){
-				other.gameObject.GetComponent<MothershipScript>().health -= explosionDamage/2;
+			} else if (other.tag == "Player" && other.tag == "Enemy") {
+				other.gameObject.GetComponent<ShipHandler> ().DecreaseHealth(explosionDamage / 2);
 			}
 		}
 		
 		if (takesDamage) {
-			if(!givesDamageBack){
+			if (!givesDamageBack) {
 				damageBack = 0;
 			}
 			//Depending on the colliding object, either let it pass, take a hit from it, or destroy it and take a hit from it.
@@ -121,9 +116,9 @@ public class ProjectileHandler : MonoBehaviour
 					DecreaseHealth (other.gameObject.GetComponent<ProjectileHandler> ().damageDone);
 					Destroy (other.gameObject);
 				}
-			} else if (other.gameObject.layer == LayerMask.NameToLayer("EnemyShips") || other.gameObject.layer == LayerMask.NameToLayer("PlayerShips")) {
+			} else if (other.gameObject.layer == LayerMask.NameToLayer ("EnemyShips") || other.gameObject.layer == LayerMask.NameToLayer ("PlayerShips")) {
 				DecreaseHealth (damageFromShip);
-				other.gameObject.GetComponent<ShipHandler>().DecreaseHealth(damageBack);
+				other.gameObject.GetComponent<ShipHandler> ().DecreaseHealth (damageBack);
 			} else {
 				//Debug.Log(other.tag);
 			}

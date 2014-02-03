@@ -59,8 +59,8 @@ public class ShipHandler : MonoBehaviour
 	public float collectedResources = 0;
 	
 	//************** MiniMap Logic ********************//
-	private GameObject enemyDot = (GameObject)Resources.Load ("EnemyshipDot");
-	private GameObject playerDot = (GameObject)Resources.Load ("PlayershipDot");
+	private GameObject enemyDot;
+	private GameObject playerDot;
 	private GameObject myDot;
 	private Vector3 worldScale;
 	private Vector3 mapShift;
@@ -74,8 +74,8 @@ public class ShipHandler : MonoBehaviour
 		//As we've seen before, getting access to ButtonHandler's booleans to know if we are paused.
 		maxHealth = shipHealth;
 		healthbar = gameObject.transform.Find ("HealthBar");
-		healthbar.localScale *= maxHealth / 3;
 		if (healthbar != null) {
+			healthbar.localScale *= maxHealth / 3;
 			maxLength = healthbar.localScale.x;
 		} else {
 			maxLength = -1;
@@ -85,6 +85,8 @@ public class ShipHandler : MonoBehaviour
 		}
 		input = GameObject.Find ("LevelController").GetComponent<InputHandler> ();
 
+		enemyDot = (GameObject)Resources.Load ("EnemyshipDot");
+		playerDot = (GameObject)Resources.Load ("PlayershipDot");
 		worldScale = GameObject.Find ("Background").transform.localScale;
 		worldScale = new Vector3 (1 / worldScale.x, 1, 1 / worldScale.z);
 		GameObject miniMap = GameObject.Find ("MiniMap");
@@ -99,18 +101,12 @@ public class ShipHandler : MonoBehaviour
 	public virtual void OnTriggerEnter (Collider other)
 	{
 		if (turnsAroundOnCollision) {
-			if (other.gameObject.layer == LayerMask.NameToLayer("EnemyShips")) {
+			if (other.gameObject.layer == LayerMask.NameToLayer("EnemyShips") || other.gameObject.layer == LayerMask.NameToLayer("PlayerShips")) {
 				transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
 				collectedResources += 5;
-				foreach (Transform child in transform) {
-					if (child.name == "HealthBar") {
-						child.localPosition -= new Vector3 (2 * child.localPosition.x, 0.0f, 0.0f);
-					}
+				if(other.tag == "Enemy" || other.tag == "Player"){
+					collectedResources += 10;
 				}
-			} else if (other.tag == "Player") {
-				GameObject.Find ("LevelController").GetComponent<LevelController> ().levelScore += collectedResources;
-				collectedResources = 0;
-				transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
 				foreach (Transform child in transform) {
 					if (child.name == "HealthBar") {
 						child.localPosition -= new Vector3 (2 * child.localPosition.x, 0.0f, 0.0f);
@@ -132,6 +128,16 @@ public class ShipHandler : MonoBehaviour
 		}
 		if (deploysShield) {
 			ShieldDeploy ();
+		}
+		if(turnsAroundOnCollision && transform.position.x < 0){
+			GameObject.Find ("LevelController").GetComponent<LevelController> ().levelScore += collectedResources;
+			collectedResources = 0;
+			transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
+			foreach (Transform child in transform) {
+				if (child.name == "HealthBar") {
+					child.localPosition -= new Vector3 (2 * child.localPosition.x, 0.0f, 0.0f);
+				}
+			}
 		}
 		if (selfDestructs) {
 			if (input.isTrigger ()) {
@@ -302,6 +308,7 @@ public class ShipHandler : MonoBehaviour
 				}
 				wasClickedOn = false;
 				wasReleasedOn = false;
+				Destroy (myDot);
 				Destroy (gameObject);
 			}
 		}
