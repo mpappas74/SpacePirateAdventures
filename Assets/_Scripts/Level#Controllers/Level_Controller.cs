@@ -17,6 +17,10 @@ public class Level_Controller : MonoBehaviour
 	private int[] goneWaves;	//How many attack waves have happened so far?
 	private LevelController lc;
 	
+	public bool[] sMIL;
+	public float[] health;
+	public float[] shieldHealth;
+	public float[] score;
 	
 	public virtual void Start ()
 	{
@@ -30,23 +34,21 @@ public class Level_Controller : MonoBehaviour
 
 		//Run coroutines for each of the different described wave fronts.
 		for(int i = 0; i < hazardNames.Length; i++){
-			hazard[i] = (GameObject)Resources.Load("EnemyShips/" + hazardNames[i]); 
-			hazard[i] = (GameObject)Instantiate(hazard[i], new Vector3(0, -1000, 0), hazard[i].transform.rotation);
-			hazard[i].SetActive(false);
-			hazard[i] = setUpHazard(hazard[i]);
-			StartCoroutine(SpawnWaves(i));
+			loadHazard(i);
 		}
 	}
 	
-	//Sets up the hazards. Will eventually rewrite as a virtual method with overloaded inputs so the individual level controllers can change these params.
-	private GameObject setUpHazard(GameObject theHazard){
-		ShipHandler sh = theHazard.GetComponent<ShipHandler>();
-		sh.shouldMoveInLane = false;
-		sh.shipHealth = 2;
-		sh.energyShieldHealth = 0;
-		sh.scoreValue = 10;
-		theHazard.layer = LayerMask.NameToLayer("EnemyShips");
-		return theHazard;
+	private void loadHazard(int i){
+		hazard[i] = (GameObject)Resources.Load("EnemyShips/" + hazardNames[i]); 
+		hazard[i] = (GameObject)Instantiate(hazard[i], new Vector3(0, -1000, 0), hazard[i].transform.rotation);
+		hazard[i].SetActive(false);
+		ShipHandler sh = hazard[i].GetComponent<ShipHandler>();
+		sh.shouldMoveInLane = sMIL[i];
+		sh.shipHealth = health[i];
+		sh.energyShieldHealth = shieldHealth[i];
+		sh.scoreValue = score[i];
+		hazard[i].layer = LayerMask.NameToLayer("EnemyShips");
+		StartCoroutine(SpawnWaves(i));
 	}
 	
 	//Determine if there are any GameObjects left in a certain physics layer (we will use this to tell if any enemies are left.)

@@ -15,10 +15,16 @@ public class Level1Controller : Level_Controller
 		spawnWait = new float[1]{1.5f};
 		waveWait = new float[1]{3};
 		numberWaves = new int[1]{1};
+		
+		sMIL = new bool[1]{false};
+		health = new float[1]{2};
+		shieldHealth = new float[1]{0};
+		score = new float[1]{10};
 
 		base.Start();
 	}
 	
+
 	public override void Update ()
 	{
 		base.Update();
