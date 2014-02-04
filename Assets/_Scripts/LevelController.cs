@@ -133,11 +133,12 @@ public class LevelController : MonoBehaviour
 	{
 		//If the game is over, tell the rest of the game to stop. This is true if we are out of points and have no ships left to earn us more.
 		//Notice the order - we only check if we have ships if we are already low on level score. There is still a worst case, but this keeps this from being too big of an efficiency drain.
-		if (mothership.isDead || (levelScore < 5 && GameObject.FindWithTag ("TinyShip") == null && GameObject.FindWithTag ("CrazyShip") == null && GameObject.FindWithTag ("LoadingBar") == null && GameObject.FindWithTag ("BombShip") == null && GameObject.FindWithTag ("ShieldShip") == null && GameObject.FindWithTag ("Shield") == null && GameObject.FindWithTag ("StealthShip") == null)) {
+		if (!button.gameOver && (mothership.isDead || (levelScore < 5 && GameObject.FindWithTag ("TinyShip") == null && GameObject.FindWithTag ("CrazyShip") == null && GameObject.FindWithTag ("LoadingBar") == null && GameObject.FindWithTag ("BombShip") == null && GameObject.FindWithTag ("ShieldShip") == null && GameObject.FindWithTag ("Shield") == null && GameObject.FindWithTag ("StealthShip") == null))) {
 			gameOver = true;
 			button.gameOver = true;
-		} else if (playerVictory || enemyMothership.isDead) { //Similarly, if playerVictory is true (set by Level_Controller when the waves end
-																													//or the enemy's mothership is dead, you win!
+		} else if (!button.gameOver && (playerVictory || enemyMothership.isDead)) { //Similarly, if playerVictory is true (set by Level_Controller when the waves end
+																																							//or the enemy's mothership is dead, you win!
+			GameObject.Find("GuiTextObjects").transform.Find("WinText").gameObject.SetActive(true);
 			playerVictory = true;
 			button.gameOver = true;
 		} else {

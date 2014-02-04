@@ -15,6 +15,8 @@ public class CameraScript : MonoBehaviour
 	private InputHandler input; //Access to input handler.
 
 	public GameObject miniMap; //Access to miniMap gameObject to keep it always in the correct camera view.
+	public GameObject healthbar;
+	public GameObject enemyHealthbar;
 
 	void Start ()
 	{
@@ -58,6 +60,7 @@ public class CameraScript : MonoBehaviour
 					dist = input.deltaPos ().x;
 					dist = Mathf.Clamp (transform.position.x - dist * cameraSpeed, leftSideCap, rightSideCap) - transform.position.x;
 					transform.position = new Vector3 (transform.position.x + dist, startingCameraPosition.y, startingCameraPosition.z);
+					input.setMoved(false);
 				} 
 			}
 		}
@@ -65,6 +68,12 @@ public class CameraScript : MonoBehaviour
 		//Simply adjust the position of the miniMap according to how much the camera has shifted.
 		if (dist != 0) {
 			miniMap.transform.position = new Vector3 (miniMap.transform.position.x + dist, miniMap.transform.position.y, miniMap.transform.position.z); 
+			if(healthbar != null){
+				healthbar.transform.position = new Vector3(healthbar.transform.position.x + dist, healthbar.transform.position.y, healthbar.transform.position.z);
+			}
+			if(enemyHealthbar != null){
+				enemyHealthbar.transform.position = new Vector3(enemyHealthbar.transform.position.x + dist, enemyHealthbar.transform.position.y, enemyHealthbar.transform.position.z);
+			}
 		}
 		
 	}

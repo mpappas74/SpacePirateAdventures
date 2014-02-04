@@ -7,7 +7,6 @@ public class MothershipScript : ShipHandler
 //The mothershipScript is not too much beyond the shipHandler,
 //but the key element is that it updates the string for now.
 
-	private string mainString;
 	public GUIText shipHealthText;
 	private float wasHealth;
 
@@ -24,14 +23,10 @@ public class MothershipScript : ShipHandler
 		turnsAroundOnCollision = false;
 		
 		base.Start ();
-
-		if (gameObject.layer == LayerMask.NameToLayer ("PlayerShips")) {
-			mainString = "Your mothership's ";
-		} else {
-			mainString = "The enemy's ";
-		}
 		wasHealth = shipHealth;
-		shipHealthText.text = mainString + "health = " + shipHealth.ToString ();
+		shipHealthText.text =  shipHealth.ToString ();
+		healthbar.localScale *= 3/maxHealth;
+		maxLength = healthbar.localScale.x;
 	}
 	
 	public override void Update ()
@@ -41,7 +36,8 @@ public class MothershipScript : ShipHandler
 			if (shipHealth <= 0) {
 				shipHealth = 0;
 			}
-			shipHealthText.text = mainString + "health = " + shipHealth.ToString ();
+			shipHealth = Mathf.Round(shipHealth * 100) / 100;
+			shipHealthText.text = shipHealth.ToString ();
 		}
 		base.Update ();
 	}

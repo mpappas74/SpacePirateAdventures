@@ -9,9 +9,9 @@ public class ShipHandler : MonoBehaviour
 	public float energyShieldHealth; //Energy shield health. Not yet valuable in any way.
 	public float speed; //Speed. Speaks for itself.
 	public bool isDead;	//Whether the ship is dead - this allows particular ship controller scripts to handle death differently.
-	private float maxHealth; //Maximum health of the ship
-	private float maxLength; //Maximum length of the ship's healthbar.
-	private Transform healthbar; //The physical healthbar above each ship.
+	public float maxHealth; //Maximum health of the ship
+	public float maxLength; //Maximum length of the ship's healthbar.
+	public Transform healthbar; //The physical healthbar above each ship.
 	public float cost;	//How much the ship costs to build.
 
 	//************** Bolt Firing Logic ********************//
