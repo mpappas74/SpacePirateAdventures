@@ -69,6 +69,8 @@ public class LevelController : MonoBehaviour
 			GameObject[] clickableShips = new GameObject[ShieldShips.Length + BombShips.Length];
 			ShieldShips.CopyTo(clickableShips, 0);
 			BombShips.CopyTo(clickableShips, ShieldShips.Length);
+			
+
 			//if (GameObject.FindWithTag ("BombShip") == null) {
 			//	input.setTrigger (false);
 			//}
@@ -403,7 +405,7 @@ public class LevelController : MonoBehaviour
 			} 
 			if (GUI.Button (new Rect (.5f * Screen.width - 100, .4f * Screen.height, 200, .13f * Screen.height), "Next Level")) {
 				//Be careful here if we change the scene order!!!!
-				if (Application.loadedLevel < 2) {
+				if (Application.loadedLevel < 3) {
 					Application.LoadLevel (Application.loadedLevel + 1);
 					GameControllerScript.Instance.setCurrentUnlockedLevel (GameControllerScript.Instance.getCurrentUnlockedLevel () + 1);
 				} else {

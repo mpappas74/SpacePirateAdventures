@@ -82,12 +82,9 @@ public class ProjectileHandler : MonoBehaviour
 	{
 		//Based on the physics layers, bolts can only hit projectiles and ships belonging to the other side.
 		if (doesSingleShotDamage) {
-			if (amPlayers && other.gameObject.layer == LayerMask.NameToLayer ("EnemyShips")) {
+			if (other.gameObject.layer == LayerMask.NameToLayer ("EnemyShips") || other.gameObject.layer == LayerMask.NameToLayer("PlayerShips")) {
 					other.gameObject.GetComponent<ShipHandler> ().DecreaseHealth (damageDone);
 					Destroy (gameObject);
-			} else if (!amPlayers && other.gameObject.layer == LayerMask.NameToLayer ("PlayerShips")) {
-					other.gameObject.GetComponent<ShipHandler> ().DecreaseHealth (damageDone);	
-					Destroy (gameObject);	//Destroy the bolt. Whether or not the ship is destroyed is handled in DecreaseHealth.
 			} else if (other.gameObject.tag == "Bolt") {
 				Destroy (other.gameObject);
 				Destroy (gameObject);

@@ -40,7 +40,7 @@ public class Level_Controller : MonoBehaviour
 	
 	private void loadHazard(int i){
 		hazard[i] = (GameObject)Resources.Load("EnemyShips/" + hazardNames[i]); 
-		hazard[i] = (GameObject)Instantiate(hazard[i], new Vector3(0, -1000, 0), hazard[i].transform.rotation);
+		hazard[i] = (GameObject)Instantiate(hazard[i], new Vector3(0, 0, 0), hazard[i].transform.rotation);
 		hazard[i].SetActive(false);
 		ShipHandler sh = hazard[i].GetComponent<ShipHandler>();
 		sh.shouldMoveInLane = sMIL[i];

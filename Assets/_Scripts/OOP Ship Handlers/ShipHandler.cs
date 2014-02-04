@@ -336,10 +336,8 @@ public class ShipHandler : MonoBehaviour
 	//If the bomb explodes, remove it, and replace it with an explosion and blastzone.
 	public void Explode ()
 	{
-		Instantiate (explosion, transform.position, transform.rotation);
 		Instantiate (blastZone, transform.position, transform.rotation);
-		audio.Play ();
-		Destroy (gameObject);
+		Die();
 	}
 
 }
