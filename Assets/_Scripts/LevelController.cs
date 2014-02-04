@@ -78,14 +78,11 @@ public class LevelController : MonoBehaviour
 				pos = Camera.main.ScreenToWorldPoint (pos);	
 				foundClickedShip = false;
 				foreach (GameObject ss in clickableShips) {
-					if ((pos - ss.transform.position).sqrMagnitude < 9) {
+					if ((pos - ss.transform.position).sqrMagnitude < 9 && ss.layer == LayerMask.NameToLayer("PlayerShips")) {
 						ss.GetComponent<ShipHandler> ().wasClickedOn = true;
 						foundClickedShip = true;
 						break;
 					}
-				}
-				if (!foundClickedShip) {
-					input.setBegan (true);
 				}
 			}
 			if (foundClickedShip && input.Ended ()) {
@@ -100,9 +97,6 @@ public class LevelController : MonoBehaviour
 							break;
 						}
 					}
-				}
-				if (!foundClickedShip) {
-					input.setEnded (true);
 				}
 			}
 			

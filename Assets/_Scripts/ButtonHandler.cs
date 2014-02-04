@@ -74,9 +74,6 @@ public class ButtonHandler : MonoBehaviour
 					if (pos.x < 0.2f*Screen.height && Mathf.Abs(delta.y) > Mathf.Abs(2*delta.x)) {
 						//Scroll an x distance proportional to the length of the moving touch, capped on either side.
 						scrollPosition.y += input.deltaPos().y;
-					} else {
-						//This is one of many stupid, hackish fixes to the input handler. I'm working on it.
-						input.setMoved(true);
 					}
 				}
 				

@@ -107,29 +107,17 @@ public class InputHandler : MonoBehaviour
 
 	public bool Began ()
 	{
-		if (clickStarted) {
-			clickStarted = false;
-			return true;
-		}
-		return false;
+		return clickStarted;
 	}
 
 	public bool Moved ()
 	{
-		if (clickMoved) {
-			clickMoved = false;
-			return true;
-		}
-		return false;
+		return clickMoved;
 	}
 	
 	public bool Ended ()
 	{
-		if (clickEnded) {
-			clickEnded = false;
-			return true;
-		}
-		return false;
+		return clickEnded;
 	}
 
 	public Vector2 startPos ()
