@@ -58,6 +58,8 @@ public class LevelController : MonoBehaviour
 		GameObject theShip = (GameObject)Instantiate (curShip, position, curShip.transform.rotation);
 		theShip.transform.Rotate(Vector3.up * rotation);
 		
+		
+		
 		//An attempt at rotating the particle systems along with the ship (aka the jet propulsion). So far unsuccessful.
 		//		ParticleSystem[] particleSystems = theShip.GetComponentsInChildren<ParticleSystem> ();
 		//		foreach (ParticleSystem p in particleSystems) {
