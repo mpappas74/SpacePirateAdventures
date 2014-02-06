@@ -49,7 +49,7 @@ public class ProjectileHandler : MonoBehaviour
 			audio.Play (); //When the bolt is shot, play the shooting audio.
 		}
 		if (rigidbody != null) {
-			rigidbody.velocity = speed * transform.forward;	//Keep the ship moving forward.
+			rigidbody.velocity = 1*speed * transform.forward;	//Keep the ship moving forward.
 		}
 		testObject = GameObject.Find ("EmptyButtonObject"); //Gain access to the ButtonHandler script to determine if the game is paused.
 		button = testObject.GetComponent<ButtonHandler> ();
@@ -80,7 +80,7 @@ public class ProjectileHandler : MonoBehaviour
 		if (button.paused && rigidbody != null) {
 			rigidbody.velocity = new Vector3 (0.0f, 0.0f, 0.0f);
 		} else if (rigidbody != null) {
-			rigidbody.velocity = speed * transform.forward;
+			rigidbody.velocity = 1*speed * transform.forward;
 		}
 	}
 

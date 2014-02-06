@@ -99,11 +99,15 @@ public class ShipHandler : MonoBehaviour
 
 		if (laneID == 0) {
 
-				iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("path1"),"time", 5));
+				iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane 1"),"time", 10));
 				}
 		if (laneID == 1) {
 			
-			iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("path2"), "time", 5));
+
+			;
+
+			iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane 2"), "time", 10));
+
 		}
 
 		//If we are moving in a lane, we've got to find the one we are in.
@@ -236,7 +240,7 @@ public class ShipHandler : MonoBehaviour
 
 
 	// Meanwhile, we are also moving the ship forward, presuming the game is not paused.
-	public virtual void FixedUpdate ()
+	/*public virtual void FixedUpdate ()
 	{
 		if (button.paused) {
 			rigidbody.velocity = new Vector3 (0.0f, 0.0f, 0.0f);
@@ -244,7 +248,7 @@ public class ShipHandler : MonoBehaviour
 			rigidbody.velocity = transform.forward * speed;	
 		}
 	}
-	
+	*/
 	//If a ship dies, update the level score, explode, and then destroy both the ship and its minimap dot.
 	public virtual void Die (bool diedOnscreen = true)
 	{
@@ -305,6 +309,7 @@ public class ShipHandler : MonoBehaviour
 	//This function determines the lane at the ship's instantiation that it is allegedly in.
 	//Presumably, you will be able to replace this entire function with simply an ID number that is set 
 	//when the ship is instantiated.
+
 	public void DetermineCurrentLane ()
 	{
 		//First, find all lanes that exist, period.

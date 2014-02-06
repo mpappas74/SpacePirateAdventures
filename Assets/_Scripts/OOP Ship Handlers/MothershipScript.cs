@@ -52,8 +52,8 @@ public class MothershipScript : ShipHandler
 		base.Die (diedOnscreen);
 	}
 
-	public override void FixedUpdate(){
+//	public override void FixedUpdate(){
 		//Do nothing.
-	}
+//	}
 
 }

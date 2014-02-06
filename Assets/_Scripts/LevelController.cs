@@ -74,7 +74,6 @@ public class LevelController : MonoBehaviour
 		//Slowly heal level score.
 		StartCoroutine (GrowLevelScore());
 
-
 		mothership = GameObject.Find ("Mothership").GetComponent<ShipHandler> ();
 		enemyMothership = GameObject.Find("EnemyMothership").GetComponent<ShipHandler>();
 
@@ -159,7 +158,7 @@ public class LevelController : MonoBehaviour
 
 		GameObject theShip = (GameObject)Instantiate (curShip, position, curShip.transform.rotation);
 		//Mike added this line
-		theShip.GetComponent<ShipBuilder>().laneID = closestIndex;
+		theShip.GetComponent<ShipHandler>().laneID = laneID;
 
 		theShip.transform.Rotate(Vector3.up * rotation);
 		
@@ -413,7 +412,7 @@ public class LevelController : MonoBehaviour
 							currentDiff = Mathf.Abs (pos.z - startPositions [j]);
 						}
 					}
-					}
+					
 
 
 					//If we released the neutralShip on a box, try to build it.
@@ -437,7 +436,7 @@ public class LevelController : MonoBehaviour
 						button.canCancelShip = false;
 						if (levelScore >= currentShip.GetComponent<ShipHandler>().cost) {
 							levelScore -= currentShip.GetComponent<ShipHandler>().cost;
-							StartCoroutine (BuildCurrentShip (currentShip, pos, rot));
+							StartCoroutine (BuildCurrentShip (currentShip, pos, rot, closestIndex));
 							//Remember, currentShip defaults to placingBox when we are no longer building a ship.
 							currentShip = GameControllerScript.Instance.getPlacingBox ();
 						} else {
@@ -457,12 +456,12 @@ public class LevelController : MonoBehaviour
 						}
 						//We are no longer trying to place a ship.
 						isPlacingShip = false;
-					}
+					}}
 					
 				} 
 		}
 	}
-	}
+	
 	void OnGUI ()
 	{
 		//We don't need the MainMenu button - buttonHandler already will post that since the game is over.
