@@ -20,9 +20,43 @@ public class GameControllerScript : Singleton<GameControllerScript>
 	//Now begins the probably huge stream of variables that determine particular ship upgrades.
 	private float tinyShipDamage;	//Damage done by a shot from the tinyShip.
 	
+	private bool canSetUpShipsNow = false;
+
 	void Awake ()
 	{
 		DontDestroyOnLoad(this);
+
+		StartCoroutine("GetShips");
+		
+		//Check PlayerPrefs to see if the three main things are saved. If not, set them to default levels.
+		if(PlayerPrefs.HasKey("Score")){
+			score = PlayerPrefs.GetFloat("Score");
+		} else{
+			score = 0;
+		}
+		if(PlayerPrefs.HasKey("CurrentUnlockedLevel")){
+			currentUnlockedLevel = PlayerPrefs.GetInt("CurrentUnlockedLevel");
+		} else{
+			currentUnlockedLevel = 1;
+		}
+		if(PlayerPrefs.HasKey("CurrentLevel")){
+			currentLevel = PlayerPrefs.GetInt("CurrentLevel");
+		} else {
+			currentLevel = 0;
+		}
+
+		//tinyShipDamage
+		if(PlayerPrefs.HasKey("TinyShipDamage")){
+			tinyShipDamage = PlayerPrefs.GetFloat("TinyShipDamage");
+		} else {
+			tinyShipDamage = 1;
+		}
+
+		canSetUpShipsNow = true;
+	}
+
+	IEnumerator GetShips(){
+		yield return new WaitForSeconds(0.0f);
 		tinyShip = (GameObject)Resources.Load("TinyShip"); //The tinyShip prefab.
 		crazyShip = (GameObject)Resources.Load("CrazyShip"); //The crazyShip prefab.
 		shieldShip = (GameObject)Resources.Load("ShieldShip"); //The shieldShip prefab.
@@ -54,31 +88,11 @@ public class GameControllerScript : Singleton<GameControllerScript>
 		shield.SetActive(false);
 		DontDestroyOnLoad(shield);
 
-		//Check PlayerPrefs to see if the three main things are saved. If not, set them to default levels.
-		if(PlayerPrefs.HasKey("Score")){
-			score = PlayerPrefs.GetFloat("Score");
-		} else{
-			score = 0;
+		while(!canSetUpShipsNow){
+			yield return new WaitForSeconds(0.1f);
 		}
-		if(PlayerPrefs.HasKey("CurrentUnlockedLevel")){
-			currentUnlockedLevel = PlayerPrefs.GetInt("CurrentUnlockedLevel");
-		} else{
-			currentUnlockedLevel = 1;
-		}
-		if(PlayerPrefs.HasKey("CurrentLevel")){
-			currentLevel = PlayerPrefs.GetInt("CurrentLevel");
-		} else {
-			currentLevel = 0;
-		}
-
-		//tinyShipDamage
-		if(PlayerPrefs.HasKey("TinyShipDamage")){
-			tinyShipDamage = PlayerPrefs.GetFloat("TinyShipDamage");
-		} else {
-			tinyShipDamage = 1;
-		}
-
 		prepareAllShips();
+
 	}
 	
 	//This method will set all relevant variables. It should be called at the end of Start() as well as any time we have upgraded and then entered a new level.
