@@ -131,7 +131,7 @@ public class LevelController : MonoBehaviour
 
 	
 	//This function allows us to build the ship we have chosen in the correct place cleanly while deleting all the other objects in the main script.
-	public IEnumerator BuildCurrentShip (GameObject curShip, Vector3 position, float rotation)
+	public IEnumerator BuildCurrentShip (GameObject curShip, Vector3 position, float rotation, int laneID)
 	{
 		//Keep one placingBox visible to show that the ship is being built. Hold it for one minute, then replace it with a ship.
 		//We rotate both the placingBox and the ship by the movementAngle about the y axis.
@@ -142,7 +142,10 @@ public class LevelController : MonoBehaviour
 			block.transform.localScale = new Vector3 (block.transform.localScale.x, block.transform.localScale.y, initialHeight * (5f - i) / 5f);
 		}
 		Destroy (block);
+
 		GameObject theShip = (GameObject)Instantiate (curShip, position, curShip.transform.rotation);
+		//Mike added this line
+		theShip.GetComponent<ShipBuilder>().laneID = closestIndex;
 
 		theShip.transform.Rotate(Vector3.up * rotation);
 		
@@ -387,9 +390,7 @@ public class LevelController : MonoBehaviour
 					//various boxes and finds which one the release was closest to.
 					
 					int closestIndex = 0;
-					if(newLaneSystem){
 
-					}else{
 					//Now we have to figure out which box you actually released on.
 					float currentDiff = Mathf.Abs (pos.z - startPositions [0]);
 						for (int j = 1; j < numLanes; j++) {
@@ -407,12 +408,14 @@ public class LevelController : MonoBehaviour
 						//STEVENLOOKHERE
 						//Last one, instantiating the ships with a particular height and rotation. If you need to do that, change these values.
 						float rot = 0;
+					/*
 						if(newLaneSystem){
 					
 						}else{
 						pos.z = startPositions [closestIndex];
 						rot = laneRotations [closestIndex];
 						}
+					*/
 						
 						
 						//Check the score. Note that we are only checking it now so that we only decrease it if the player actually builds the ship.

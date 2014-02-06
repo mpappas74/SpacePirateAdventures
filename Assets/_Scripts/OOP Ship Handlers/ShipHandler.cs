@@ -13,6 +13,7 @@ public class ShipHandler : MonoBehaviour
 	public float maxLength; //Maximum length of the ship's healthbar.
 	public Transform healthbar; //The physical healthbar above each ship.
 	public float cost;	//How much the ship costs to build.
+	public int laneID;
 
 	//************** Bolt Firing Logic ********************//
 	public bool firesBolts;	//Does this ship fire bolts?
@@ -90,6 +91,15 @@ public class ShipHandler : MonoBehaviour
 		//If you are turning off shouldMoveInLane, do it before this line.
 		//DO NOT simply replace shouldMoveInLane with false below, as that would miss another call
 		//in update. It's easier to just set it to be false directly.
+		shouldMoveInLane = false;
+		if (laneID == 0) {
+
+				iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("path1"),"time", 5));
+				}
+		if (laneID == 1) {
+			
+			iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("path2")));
+		}
 
 		//If we are moving in a lane, we've got to find the one we are in.
 		if (shouldMoveInLane) {
