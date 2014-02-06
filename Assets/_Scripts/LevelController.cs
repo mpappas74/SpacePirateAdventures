@@ -378,12 +378,12 @@ public class LevelController : MonoBehaviour
 					//This code is to figure out which box the player released on. Depending on how you built the boxes, you'll
 					//need to track their z positions right now. The for loop iterates over all possible z positions of the 
 					//various boxes and finds which one the release was closest to.
-		
+					
+					int closestIndex = 0;
 					if(newLaneSystem){
 
 					}else{
 					//Now we have to figure out which box you actually released on.
-					int closestIndex = 0;
 					float currentDiff = Mathf.Abs (pos.z - startPositions [0]);
 						for (int j = 1; j < numLanes; j++) {
 						if (Mathf.Abs (pos.z - startPositions [j]) < currentDiff) {
@@ -399,11 +399,12 @@ public class LevelController : MonoBehaviour
 
 						//STEVENLOOKHERE
 						//Last one, instantiating the ships with a particular height and rotation. If you need to do that, change these values.
+						float rot = 0;
 						if(newLaneSystem){
 					
 						}else{
 						pos.z = startPositions [closestIndex];
-						float rot = laneRotations [closestIndex];
+						rot = laneRotations [closestIndex];
 						}
 						
 						
