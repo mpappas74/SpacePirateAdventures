@@ -13,7 +13,7 @@ public class ShipHandler : MonoBehaviour
 	public float maxLength; //Maximum length of the ship's healthbar.
 	public Transform healthbar; //The physical healthbar above each ship.
 	public float cost;	//How much the ship costs to build.
-	public int laneID;
+	public int laneID = -1;
 
 	//************** Bolt Firing Logic ********************//
 	public bool firesBolts;	//Does this ship fire bolts?
@@ -93,9 +93,8 @@ public class ShipHandler : MonoBehaviour
 		//in update. It's easier to just set it to be false directly.
 		shouldMoveInLane = false;
 		if (laneID == 0) {
-
-				iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane 1"),"time", 5));
-				}
+			iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane 1"), "time", 5));
+		}
 		if (laneID == 1) {
 			
 			iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane 2")));
@@ -112,7 +111,7 @@ public class ShipHandler : MonoBehaviour
 
 		//Then instantiate a dot for this ship as a child of the map and orient it correctly.
 		GameObject miniMap = GameObject.Find ("MiniMap");
-		myDot = (gameObject.layer == LayerMask.NameToLayer("EnemyShips")) ? (GameObject)Resources.Load ("EnemyshipDot") : (GameObject)Resources.Load ("PlayershipDot");
+		myDot = (gameObject.layer == LayerMask.NameToLayer ("EnemyShips")) ? (GameObject)Resources.Load ("EnemyshipDot") : (GameObject)Resources.Load ("PlayershipDot");
 		myDot = (GameObject)Instantiate (myDot, myDot.transform.position, myDot.transform.rotation);
 		myDot.transform.parent = miniMap.transform;
 		mapShift = new Vector3 (0.5f, -1.2f, 0.0f);
@@ -126,10 +125,10 @@ public class ShipHandler : MonoBehaviour
 		//Notice that we can just check if the ship was on the enemy or player ship layer, since, if, say, this ship was a player ship,
 		//it can't collide with the player layer, so this script will only truly react to colliding with an enemy ship, which is what we want.
 		if (turnsAroundOnCollision) {
-			if (other.gameObject.layer == LayerMask.NameToLayer("EnemyShips") || other.gameObject.layer == LayerMask.NameToLayer("PlayerShips")) {
+			if (other.gameObject.layer == LayerMask.NameToLayer ("EnemyShips") || other.gameObject.layer == LayerMask.NameToLayer ("PlayerShips")) {
 				transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
 				collectedResources += 5;
-				if(other.tag == "Enemy" || other.tag == "Player"){
+				if (other.tag == "Enemy" || other.tag == "Player") {
 					collectedResources += 10;
 				}
 				foreach (Transform child in transform) {
@@ -138,14 +137,14 @@ public class ShipHandler : MonoBehaviour
 					}
 				}
 			}
-		} else if(other.gameObject.layer == LayerMask.NameToLayer("EnemyShips") && gameObject.layer != LayerMask.NameToLayer("EnemyShips")) {
+		} else if (other.gameObject.layer == LayerMask.NameToLayer ("EnemyShips") && gameObject.layer != LayerMask.NameToLayer ("EnemyShips")) {
 			
 			//If we don't turn around on collisions, then collide with the other ship. The above isItAnEnemyAndI'mNot logic is to keep from double subtracting accidentally.
 			//A collision results in both ships taking damage equal to the weaker one's health.
 
-			float damage = Mathf.Min(shipHealth, other.gameObject.GetComponent<ShipHandler>().shipHealth);
-			DecreaseHealth(damage);
-			other.gameObject.GetComponent<ShipHandler>().DecreaseHealth(damage);
+			float damage = Mathf.Min (shipHealth, other.gameObject.GetComponent<ShipHandler> ().shipHealth);
+			DecreaseHealth (damage);
+			other.gameObject.GetComponent<ShipHandler> ().DecreaseHealth (damage);
 		}
 	}
 
@@ -161,7 +160,7 @@ public class ShipHandler : MonoBehaviour
 		if (deploysShield) {
 			ShieldDeploy ();
 		}
-		if(turnsAroundOnCollision && transform.position.x < 0){
+		if (turnsAroundOnCollision && transform.position.x < 0) {
 			GameObject.Find ("LevelController").GetComponent<LevelController> ().levelScore += collectedResources;
 			collectedResources = 0;
 			transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
@@ -175,7 +174,7 @@ public class ShipHandler : MonoBehaviour
 			if (wasClickedOn && wasReleasedOn) {
 				wasClickedOn = false;
 				wasReleasedOn = false;
-				Explode();
+				Explode ();
 			} else if (isDead) {
 				Explode ();
 			}
@@ -278,9 +277,9 @@ public class ShipHandler : MonoBehaviour
 				nextFire = Time.time + fireLag;
 				GameObject thisBolt = (GameObject)Instantiate (bolt, shotSpawn.position, shotSpawn.rotation);
 				ProjectileHandler boltMover = thisBolt.GetComponent<ProjectileHandler> ();
-				thisBolt.layer = LayerMask.NameToLayer("PlayerAttacks");
-				if (gameObject.layer == LayerMask.NameToLayer("EnemyShips")) {
-					thisBolt.layer = LayerMask.NameToLayer("EnemyAttacks");
+				thisBolt.layer = LayerMask.NameToLayer ("PlayerAttacks");
+				if (gameObject.layer == LayerMask.NameToLayer ("EnemyShips")) {
+					thisBolt.layer = LayerMask.NameToLayer ("EnemyAttacks");
 				}
 				boltMover.damageDone = shotDamage;
 				if (boltSurvivalTime > 0) {
@@ -356,9 +355,9 @@ public class ShipHandler : MonoBehaviour
 		if (!button.paused) {
 			if (wasClickedOn && wasReleasedOn) {
 				GameObject theShield = (GameObject)Instantiate (shield, shotSpawn.position, shotSpawn.rotation);
-				theShield.layer = LayerMask.NameToLayer("PlayerAttacks");
-				if(gameObject.layer == LayerMask.NameToLayer("EnemyShips")){
-					theShield.layer = LayerMask.NameToLayer("EnemyAttacks");
+				theShield.layer = LayerMask.NameToLayer ("PlayerAttacks");
+				if (gameObject.layer == LayerMask.NameToLayer ("EnemyShips")) {
+					theShield.layer = LayerMask.NameToLayer ("EnemyAttacks");
 				}
 				wasClickedOn = false;
 				wasReleasedOn = false;
@@ -372,7 +371,7 @@ public class ShipHandler : MonoBehaviour
 	public void Explode ()
 	{
 		Instantiate (blastZone, transform.position, transform.rotation);
-		Die();
+		Die ();
 	}
 
 }
