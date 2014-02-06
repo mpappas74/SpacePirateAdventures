@@ -47,6 +47,10 @@ public class ShipHandler : MonoBehaviour
 	public GameObject explosion; //Access to the explosion to instantiate it when the ship dies.
 	public float scoreValue;	//How many points this ship is worth upon destruction.
 	
+
+	//STEVENLOOKHERE
+	//The below variables handle the movement in the current lanes. If you want to disable all of this logic, just go into the Start()
+	//function below and set shouldMoveInLane to false. You can then freely add your own code to handle your lanes and activate it with another bool.
 	//************** Move In Lane Logic ********************//
 	public bool shouldMoveInLane;	//Should the ship follow a lane or just move directly forward?
 	private GameObject upperWall;   //The upper wall of the lane.
@@ -82,6 +86,11 @@ public class ShipHandler : MonoBehaviour
 			maxLength = -1;
 		}
 		
+		//STEVENLOOKHERE
+		//If you are turning off shouldMoveInLane, do it before this line.
+		//DO NOT simply replace shouldMoveInLane with false below, as that would miss another call
+		//in update. It's easier to just set it to be false directly.
+
 		//If we are moving in a lane, we've got to find the one we are in.
 		if (shouldMoveInLane) {
 			DetermineCurrentLane ();
@@ -163,8 +172,16 @@ public class ShipHandler : MonoBehaviour
 		} else if (isDead) {
 			Die ();
 		}
+
+		
+		//STEVENLOOKHERE
+		//Below is the update logic for continuing to move in the current lane. 
+		//If you set shouldMoveInLane to false earlier, you can effectively ignore this logic.
+		//Note, though, that upperWall and lowerWall are currently the saved variables for the walls
+		//of the lanes. Hopefully your code will remove the need for this ugly raycasting.
+	
 		//If we are in a lane, we use this logic to track the distance between the ship and the two walls, and keep it vertically in between the walls.
-		if (amInLane) {
+		if (shouldMoveInLane && amInLane) {
 			float upZ = transform.position.z;
 			RaycastHit hit;
 			if (Physics.Raycast (transform.position, new Vector3 (0, 0, 10), out hit)) {
@@ -186,6 +203,10 @@ public class ShipHandler : MonoBehaviour
 			}
 			transform.position += new Vector3 (0.0f, 0.0f, (upZ + downZ) / 2 - transform.position.z);			
 		}
+
+
+
+		//Flip the ship and healthbar around if the ship is turning backwards.
 		if (turnsAroundOnCollision) {
 			if (transform.position.x >= 80) {
 				transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
@@ -265,6 +286,10 @@ public class ShipHandler : MonoBehaviour
 		timeDif = nextFire - Time.time;
 	}
 
+	//STEVENLOOKHERE
+	//This function determines the lane at the ship's instantiation that it is allegedly in.
+	//Presumably, you will be able to replace this entire function with simply an ID number that is set 
+	//when the ship is instantiated.
 	public void DetermineCurrentLane ()
 	{
 		//First, find all lanes that exist, period.

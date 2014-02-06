@@ -24,8 +24,19 @@ public class LevelController : MonoBehaviour
 	public bool gameOver; //Whether the game has ended for any reason. Currently the game only ends if you run out of points to build ships with.
 	private InputHandler input;	//The input handler.
 	public float levelScore;	//The score we have in the current level. Modify in inspector to allow levels where you start with many points.
+	
+	//STEVENLOOKHERE
+	//These two vectors (editable from the inspector) are all the game actually knows about the lanes.
+	//Right now, the options for building a ship are set so that the ship will be built at the heights 
+	//listed in startPositions and the rotations given in laneRotations.
+	//I've added a bool newLaneSystem here. Set it to true if you want to implement your new lanes without destroying my code.
+	//YOU WILL HAVE TO SEARCH FOR THE OTHER STEVENLOOKHERE TAGS and add the relevant code that you want to run instead.
+	
+	private bool newLaneSystem = false;
 	public float[] laneRotations; //How much ship placed into each lane should be rotated. (Note that, if the ship has MoveInLane, it should follow the lane regardless of orientation.)
 	public float[] startPositions; //The starting z positions for ships to be built in the lanes which exist.
+	private int numLanes;
+	
 	public bool playerVictory = false; //Has the player won?
 	private ShipHandler mothership; //Need access to the player's and enemy's mothership so that we can tell if we've won.
 	private ShipHandler enemyMothership;
@@ -36,8 +47,18 @@ public class LevelController : MonoBehaviour
 		GameControllerScript.Instance.setCurrentLevel (Application.loadedLevel);
 		//Be careful here if we change the scene order!!!!!
 
+		//STEVENLOOKHERE
+		//Make sure to redefine numLanes appropriately so several for loops can run!
+
 		//We will need as many placingBoxes as there are lanes, and also the neutral drag ship.
-		placingShipObjects = new GameObject[laneRotations.Length + 1];
+		if(newLaneSystem){
+
+		}else{
+		numLanes = laneRotations.Length;
+		}
+		placingShipObjects = new GameObject[numLanes + 1];
+
+
 		button = testObject.GetComponent<ButtonHandler> ();
 		//We will check during a build if the click missed the boxes and set it to false if it did.
 		clickWasAtBoxes = true;
@@ -50,6 +71,7 @@ public class LevelController : MonoBehaviour
 
 		mothership = GameObject.Find ("Mothership").GetComponent<ShipHandler> ();
 		enemyMothership = GameObject.Find("EnemyMothership").GetComponent<ShipHandler>();
+
 	}
 	
 	IEnumerator FixBuggyInput ()
@@ -278,7 +300,7 @@ public class LevelController : MonoBehaviour
 				if (button.pressed3) {
 					button.pressed3 = false;
 					button.paused = false;
-					for (int i = 0; i <= laneRotations.Length; i++) {
+					for (int i = 0; i <= numLanes; i++) {
 						Destroy (placingShipObjects [i]);
 					}
 					currentShip = GameControllerScript.Instance.getPlacingBox ();
@@ -309,14 +331,23 @@ public class LevelController : MonoBehaviour
 
 			if (isPlacingShip) {
 				
+
+				//STEVENLOOKHERE
+				//This is the first place that startPositions/laneRotations are used - placingBoxes that you drag to in order
+				//to build a ship. Depending on how you've edited things, you may add your replacement code in the if statement.
+		
+				if(newLaneSystem){
+
+				} else{
 				if (mustAddBoxes) {
 					//We place and orient the boxes according to the future orientation of the built ship. 
-					for (int j = 1; j <= laneRotations.Length; j++) {
+						for (int j = 1; j <= numLanes; j++) {
 						float rotation = laneRotations [j - 1];
 						float zpos = startPositions [j - 1];
 						placingShipObjects [j] = (GameObject)Instantiate (GameControllerScript.Instance.getPlacingBox (), new Vector3 (9, -10, zpos), Quaternion.Euler (rotation * Vector3.up));
 					}
 					mustAddBoxes = false;
+				}
 				}
 				//If we dragged the ship, move it accordingly.
 				if(input.Moved()){
@@ -343,21 +374,37 @@ public class LevelController : MonoBehaviour
 					}
 					
 					
+					//STEVENLOOKHERE
+					//This code is to figure out which box the player released on. Depending on how you built the boxes, you'll
+					//need to track their z positions right now. The for loop iterates over all possible z positions of the 
+					//various boxes and finds which one the release was closest to.
+		
+					if(newLaneSystem){
+
+					}else{
 					//Now we have to figure out which box you actually released on.
 					int closestIndex = 0;
 					float currentDiff = Mathf.Abs (pos.z - startPositions [0]);
-					for (int j = 1; j < laneRotations.Length; j++) {
+						for (int j = 1; j < numLanes; j++) {
 						if (Mathf.Abs (pos.z - startPositions [j]) < currentDiff) {
 							closestIndex = j;
 							currentDiff = Mathf.Abs (pos.z - startPositions [j]);
 						}
 					}
-					
+					}
+
+
 					//If we released the neutralShip on a box, try to build it.
 					if (clickWasAtBoxes) {
+
+						//STEVENLOOKHERE
+						//Last one, instantiating the ships with a particular height and rotation. If you need to do that, change these values.
+						if(newLaneSystem){
+					
+						}else{
 						pos.z = startPositions [closestIndex];
 						float rot = laneRotations [closestIndex];
-						
+						}
 						
 						
 						//Check the score. Note that we are only checking it now so that we only decrease it if the player actually builds the ship.
@@ -373,14 +420,14 @@ public class LevelController : MonoBehaviour
 							currentShip = GameControllerScript.Instance.getNotEnoughMoneyObject ();
 						}
 						//Destroy the placingBoxes and the neutralShip.
-						for (int i = 0; i <= laneRotations.Length; i++) {
+						for (int i = 0; i <= numLanes; i++) {
 							Destroy (placingShipObjects [i]);
 						}
 						//We are no longer trying to place a ship.
 						isPlacingShip = false;
 					} else { //If we released the ship not at the boxes, cancel the build.
 						currentShip = GameControllerScript.Instance.getPlacingBox();
-						for (int i = 0; i <= laneRotations.Length; i++) {
+						for (int i = 0; i <= numLanes; i++) {
 							Destroy (placingShipObjects [i]);
 						}
 						//We are no longer trying to place a ship.
