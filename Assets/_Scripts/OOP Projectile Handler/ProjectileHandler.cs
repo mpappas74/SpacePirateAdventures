@@ -35,6 +35,9 @@ public class ProjectileHandler : MonoBehaviour
 	private float maxLength; //Maximum length of the ship's healthbar.
 	private Transform healthbar;
 
+	//************** FadeAway Logic ********************//
+	public bool fadesAway = false;
+	public float minAlpha = 0.25f;
 
 	//***************************************** Virtual Methods ******************************************************//
 	
@@ -61,6 +64,9 @@ public class ProjectileHandler : MonoBehaviour
 			} else {
 				maxLength = -1;
 			}
+		}
+		if(fadesAway){
+			StartCoroutine("FadeAway");
 		}
 	}
 
@@ -146,6 +152,22 @@ public class ProjectileHandler : MonoBehaviour
 		yield return new WaitForSeconds (survivalTime);
 		Destroy (gameObject);
 		
+	}
+	public IEnumerator FadeAway ()
+	{
+		GameObject go = null;
+		foreach(Transform child in transform){
+			if(child.name == "VFX"){
+				go = child.gameObject;
+			}
+		}
+		int count = 0;
+		while(true){
+			count++;
+			yield return new WaitForSeconds (0.2f);
+			Color t = go.renderer.material.GetColor("_TintColor");
+			go.renderer.material.SetColor ("_TintColor", new Color(t.r, t.b, t.g, Mathf.Max(1-count*(0.2f/survivalTime), minAlpha)));
+		}
 	}
 	
 }

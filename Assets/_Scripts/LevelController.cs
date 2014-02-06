@@ -24,7 +24,9 @@ public class LevelController : MonoBehaviour
 	public bool gameOver; //Whether the game has ended for any reason. Currently the game only ends if you run out of points to build ships with.
 	private InputHandler input;	//The input handler.
 	public float levelScore;	//The score we have in the current level. Modify in inspector to allow levels where you start with many points.
-	
+	public float scoreRegenTime = 1; //How long to wait before increasing score.
+	public float scoreRegenMag = 1; //How much score to increase each time.	
+
 	//STEVENLOOKHERE
 	//These two vectors (editable from the inspector) are all the game actually knows about the lanes.
 	//Right now, the options for building a ship are set so that the ship will be built at the heights 
@@ -68,12 +70,24 @@ public class LevelController : MonoBehaviour
 
 		//...yeah...the coroutine name speaks for itself. 
 		StartCoroutine (FixBuggyInput ());
+		
+		//Slowly heal level score.
+		StartCoroutine (GrowLevelScore());
+
 
 		mothership = GameObject.Find ("Mothership").GetComponent<ShipHandler> ();
 		enemyMothership = GameObject.Find("EnemyMothership").GetComponent<ShipHandler>();
 
 	}
 	
+	IEnumerator GrowLevelScore()
+	{
+		while(!button.gameOver){
+			levelScore += scoreRegenMag;
+			yield return new WaitForSeconds(scoreRegenTime);
+		}
+	}
+
 	IEnumerator FixBuggyInput ()
 	{
 		//OK, basic summary of the below coroutine. We basically check every shield and bomb ship, since
