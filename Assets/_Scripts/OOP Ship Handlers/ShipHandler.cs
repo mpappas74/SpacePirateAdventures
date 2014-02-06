@@ -92,13 +92,18 @@ public class ShipHandler : MonoBehaviour
 		//DO NOT simply replace shouldMoveInLane with false below, as that would miss another call
 		//in update. It's easier to just set it to be false directly.
 		shouldMoveInLane = false;
+		//MIKELOOKHERE
+		//These are the lane movers 
+		//http://www.youtube.com/watch?v=qRafXt26a_E brief tutorial
+
+
 		if (laneID == 0) {
 
 				iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("path1"),"time", 5));
 				}
 		if (laneID == 1) {
 			
-			iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("path2")));
+			iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("path2"), "time", 5));
 		}
 
 		//If we are moving in a lane, we've got to find the one we are in.

@@ -1,10 +1,10 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\_Scripts\OOP Ship Handlers\ShipHandler.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\_Scripts\LevelController.cs">
     <Files>
       <File FileName="Assets\_Scripts\Level#Controllers\Level_Controller.cs" Line="1" Column="1" />
       <File FileName="Assets\iTween\Plugins\iTween.cs" Line="1" Column="1" />
-      <File FileName="Assets\_Scripts\LevelController.cs" Line="150" Column="32" />
+      <File FileName="Assets\_Scripts\LevelController.cs" Line="181" Column="2" />
       <File FileName="Assets\_Scripts\MainMenuScript.cs" Line="1" Column="1" />
       <File FileName="Assets\_Scripts\OrientationAdjustment.cs" Line="1" Column="1" />
       <File FileName="Assets\iTween\ReadMe!\ReadMe!.txt" Line="1" Column="1" />
@@ -12,7 +12,7 @@
       <File FileName="Assets\_Scripts\Level#Controllers\Level_Controller.cs" Line="26" Column="3" />
       <File FileName="Assets\_Scripts\Level#Controllers\Level2Controller.cs" Line="1" Column="1" />
       <File FileName="Assets\_Scripts\OOP Ship Handlers\ShieldShipHandler.cs" Line="1" Column="1" />
-      <File FileName="Assets\_Scripts\OOP Ship Handlers\ShipHandler.cs" Line="163" Column="4" />
+      <File FileName="Assets\_Scripts\OOP Ship Handlers\ShipHandler.cs" Line="155" Column="1" />
       <File FileName="Assets\_Scripts\OOP Ship Handlers\BombShipHandler.cs" Line="1" Column="1" />
       <File FileName="Assets\_Scripts\Level#Controllers\Level3Controller.cs" Line="1" Column="1" />
       <File FileName="Assets\_Scripts\OOP Ship Handlers\MothershipScript.cs" Line="1" Column="1" />
