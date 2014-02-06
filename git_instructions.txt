@@ -1,9 +1,20 @@
+**First download git for your OS, as well as setting up a github account.
+**Then, once you have emailed me your account name and gotten confirmation that I have added you to the project, do the following::
+
+Open terminal, or some similar client.
+
+Type command <mkdir ~/SpacePirateAdventures> to make a SpacePirateAdventures empty directory.
+Type command <git init>. If this command fails, you have not properly set up your git account.
+Type command <git remote add origin https://github.com/mpappas74/SpacePirateAdventures.git>
+
+You should now be able to do the below operations to add your assets to the project. I HIGHLY recommend running git pull and trying to work from that project if possible, but if you've made major changes already you can try uploading the project and resolving conflicts. The locations of conflicts should pop up in your terminal, you'll have to settle each of them individually, which can be annoying.
+
 Order of operations:
 *Make changes
 *Add new files / delete old files <git add -A>
 *Commit changes <git commit -am "Message">
-*Pull current version <git pull>
+*Pull current version <git pull origin master>
 *Resolve conflicts (Resolve and remove all <<<<, =====, and >>>> symbols.  Use <git status> to check which files need to be merged, and use <git add filename> to mark a file as resolved)
-*Push resolved version <git push>
 
-cheese
+*Push resolved version <git push origin master>
+

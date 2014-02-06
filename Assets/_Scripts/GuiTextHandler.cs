@@ -14,14 +14,17 @@ public class GuiTextHandler : MonoBehaviour
 	private GameObject currentBuildingShip; //Whether or not we are currently building a ship, warranting an explanation.
 	private bool bonusText;	//Whether or not we are paused and therefore need additional text.
 	private GUIStyle labelStyle;	//A style variable to track whether we are using ExplanationStyle or extraExplanationStyle.
-	private string gameOverText = "You no longer have enough points to buy a ship. Game Over.";
+	private string gameOverText = "Game Over. Do better next time.";
 	public GUIStyle gameOverStyle;
+
+	private ButtonHandler button;
 
 	// Use this for initialization
 	void Start ()
 	{
 		levelController = GameObject.Find("LevelController");
 		levelCont = levelController.GetComponent<LevelController>();
+		button = GameObject.Find("EmptyButtonObject").GetComponent<ButtonHandler>();
 	}
 	
 	// Update is called once per frame
@@ -29,8 +32,11 @@ public class GuiTextHandler : MonoBehaviour
 	{
 		//Figure out which ship we are currently building. (If we are building no ship, right now it will return a placement box.)
 		currentBuildingShip = levelCont.currentShip;
+	
 		//Figure out if we need any extraText, aka if the game has been paused warranting extra text.
-		bonusText = levelCont.extraText;
+		//Currently, due to the click and drag functionality, this is no longer possible physically.
+		//However, I expect the explanation text to be replaced eventually by a ship overview menu on the pause screen, so I think it's fine.
+		bonusText = (levelCont.isPlacingShip && button.paused);
 		
 		if (!bonusText) {
 			//If no need for extra text, give the explanation according to the ship currently being built.
@@ -68,7 +74,7 @@ public class GuiTextHandler : MonoBehaviour
 			labelStyle = explanationStyle;
 		}
 		//Post the texts for explanation and style.
-		GUI.Label (new Rect (.25f * Screen.height, .12f * Screen.height, Screen.width - .26f * Screen.height, .2f * Screen.height), explanationText, labelStyle);
+		GUI.Label (new Rect (.25f * Screen.height, .10f * Screen.height, Screen.width - .26f * Screen.height, .2f * Screen.height), explanationText, labelStyle);
 		GUI.Label (new Rect (.25f * Screen.height, .02f * Screen.height, .27f * Screen.height, .1f * Screen.height), "Score = " + score.ToString (), scoreStyle);
 		
 		//If the game is over, post the gameOver text.

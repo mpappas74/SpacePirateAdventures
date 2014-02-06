@@ -26,8 +26,9 @@ public class InputHandler : MonoBehaviour
 		clickStarted = false;	//No touch/click has started.
 		clickEnded = false;		//No touch/click has ended.
 		clickMoved = false;		//No touch/click has moved.
+		trigger = false;			//Assume no trigger has been pressed.
 		onTouchScreen = false;	//Assume we are not on a touchscreen.
-		trigger = false;
+
 		//If we are, modify that assumption.
 		if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer) {
 			onTouchScreen = true;
@@ -106,29 +107,17 @@ public class InputHandler : MonoBehaviour
 
 	public bool Began ()
 	{
-		if (clickStarted) {
-			clickStarted = false;
-			return true;
-		}
-		return false;
+		return clickStarted;
 	}
 
 	public bool Moved ()
 	{
-		if (clickMoved) {
-			clickMoved = false;
-			return true;
-		}
-		return false;
+		return clickMoved;
 	}
 	
 	public bool Ended ()
 	{
-		if (clickEnded) {
-			clickEnded = false;
-			return true;
-		}
-		return false;
+		return clickEnded;
 	}
 
 	public Vector2 startPos ()
@@ -162,6 +151,22 @@ public class InputHandler : MonoBehaviour
 			return true;
 		}
 		return false;
+	}
+
+	//The set functions are hackish solutions to occasional double or zero counting of the input handler.
+	//I'm working on it.
+	public void setTrigger(bool b){
+		trigger = b;
+	}
+
+	public void setEnded(bool b){
+		clickEnded = b;
+	}
+	public void setBegan(bool b){
+		clickStarted = b;
+	}
+	public void setMoved(bool b){
+		clickMoved = b;
 	}
 
 	
