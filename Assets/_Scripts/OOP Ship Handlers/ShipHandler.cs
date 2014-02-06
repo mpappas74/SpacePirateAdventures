@@ -94,11 +94,11 @@ public class ShipHandler : MonoBehaviour
 		shouldMoveInLane = false;
 		if (laneID == 0) {
 
-				iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("path1"),"time", 5));
+				iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane 1"),"time", 5));
 				}
 		if (laneID == 1) {
 			
-			iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("path2")));
+			iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane 2")));
 		}
 
 		//If we are moving in a lane, we've got to find the one we are in.
