@@ -38,6 +38,9 @@ public class ButtonHandler : MonoBehaviour
 
 	private float theTimeScale;
 
+	private Vector2 pos;
+	private Vector2 delta;
+
 	void Start(){
 		input = GameObject.Find("LevelController").GetComponent<InputHandler>();	
 		
@@ -47,6 +50,33 @@ public class ButtonHandler : MonoBehaviour
 		Time.timeScale = 0.75f;
 		Time.fixedDeltaTime *= 0.75f;
 		theTimeScale = Time.timeScale;
+	}
+
+	void Update(){
+		if (input.Moved()) {
+			//If we moved, figure out if we did so along the part of the screen where the buttons are, and if the swipe was vertical.
+			//If the swipe was vertical and near the buttons, adjust the scrollPosition.
+			pos = input.currentDragPos();
+			delta = input.deltaPos();
+			if (pos.x < 0.2f*Screen.height && Mathf.Abs(delta.y) > Mathf.Abs(2*delta.x)) {
+				//Scroll an x distance proportional to the length of the moving touch, capped on either side.
+				scrollPosition.y += input.deltaPos().y;
+			}
+		}
+	}
+
+	private void SwapSpeed(){
+		if(speedString == "Speed Up Game"){
+			speedString = "Slow Down Game";
+			Time.timeScale *= 2f; 
+			Time.fixedDeltaTime *= 2f;
+			theTimeScale *= 2f;
+		} else {
+			speedString = "Speed Up Game";
+			Time.timeScale *= 0.5f;
+			Time.fixedDeltaTime *= 0.5f;
+			theTimeScale *= 0.5f;
+		}
 	}
 
 	void OnGUI ()
@@ -73,17 +103,7 @@ public class ButtonHandler : MonoBehaviour
 				//is the size of the view on screen, while the second is the size of the interior of the view.
 				//The two empty GUIStyle()'s are there to remove the scroll bar.
 				//The scrollview is where the build ship buttons go.
-				scrollPosition = GUI.BeginScrollView(new Rect(0.03f*Screen.height, 0.19f*Screen.height, 0.2f*Screen.height, 0.64f*Screen.height), scrollPosition, new Rect(0.0f, 0.0f, 0.13f*Screen.height, 0.8f*Screen.height), new GUIStyle(), new GUIStyle());
-				if (input.Moved()) {
-					//If we moved, figure out if we did so along the part of the screen where the buttons are, and if the swipe was vertical.
-					//If the swipe was vertical and near the buttons, adjust the scrollPosition.
-					Vector2 pos = input.currentDragPos();
-					Vector2 delta = input.deltaPos();
-					if (pos.x < 0.2f*Screen.height && Mathf.Abs(delta.y) > Mathf.Abs(2*delta.x)) {
-						//Scroll an x distance proportional to the length of the moving touch, capped on either side.
-						scrollPosition.y += input.deltaPos().y;
-					}
-				}
+				scrollPosition = GUI.BeginScrollView(new Rect(0.03f*Screen.height, 0.19f*Screen.height, 0.2f*Screen.height, 0.64f*Screen.height), scrollPosition, new Rect(0.0f, 0.0f, 0.13f*Screen.height, 0.96f*Screen.height), new GUIStyle(), new GUIStyle());
 				
 				//All of these buttons are now RepeatButtons, which return true at all times that they are pressed down, rather than 
 				//just when they are pressed down and fully released. This is useful to allow the click and drag feature, since we
@@ -103,6 +123,9 @@ public class ButtonHandler : MonoBehaviour
 				if (GUI.RepeatButton (new Rect  (0f, 0.64f * Screen.height, .2f * Screen.height, .13f * Screen.height), "Thief")) {
 					pressed6 = true;
 				} 
+				if (GUI.Button (new Rect  (0f, 0.80f * Screen.height, .2f * Screen.height, .13f * Screen.height), "Hell")) {
+					pressed1 = true;
+				} 
 				GUI.EndScrollView();
 
 			} else {
@@ -110,17 +133,7 @@ public class ButtonHandler : MonoBehaviour
 				//Time.timeScale changes how the game processes time in terms of coroutines and the like, while
 				//Time.fixedDeltaTime changes how the game processes physics.
 				if (GUI.Button (new Rect (.5f * Screen.width - 100f, .35f * Screen.height, 200f, .08f * Screen.height), speedString)) {
-					if(speedString == "Speed Up Game"){
-						speedString = "Slow Down Game";
-						Time.timeScale *= 2f; 
-						Time.fixedDeltaTime *= 2f;
-						theTimeScale *= 2f;
-					} else {
-						speedString = "Speed Up Game";
-						Time.timeScale *= 0.5f;
-						Time.fixedDeltaTime *= 0.5f;
-						theTimeScale *= 0.5f;
-					}
+					SwapSpeed();
 				} 
 				if (GUI.Button (new Rect (.5f * Screen.width - 100f, .45f * Screen.height, 200f, .08f * Screen.height), shipRepeatString)) {
 					if(shipRepeatString == "Set Ship Repeater On?"){

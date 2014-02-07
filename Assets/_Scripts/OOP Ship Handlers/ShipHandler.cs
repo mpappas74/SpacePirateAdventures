@@ -100,6 +100,7 @@ public class ShipHandler : MonoBehaviour
 		//it can't collide with the player layer, so this script will only truly react to colliding with an enemy ship, which is what we want.
 		if (turnsAroundOnCollision) {
 			if (other.gameObject.layer == LayerMask.NameToLayer ("EnemyShips") || other.gameObject.layer == LayerMask.NameToLayer ("PlayerShips")) {
+				
 				transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
 				collectedResources += 5;
 				if (other.tag == "Enemy" || other.tag == "Player") {
@@ -135,6 +136,7 @@ public class ShipHandler : MonoBehaviour
 			ShieldDeploy ();
 		}
 		if (turnsAroundOnCollision && transform.position.x < 0) {
+			
 			GameObject.Find ("LevelController").GetComponent<LevelController> ().levelScore += collectedResources;
 			collectedResources = 0;
 			transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
@@ -158,6 +160,7 @@ public class ShipHandler : MonoBehaviour
 		//Flip the ship and healthbar around if the ship is turning backwards.
 		if (turnsAroundOnCollision) {
 			if (transform.position.x >= 80) {
+				
 				transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
 				foreach (Transform child in transform) {
 					if (child.name == "HealthBar") {

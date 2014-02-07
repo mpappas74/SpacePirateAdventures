@@ -62,10 +62,7 @@ public class MainMenuScript : MonoBehaviour
 	//should optimally be executed here as much as possible.
 	void Update ()
 	{
-		if (pressed2) {
-			text = "There are no high scores yet. We need a game first.";
-			pressed2 = false;
-		}
+		
 	}
 	
 	void OnGUI ()

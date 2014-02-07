@@ -18,6 +18,8 @@ public class GuiTextHandler : MonoBehaviour
 	public GUIStyle gameOverStyle;
 
 	private ButtonHandler button;
+	private string score;
+	private bool gameOver;
 
 	// Use this for initialization
 	void Start ()
@@ -32,7 +34,9 @@ public class GuiTextHandler : MonoBehaviour
 	{
 		//Figure out which ship we are currently building. (If we are building no ship, right now it will return a placement box.)
 		currentBuildingShip = levelCont.currentShip;
-	
+		//Get the current score.
+		score = levelCont.levelScore.ToString();
+
 		//Figure out if we need any extraText, aka if the game has been paused warranting extra text.
 		//Currently, due to the click and drag functionality, this is no longer possible physically.
 		//However, I expect the explanation text to be replaced eventually by a ship overview menu on the pause screen, so I think it's fine.
@@ -40,6 +44,7 @@ public class GuiTextHandler : MonoBehaviour
 		
 		if (!bonusText) {
 			//If no need for extra text, give the explanation according to the ship currently being built.
+			labelStyle = explanationStyle;
 			if (currentBuildingShip.tag == "TinyShip") {
 				explanationText = "This is the basic ship. Cost = 5";
 			} else if (currentBuildingShip.tag == "CrazyShip") {
@@ -51,6 +56,7 @@ public class GuiTextHandler : MonoBehaviour
 			}
 		} else{
 			//If there is a need for extra text, give the complete explanation.
+			labelStyle = extraExplanationStyle;
 			if (currentBuildingShip.tag == "TinyShip") {
 				explanationText = "This is the basic ship. It has 5 health and fires bullets that do 1 damage. Cost = 5";
 			} else if (currentBuildingShip.tag == "CrazyShip") {
@@ -61,24 +67,20 @@ public class GuiTextHandler : MonoBehaviour
 				explanationText = "";
 			}
 		}
+
+		if(levelCont.gameOver){
+			gameOver = true;
+		}
 	}
 
 	void OnGUI ()
 	{
-		//Get the current score.
-		float score = levelCont.levelScore;
-		//Depending on what the text is, choose the current style for it.
-		if(bonusText){
-			labelStyle = extraExplanationStyle;
-		} else{
-			labelStyle = explanationStyle;
-		}
 		//Post the texts for explanation and style.
 		GUI.Label (new Rect (.25f * Screen.height, .10f * Screen.height, Screen.width - .26f * Screen.height, .2f * Screen.height), explanationText, labelStyle);
-		GUI.Label (new Rect (.25f * Screen.height, .02f * Screen.height, .27f * Screen.height, .1f * Screen.height), "Score = " + score.ToString (), scoreStyle);
+		GUI.Label (new Rect (.25f * Screen.height, .02f * Screen.height, .27f * Screen.height, .1f * Screen.height), "Score = " + score, scoreStyle);
 		
 		//If the game is over, post the gameOver text.
-		if(levelCont.gameOver){
+		if(gameOver){
 			GUI.Label (new Rect (.5f * Screen.width - 100, .4f * Screen.height, 200, .2f * Screen.height), gameOverText, gameOverStyle);
 		}
 		

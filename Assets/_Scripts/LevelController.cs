@@ -33,6 +33,7 @@ public class LevelController : MonoBehaviour
 	public bool playerVictory = false; //Has the player won?
 	private ShipHandler mothership; //Need access to the player's and enemy's mothership so that we can tell if we've won.
 	private ShipHandler enemyMothership;
+	public GameObject specialBolt;
 	
 	void Start ()
 	{
@@ -144,6 +145,24 @@ public class LevelController : MonoBehaviour
 		
 	}
 
+	IEnumerator SpecialAttack ()
+	{
+		yield return new WaitForSeconds (0.5f);
+		float time = Time.time;
+		while (Time.time < time + 8) {
+			for (int i = 0; i < 4; i++) {
+				int zWay = 2 * Random.Range (0, 2);
+				GameObject go = (GameObject)Instantiate (specialBolt, new Vector3 (1f * Random.Range (10, 80), 0.0f, (1 - zWay) * 10f), specialBolt.transform.rotation);
+				go.transform.Rotate (Vector3.up * 180 * ((2-zWay)/2f));
+				go.layer = LayerMask.NameToLayer ("PlayerAttacks");
+				go.GetComponent<ProjectileHandler> ().damageDone = 1f;
+				go.GetComponent<ProjectileHandler> ().doesSingleShotDamage = true;
+				go.GetComponent<ProjectileHandler> ().speed = 10;
+			}
+			yield return new WaitForSeconds (0.3f);
+		}
+	}
+
 	void Update ()
 	{
 		//If the game is over, tell the rest of the game to stop. This is true if we are out of points and have no ships left to earn us more.
@@ -166,6 +185,13 @@ public class LevelController : MonoBehaviour
 			if (!button.paused) {
 				//If we are not placing a ship and one of the other buttons has been pressed, do as the button commands.
 				if (!isPlacingShip) {
+					if (button.pressed1) {
+						button.pressed1 = false;
+						if(levelScore >= 20){
+							StartCoroutine ("SpecialAttack");
+							levelScore -= 20;
+						}
+					}
 					//Buttons 2 and 3 build tinyShips and crazyShips, respectively. 
 					if (button.pressed2) {
 						button.pressed2 = false;
@@ -306,7 +332,7 @@ public class LevelController : MonoBehaviour
 				if (input.Ended () || input.Clicked ()) {
 					input.setClicked (false);
 					Vector3 pos = input.Ended () ? input.endPos () : input.getClickLoc ();
-					input.setEnded(false);
+					input.setEnded (false);
 					pos.z = 10.0f;
 					pos = Camera.main.ScreenToWorldPoint (pos);
 					
