@@ -82,9 +82,9 @@ public class ShipHandler : MonoBehaviour
 
 
 		if (laneID == 0) {
-			iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane 1"), "speed", speed));
+			iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane 1"), "speed", speed, "movetopath", false));
 		} else if (laneID == 1) {
-			iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane 2"), "speed", speed));
+			iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane 2"), "speed", speed, "movetopath", false));
 		}
 
 		//Set up the miniMap. First calculate the scaling factor for the miniMap : world ratio.
@@ -100,6 +100,7 @@ public class ShipHandler : MonoBehaviour
 		myDot.transform.localPosition = Vector3.Scale (transform.position, worldScale) - mapShift;
 
 	}
+
 
 	public virtual void OnTriggerEnter (Collider other)
 	{

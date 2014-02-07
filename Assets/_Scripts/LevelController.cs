@@ -159,6 +159,7 @@ public class LevelController : MonoBehaviour
 		
 	}
 
+
 	void Update ()
 	{
 		//If the game is over, tell the rest of the game to stop. This is true if we are out of points and have no ships left to earn us more.
