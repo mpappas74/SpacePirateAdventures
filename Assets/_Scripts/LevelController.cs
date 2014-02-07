@@ -38,11 +38,9 @@ public class LevelController : MonoBehaviour
 	public float[] laneRotations; //How much ship placed into each lane should be rotated. (Note that, if the ship has MoveInLane, it should follow the lane regardless of orientation.)
 	public float[] startPositions; //The starting z positions for ships to be built in the lanes which exist.
 	private int numLanes;
-	
 	public bool playerVictory = false; //Has the player won?
 	private ShipHandler mothership; //Need access to the player's and enemy's mothership so that we can tell if we've won.
 	private ShipHandler enemyMothership;
-	
 	
 	void Start ()
 	{
@@ -53,10 +51,10 @@ public class LevelController : MonoBehaviour
 		//Make sure to redefine numLanes appropriately so several for loops can run!
 
 		//We will need as many placingBoxes as there are lanes, and also the neutral drag ship.
-		if(newLaneSystem){
+		if (newLaneSystem) {
 
-		}else{
-		numLanes = laneRotations.Length;
+		} else {
+			numLanes = laneRotations.Length;
 		}
 		placingShipObjects = new GameObject[numLanes + 1];
 
@@ -72,18 +70,18 @@ public class LevelController : MonoBehaviour
 		StartCoroutine (FixBuggyInput ());
 		
 		//Slowly heal level score.
-		StartCoroutine (GrowLevelScore());
+		StartCoroutine (GrowLevelScore ());
 
 		mothership = GameObject.Find ("Mothership").GetComponent<ShipHandler> ();
-		enemyMothership = GameObject.Find("EnemyMothership").GetComponent<ShipHandler>();
+		enemyMothership = GameObject.Find ("EnemyMothership").GetComponent<ShipHandler> ();
 
 	}
 	
-	IEnumerator GrowLevelScore()
+	IEnumerator GrowLevelScore ()
 	{
-		while(!button.gameOver){
+		while (!button.gameOver) {
 			levelScore += scoreRegenMag;
-			yield return new WaitForSeconds(scoreRegenTime);
+			yield return new WaitForSeconds (scoreRegenTime);
 		}
 	}
 
@@ -100,10 +98,10 @@ public class LevelController : MonoBehaviour
 		bool foundClickedShip = false;
 		while (!gameOver) {
 			GameObject[] ShieldShips = GameObject.FindGameObjectsWithTag ("ShieldShip");
-			GameObject[] BombShips = GameObject.FindGameObjectsWithTag("BombShip");
+			GameObject[] BombShips = GameObject.FindGameObjectsWithTag ("BombShip");
 			GameObject[] clickableShips = new GameObject[ShieldShips.Length + BombShips.Length];
-			ShieldShips.CopyTo(clickableShips, 0);
-			BombShips.CopyTo(clickableShips, ShieldShips.Length);
+			ShieldShips.CopyTo (clickableShips, 0);
+			BombShips.CopyTo (clickableShips, ShieldShips.Length);
 			
 
 			//if (GameObject.FindWithTag ("BombShip") == null) {
@@ -115,7 +113,7 @@ public class LevelController : MonoBehaviour
 				pos = Camera.main.ScreenToWorldPoint (pos);	
 				foundClickedShip = false;
 				foreach (GameObject ss in clickableShips) {
-					if ((pos - ss.transform.position).sqrMagnitude < 9 && ss.layer == LayerMask.NameToLayer("PlayerShips")) {
+					if ((pos - ss.transform.position).sqrMagnitude < 9 && ss.layer == LayerMask.NameToLayer ("PlayerShips")) {
 						ss.GetComponent<ShipHandler> ().wasClickedOn = true;
 						foundClickedShip = true;
 						break;
@@ -158,9 +156,9 @@ public class LevelController : MonoBehaviour
 
 		GameObject theShip = (GameObject)Instantiate (curShip, position, curShip.transform.rotation);
 		//Mike added this line
-		theShip.GetComponent<ShipHandler>().laneID = laneID;
+		theShip.GetComponent<ShipHandler> ().laneID = laneID;
 
-		theShip.transform.Rotate(Vector3.up * rotation);
+		theShip.transform.Rotate (Vector3.up * rotation);
 		
 		
 		
@@ -184,8 +182,8 @@ public class LevelController : MonoBehaviour
 			gameOver = true;
 			button.gameOver = true;
 		} else if (!button.gameOver && (playerVictory || enemyMothership.isDead)) { //Similarly, if playerVictory is true (set by Level_Controller when the waves end
-																																							//or the enemy's mothership is dead, you win!
-			GameObject.Find("GuiTextObjects").transform.Find("WinText").gameObject.SetActive(true);
+			//or the enemy's mothership is dead, you win!
+			GameObject.Find ("GuiTextObjects").transform.Find ("WinText").gameObject.SetActive (true);
 			playerVictory = true;
 			button.gameOver = true;
 		} else {
@@ -213,7 +211,7 @@ public class LevelController : MonoBehaviour
 						//OK, so first, we need the position of the click so we can start dragging.
 						//We also need to disable various elements of the neutralShip to keep it from firing or exploding.
 						//These buttons are all pretty damn copy-paste: at some point I'll try to make a nicer switch-case out of them.
-						Vector3 pos = new Vector3 (input.startPos().x, input.startPos().y, 10.0f);
+						Vector3 pos = new Vector3 (input.startPos ().x, input.startPos ().y, 10.0f);
 						pos = Camera.main.ScreenToWorldPoint (pos);
 						
 						placingShipObjects [0] = (GameObject)Instantiate (currentNeutralShip, pos, currentNeutralShip.transform.rotation);
@@ -233,7 +231,7 @@ public class LevelController : MonoBehaviour
 						currentShip = GameControllerScript.Instance.getCrazyShip ();
 						currentNeutralShip = GameControllerScript.Instance.getCrazyShip ();
 
-						Vector3 pos = new Vector3 (input.startPos().x, input.startPos().y, 10.0f);
+						Vector3 pos = new Vector3 (input.startPos ().x, input.startPos ().y, 10.0f);
 						pos = Camera.main.ScreenToWorldPoint (pos);
 						
 						placingShipObjects [0] = (GameObject)Instantiate (currentNeutralShip, pos, currentNeutralShip.transform.rotation);
@@ -253,11 +251,11 @@ public class LevelController : MonoBehaviour
 						currentShip = GameControllerScript.Instance.getBombShip ();
 						currentNeutralShip = GameControllerScript.Instance.getBombShip ();
 
-						Vector3 pos = new Vector3 (input.startPos().x, input.startPos().y, 10.0f);
+						Vector3 pos = new Vector3 (input.startPos ().x, input.startPos ().y, 10.0f);
 						pos = Camera.main.ScreenToWorldPoint (pos);
 						
 						placingShipObjects [0] = (GameObject)Instantiate (currentNeutralShip, pos, currentNeutralShip.transform.rotation);
-						placingShipObjects [0].SetActive(true);
+						placingShipObjects [0].SetActive (true);
 						placingShipObjects [0].GetComponent<ShipHandler> ().enabled = false;
 						placingShipObjects [0].GetComponent<SphereCollider> ().enabled = false;
 						placingShipObjects [0].transform.Find ("HealthBar").gameObject.GetComponent<MeshRenderer> ().enabled = false;
@@ -272,7 +270,7 @@ public class LevelController : MonoBehaviour
 						currentShip = GameControllerScript.Instance.getShieldShip ();
 						currentNeutralShip = GameControllerScript.Instance.getShieldShip ();
 
-						Vector3 pos = new Vector3 (input.startPos().x, input.startPos().y, 10.0f);
+						Vector3 pos = new Vector3 (input.startPos ().x, input.startPos ().y, 10.0f);
 						pos = Camera.main.ScreenToWorldPoint (pos);
 						
 						placingShipObjects [0] = (GameObject)Instantiate (currentNeutralShip, pos, currentNeutralShip.transform.rotation);
@@ -293,7 +291,7 @@ public class LevelController : MonoBehaviour
 						currentShip = GameControllerScript.Instance.getStealthShip ();
 						currentNeutralShip = GameControllerScript.Instance.getStealthShip ();
 						
-						Vector3 pos = new Vector3 (input.startPos().x, input.startPos().y, 10.0f);
+						Vector3 pos = new Vector3 (input.startPos ().x, input.startPos ().y, 10.0f);
 						pos = Camera.main.ScreenToWorldPoint (pos);
 						
 						placingShipObjects [0] = (GameObject)Instantiate (currentNeutralShip, pos, currentNeutralShip.transform.rotation);
@@ -359,27 +357,27 @@ public class LevelController : MonoBehaviour
 				//This is the first place that startPositions/laneRotations are used - placingBoxes that you drag to in order
 				//to build a ship. Depending on how you've edited things, you may add your replacement code in the if statement.
 		
-				if(newLaneSystem){
+				if (newLaneSystem) {
 
-				} else{
-				if (mustAddBoxes) {
-					//We place and orient the boxes according to the future orientation of the built ship. 
+				} else {
+					if (mustAddBoxes) {
+						//We place and orient the boxes according to the future orientation of the built ship. 
 						for (int j = 1; j <= numLanes; j++) {
-						float rotation = laneRotations [j - 1];
-						float zpos = startPositions [j - 1];
-						placingShipObjects [j] = (GameObject)Instantiate (GameControllerScript.Instance.getPlacingBox (), new Vector3 (9, -10, zpos), Quaternion.Euler (rotation * Vector3.up));
+							float rotation = laneRotations [j - 1];
+							float zpos = startPositions [j - 1];
+							placingShipObjects [j] = (GameObject)Instantiate (GameControllerScript.Instance.getPlacingBox (), new Vector3 (9, -10, zpos), Quaternion.Euler (rotation * Vector3.up));
+						}
+						mustAddBoxes = false;
 					}
-					mustAddBoxes = false;
-				}
 				}
 				//If we dragged the ship, move it accordingly.
-				if(input.Moved()){
-					Vector2 movePos = input.currentDragPos();
-					placingShipObjects[0].transform.position = Camera.main.ScreenToWorldPoint(new Vector3(movePos.x, movePos.y, 10.0f));
+				if (input.Moved ()) {
+					Vector2 movePos = input.currentDragPos ();
+					placingShipObjects [0].transform.position = Camera.main.ScreenToWorldPoint (new Vector3 (movePos.x, movePos.y, 10.0f));
 				}
 				
 			
-				if(input.Ended()){
+				if (input.Ended ()) {
 					Vector3 pos = input.endPos ();
 					pos.z = 10.0f;
 					pos = Camera.main.ScreenToWorldPoint (pos);
@@ -406,7 +404,7 @@ public class LevelController : MonoBehaviour
 
 					//Now we have to figure out which box you actually released on.
 					float currentDiff = Mathf.Abs (pos.z - startPositions [0]);
-						for (int j = 1; j < numLanes; j++) {
+					for (int j = 1; j < numLanes; j++) {
 						if (Mathf.Abs (pos.z - startPositions [j]) < currentDiff) {
 							closestIndex = j;
 							currentDiff = Mathf.Abs (pos.z - startPositions [j]);
@@ -421,7 +419,7 @@ public class LevelController : MonoBehaviour
 						//STEVENLOOKHERE
 						//Last one, instantiating the ships with a particular height and rotation. If you need to do that, change these values.
 						float rot = 0;
-					/*
+						/*
 						if(newLaneSystem){
 					
 						}else{
@@ -434,8 +432,8 @@ public class LevelController : MonoBehaviour
 						//Check the score. Note that we are only checking it now so that we only decrease it if the player actually builds the ship.
 						//We also want the players able to look at ships they don't have the points to build yet.
 						button.canCancelShip = false;
-						if (levelScore >= currentShip.GetComponent<ShipHandler>().cost) {
-							levelScore -= currentShip.GetComponent<ShipHandler>().cost;
+						if (levelScore >= currentShip.GetComponent<ShipHandler> ().cost) {
+							levelScore -= currentShip.GetComponent<ShipHandler> ().cost;
 							StartCoroutine (BuildCurrentShip (currentShip, pos, rot, closestIndex));
 							//Remember, currentShip defaults to placingBox when we are no longer building a ship.
 							currentShip = GameControllerScript.Instance.getPlacingBox ();
@@ -450,15 +448,16 @@ public class LevelController : MonoBehaviour
 						//We are no longer trying to place a ship.
 						isPlacingShip = false;
 					} else { //If we released the ship not at the boxes, cancel the build.
-						currentShip = GameControllerScript.Instance.getPlacingBox();
+						currentShip = GameControllerScript.Instance.getPlacingBox ();
 						for (int i = 0; i <= numLanes; i++) {
 							Destroy (placingShipObjects [i]);
 						}
 						//We are no longer trying to place a ship.
 						isPlacingShip = false;
-					}}
+					}
+				}
 					
-				} 
+			} 
 		}
 	}
 	
@@ -483,12 +482,12 @@ public class LevelController : MonoBehaviour
 					Application.LoadLevel ("MainMenu");
 				}
 			} 
-		}else if (gameOver) {
+		} else if (gameOver) {
 			//if (GUI.Button (new Rect (.5f * Screen.width - 100, .7f * Screen.height, 200, .13f * Screen.height), "Return to Main Menu")) {
 			//	Application.LoadLevel ("MainMenu");
 			//} 
 			if (GUI.Button (new Rect (.5f * Screen.width - 100, .55f * Screen.height, 200, .13f * Screen.height), "Try Again?")) {
-					Application.LoadLevel (Application.loadedLevel);
+				Application.LoadLevel (Application.loadedLevel);
 			} 
 		}
 	}
