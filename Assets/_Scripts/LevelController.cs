@@ -92,8 +92,8 @@ public class LevelController : MonoBehaviour
 			//if (GameObject.FindWithTag ("BombShip") == null) {
 			//	input.setTrigger (false);
 			//}
-			if (input.Began ()) {
-				currentClickPos = input.startPos ();
+			if (input.Clicked ()) {
+				currentClickPos = input.getClickLoc ();
 				Vector3 pos = new Vector3 (currentClickPos.x, currentClickPos.y, 10.0f);
 				pos = Camera.main.ScreenToWorldPoint (pos);	
 				foundClickedShip = false;
@@ -105,22 +105,7 @@ public class LevelController : MonoBehaviour
 					}
 				}
 			}
-			if (foundClickedShip && input.Ended ()) {
-				foundClickedShip = false;
-				if ((input.endPos () - currentClickPos).sqrMagnitude < 9) {
-					Vector3 pos = new Vector3 (currentClickPos.x, currentClickPos.y, 10.0f);
-					pos = Camera.main.ScreenToWorldPoint (pos);
-					foreach (GameObject ss in clickableShips) {
-						if ((pos - ss.transform.position).sqrMagnitude < 9) {
-							ss.GetComponent<ShipHandler> ().wasReleasedOn = true;
-							foundClickedShip = true;
-							break;
-						}
-					}
-				}
-			}
-			
-
+			input.setClicked (false);
 			yield return new WaitForSeconds (0.2f);
 		}
 	}
@@ -159,7 +144,6 @@ public class LevelController : MonoBehaviour
 		
 	}
 
-
 	void Update ()
 	{
 		//If the game is over, tell the rest of the game to stop. This is true if we are out of points and have no ships left to earn us more.
@@ -180,13 +164,7 @@ public class LevelController : MonoBehaviour
 			
 			//If we are not currently paused...
 			if (!button.paused) {
-				//If we click the pause button, now we are paused.
-				if (button.pressed1) {
-					button.pressed1 = false;
-					button.paused = true;
-					input.setBegan (false);
-				}
-				//Otherwise, if we are not placing a ship and one of the other buttons has been pressed, do as the button commands.
+				//If we are not placing a ship and one of the other buttons has been pressed, do as the button commands.
 				if (!isPlacingShip) {
 					//Buttons 2 and 3 build tinyShips and crazyShips, respectively. 
 					if (button.pressed2) {
@@ -302,36 +280,7 @@ public class LevelController : MonoBehaviour
 				}
 			} else {
 				//This else corresponds to the paused boolean, so this is the pause menu.
-				
-				//If we wanted to cancel a currently built ship, do so.
-				if (button.pressed3) {
-					button.pressed3 = false;
-					button.paused = false;
-					for (int i = 0; i <= numLanes; i++) {
-						Destroy (placingShipObjects [i]);
-					}
-					currentShip = GameControllerScript.Instance.getPlacingBox ();
-					isPlacingShip = false;
-					button.canCancelShip = false;
-					//Reset the input values. This is due to poorly designed sequencing of touches in my input script and may later be unnecessary.
-					//For now, though, it prevents the gameController from saving the touch position/angle information and immediately jumping on that the next time we try to build a ship.
-					input.Start ();
-					
-				}
-				//Otherwise, if we click Unpause, unpause the game.
-				if (button.pressed1) {
-					//OK, this is really dumb, but if you hit Unpause over the swiping box, the input handler thinks it is a swipe.
-					//This is because it cannot currently separate button presses from normal touches.
-					//We currently fix this by once again resetting the input values so that it doesn't think we've made a touch. 
-					button.pressed1 = false;
-					button.paused = false;
-					input.Start ();
-					
-				}
-				//If we click return to Menu, we will do so. Eventually we'll want to be able to save information before returning to menu.
-				if (button.pressed2) {
-					Application.LoadLevel ("MainMenu");
-				}
+				//All pause functionality is handled in ButtonHandler, as none of it needs access to Level info.
 			}
 
 //******************************** WE NOW MOVE FROM BUTTON LOGIC TO SHIP-BUILDING LOGIC *************************** 
@@ -354,8 +303,10 @@ public class LevelController : MonoBehaviour
 				}
 				
 			
-				if (input.Ended ()) {
-					Vector3 pos = input.endPos ();
+				if (input.Ended () || input.Clicked ()) {
+					input.setClicked (false);
+					Vector3 pos = input.Ended () ? input.endPos () : input.getClickLoc ();
+					input.setEnded(false);
 					pos.z = 10.0f;
 					pos = Camera.main.ScreenToWorldPoint (pos);
 					
@@ -397,22 +348,34 @@ public class LevelController : MonoBehaviour
 						
 						//Check the score. Note that we are only checking it now so that we only decrease it if the player actually builds the ship.
 						//We also want the players able to look at ships they don't have the points to build yet.
+						//We are no longer trying to place a ship.
+						isPlacingShip = false;
 						button.canCancelShip = false;
 						if (levelScore >= currentShip.GetComponent<ShipHandler> ().cost) {
 							levelScore -= currentShip.GetComponent<ShipHandler> ().cost;
 							StartCoroutine (BuildCurrentShip (currentShip, pos, rot, closestIndex));
 							//Remember, currentShip defaults to placingBox when we are no longer building a ship.
-							currentShip = GameControllerScript.Instance.getPlacingBox ();
+							if (button.shipRepeater) {
+								currentShip = currentNeutralShip;//GameControllerScript.Instance.getPlacingBox ();
+								placingShipObjects [0].transform.position = new Vector3 (8, 2, 0);
+								isPlacingShip = true;
+								button.canCancelShip = true;
+								input.setEnded (false);
+								input.setMoved (false);
+							} else {
+								currentShip = GameControllerScript.Instance.getPlacingBox ();
+								for (int i = 0; i <= numLanes; i++) {
+									Destroy (placingShipObjects [i]);
+								}
+							}
 						} else {
 							//If we didn't have enough points, make sure GuiTextHandler will know by changing the currentShip object.
 							currentShip = GameControllerScript.Instance.getNotEnoughMoneyObject ();
+							//Destroy the placingBoxes and the neutralShip.
+							for (int i = 0; i <= numLanes; i++) {
+								Destroy (placingShipObjects [i]);
+							}
 						}
-						//Destroy the placingBoxes and the neutralShip.
-						for (int i = 0; i <= numLanes; i++) {
-							Destroy (placingShipObjects [i]);
-						}
-						//We are no longer trying to place a ship.
-						isPlacingShip = false;
 					} else { //If we released the ship not at the boxes, cancel the build.
 						currentShip = GameControllerScript.Instance.getPlacingBox ();
 						for (int i = 0; i <= numLanes; i++) {

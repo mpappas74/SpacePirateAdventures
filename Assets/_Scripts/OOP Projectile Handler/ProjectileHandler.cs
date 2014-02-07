@@ -14,10 +14,6 @@ public class ProjectileHandler : MonoBehaviour
 	public bool doesSingleShotDamage; //Does this projectile impact other projectiles and ships?
 	public float damageDone; //damageDone is set by the firing ship, and controls how much damage the bolt does.
 
-	//************** Button Logic ********************//
-	private GameObject testObject;	//The testObject holds the button information currently. Could also use GameObject.Find.
-	private ButtonHandler button;	//Access to the button script to check the booleans in it. 
-	
 	//************** Explosion Logic ********************//
 	public bool isExplosion; //Is this projectile an explosion?
 	public float explosionDamage; //How much damage does the explosion do?
@@ -51,8 +47,6 @@ public class ProjectileHandler : MonoBehaviour
 		if (rigidbody != null) {
 			rigidbody.velocity = 1*speed * transform.forward;	//Keep the ship moving forward.
 		}
-		testObject = GameObject.Find ("EmptyButtonObject"); //Gain access to the ButtonHandler script to determine if the game is paused.
-		button = testObject.GetComponent<ButtonHandler> ();
 		if (survivalTime > 0) {
 			StartCoroutine ("KillSelf");
 		}
@@ -76,10 +70,8 @@ public class ProjectileHandler : MonoBehaviour
 		if (maxHealth > 0 && isDead) {
 			Destroy (gameObject);
 		}
-		//If the game is paused, don't move. Otherwise, keep moving.
-		if (button.paused && rigidbody != null) {
-			rigidbody.velocity = new Vector3 (0.0f, 0.0f, 0.0f);
-		} else if (rigidbody != null) {
+		
+		if (rigidbody != null) {
 			rigidbody.velocity = 1*speed * transform.forward;
 		}
 	}

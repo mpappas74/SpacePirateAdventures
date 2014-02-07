@@ -4,8 +4,6 @@ using System.Collections;
 public class Level_Controller : MonoBehaviour
 	//The base class from which level#controllers inherit.
 {
-	public GameObject testObject;	//The testObject holds the button information currently. 
-	private ButtonHandler button;	//Access to the button script to check the booleans in it.
 	public float[] startWait;	//How long to wait before enemy ships start coming.
 	public float[] hazardCount;	//How many enemy ships to send per wave.
 	public Vector3[] spawnValues;	//Where to generate the enemy ships. (See SpawnWaves() for more.)
@@ -24,7 +22,6 @@ public class Level_Controller : MonoBehaviour
 	
 	public virtual void Start ()
 	{
-		button = testObject.GetComponent<ButtonHandler> ();
 		lc = gameObject.GetComponent<LevelController>();
 
 		//Someone sometime should really write a check that all of these arrays are the same length.
@@ -77,9 +74,6 @@ public class Level_Controller : MonoBehaviour
 			goneWaves[j]++;
 			//Send out each hazard in the wave one at a time.
 			for (int i = 0; i < hazardCount[j]; i++) {
-				while (button.paused) {
-					yield return new WaitForFixedUpdate ();
-				}
 				//We spawn them at a range of z values, but always at the given x and y values. Note that Random.Range is inclusive on the lower end (-2), but not on the upper end. So it will return -2, -1, 0, 1, or 2.
 				Vector3 spawnPosition = new Vector3 (spawnValues[j].x, spawnValues[j].y, (spawnValues[j].z / 2) * Random.Range (-2, 3));
 				GameObject newHazard = (GameObject)Instantiate (hazard[j], spawnPosition, hazard[j].transform.rotation);

@@ -16,6 +16,8 @@ public class InputHandler : MonoBehaviour
 	private bool clickMoved;	//Has a click/touch just moved while down?
 	private bool onTouchScreen;	//Are we on a touch-screen device?
 	private bool trigger; //Have we input the trigger command for special behavior?
+	private bool clicked;
+	private Vector2 clickLoc;
 
 	public void Start ()
 	{
@@ -37,6 +39,7 @@ public class InputHandler : MonoBehaviour
 	
 	void Update ()
 	{
+
 		if (!onTouchScreen) {
 			//If we thought the mouse was up but now it is down, it was just clicked down. So a click started.
 			if (clickUp && Input.GetMouseButton (0)) {
@@ -70,6 +73,16 @@ public class InputHandler : MonoBehaviour
 				finalMousePos = initialMousePos;
 			}
 
+			if(clickStarted && clickEnded){
+				if((initialMousePos - finalMousePos).magnitude < (Screen.width/100)){
+					clicked = true;
+					clickStarted = false;
+					clickEnded = false;
+					clickMoved = false;
+					clickLoc = initialMousePos;
+				}
+			}
+
 			if(Input.GetKeyDown("space")){
 				trigger = true;
 			}
@@ -96,6 +109,16 @@ public class InputHandler : MonoBehaviour
 				clickEnded = true;
 			}
 
+			if(clickStarted && clickEnded){
+				if((initialMousePos - finalMousePos).magnitude < (Screen.width/100)){
+					clicked = true;
+					clickStarted = false;
+					clickEnded = false;
+					clickMoved = false;
+					clickLoc = initialMousePos;
+				}
+			}
+
 			if(Input.acceleration.sqrMagnitude > 5){
 				trigger = true;
 			}
@@ -103,6 +126,16 @@ public class InputHandler : MonoBehaviour
 		
 
 
+	}
+
+	public bool Clicked(){
+		return clicked;
+	}
+	public Vector2 getClickLoc(){
+		return clickLoc;
+	}
+	public void setClicked(bool b){
+		clicked = b;
 	}
 
 	public bool Began ()

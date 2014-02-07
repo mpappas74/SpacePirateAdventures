@@ -28,7 +28,6 @@ public class ShipHandler : MonoBehaviour
 
 	//************** Input Logic ********************//
 	public bool wasClickedOn;	//Was this ship just clicked on?
-	public bool wasReleasedOn; //Did the same click just release over the ship?
 	
 	//************** Shield Deployment Logic ********************//
 	public bool deploysShield; //Does this ship deploy shields?
@@ -37,10 +36,6 @@ public class ShipHandler : MonoBehaviour
 	//************** SelfDestruction Logic ********************//
 	public bool selfDestructs;	//Does this ship blow itself up?
 	public GameObject blastZone; //The physical blast zone in which things take damage from the bomb.
-
-	//************** PauseButton Access Variables ********************//
-	private GameObject testObject;	//The testObject holds the button information currently.
-	private ButtonHandler button;	//Access to the button script to check the booleans in it. 
 	
 	//************** Death Logic ********************//
 	public GameObject explosion; //Access to the explosion to instantiate it when the ship dies.
@@ -62,10 +57,6 @@ public class ShipHandler : MonoBehaviour
  
 	public virtual void Start ()
 	{
-		testObject = GameObject.Find ("EmptyButtonObject");
-		button = testObject.GetComponent<ButtonHandler> ();
-		//As we've seen before, getting access to ButtonHandler's booleans to know if we are paused.
-		
 		//Set up the healthbar. If we have one, set its initial length based on the max health of the ship.
 		maxHealth = shipHealth;
 		healthbar = gameObject.transform.Find ("HealthBar");
@@ -76,16 +67,17 @@ public class ShipHandler : MonoBehaviour
 			maxLength = -1;
 		}
 		
-		//MIKELOOKHERE
-		//These are the lane movers 
-		//http://www.youtube.com/watch?v=qRafXt26a_E brief tutorial
-
 
 		if (laneID == 0) {
 			iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane 1"), "speed", speed, "movetopath", false));
 		} else if (laneID == 1) {
 			iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane 2"), "speed", speed, "movetopath", false));
+		} else if (laneID == 2) {
+			iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane 3"), "speed", speed, "movetopath", false));
+		} else if (laneID == 3) {
+			iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane 4"), "speed", speed, "movetopath", false));
 		}
+
 
 		//Set up the miniMap. First calculate the scaling factor for the miniMap : world ratio.
 		worldScale = GameObject.Find ("Background").transform.localScale;
@@ -100,7 +92,6 @@ public class ShipHandler : MonoBehaviour
 		myDot.transform.localPosition = Vector3.Scale (transform.position, worldScale) - mapShift;
 
 	}
-
 
 	public virtual void OnTriggerEnter (Collider other)
 	{
@@ -154,9 +145,8 @@ public class ShipHandler : MonoBehaviour
 			}
 		}
 		if (selfDestructs) {
-			if (wasClickedOn && wasReleasedOn) {
+			if (wasClickedOn) {
 				wasClickedOn = false;
-				wasReleasedOn = false;
 				Explode ();
 			} else if (isDead) {
 				Explode ();
@@ -178,15 +168,11 @@ public class ShipHandler : MonoBehaviour
 		}
 	}
 
-	// Meanwhile, we are also moving the ship forward, presuming the game is not paused.
+	// Meanwhile, we are also moving the ship forward.
 	public virtual void FixedUpdate ()
 	{
 		if (laneID < 0) {
-			if (button.paused) {
-				rigidbody.velocity = new Vector3 (0.0f, 0.0f, 0.0f);
-			} else {
-				rigidbody.velocity = transform.forward * speed;	
-			}
+			rigidbody.velocity = transform.forward * speed;	
 		}
 	}
 	
@@ -223,44 +209,37 @@ public class ShipHandler : MonoBehaviour
 	public void FireBolts ()
 	{
 		//Fire bolts and place them on a layer according to whether we are an enemy or player ship.
-		if (!button.paused) {
-			if (Time.time > nextFire) {
-				nextFire = Time.time + fireLag;
-				GameObject thisBolt = (GameObject)Instantiate (bolt, shotSpawn.position, shotSpawn.rotation);
-				ProjectileHandler boltMover = thisBolt.GetComponent<ProjectileHandler> ();
-				thisBolt.layer = LayerMask.NameToLayer ("PlayerAttacks");
-				if (gameObject.layer == LayerMask.NameToLayer ("EnemyShips")) {
-					thisBolt.layer = LayerMask.NameToLayer ("EnemyAttacks");
-				}
-				boltMover.damageDone = shotDamage;
-				if (boltSurvivalTime > 0) {
-					boltMover.survivalTime = boltSurvivalTime;
-				}
-				//Give the bolt a relative speed boost from the ship.
-				boltMover.speed += speed;
+		if (Time.time > nextFire) {
+			nextFire = Time.time + fireLag;
+			GameObject thisBolt = (GameObject)Instantiate (bolt, shotSpawn.position, shotSpawn.rotation);
+			ProjectileHandler boltMover = thisBolt.GetComponent<ProjectileHandler> ();
+			thisBolt.layer = LayerMask.NameToLayer ("PlayerAttacks");
+			if (gameObject.layer == LayerMask.NameToLayer ("EnemyShips")) {
+				thisBolt.layer = LayerMask.NameToLayer ("EnemyAttacks");
 			}
-		} else {
-			//At all times, we track how much time is left before we fire again. This allows us to update nextFire in case we pause the game.
-			nextFire = Time.time + timeDif;
+			boltMover.damageDone = shotDamage;
+			if (boltSurvivalTime > 0) {
+				boltMover.survivalTime = boltSurvivalTime;
+			}
+			//Give the bolt a relative speed boost from the ship.
+			boltMover.speed += speed;
 		}
+	
 		timeDif = nextFire - Time.time;
 	}
 
 	//Replace the ship with a shield at the same place.
 	public void ShieldDeploy ()
 	{
-		if (!button.paused) {
-			if (wasClickedOn && wasReleasedOn) {
-				GameObject theShield = (GameObject)Instantiate (shield, shotSpawn.position, shotSpawn.rotation);
-				theShield.layer = LayerMask.NameToLayer ("PlayerAttacks");
-				if (gameObject.layer == LayerMask.NameToLayer ("EnemyShips")) {
-					theShield.layer = LayerMask.NameToLayer ("EnemyAttacks");
-				}
-				wasClickedOn = false;
-				wasReleasedOn = false;
-				Destroy (myDot);
-				Destroy (gameObject);
+		if (wasClickedOn) {
+			GameObject theShield = (GameObject)Instantiate (shield, shotSpawn.position, shotSpawn.rotation);
+			theShield.layer = LayerMask.NameToLayer ("PlayerAttacks");
+			if (gameObject.layer == LayerMask.NameToLayer ("EnemyShips")) {
+				theShield.layer = LayerMask.NameToLayer ("EnemyAttacks");
 			}
+			wasClickedOn = false;
+			Destroy (myDot);
+			Destroy (gameObject);
 		}
 	}
 
