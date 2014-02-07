@@ -27,14 +27,6 @@ public class LevelController : MonoBehaviour
 	public float scoreRegenTime = 1; //How long to wait before increasing score.
 	public float scoreRegenMag = 1; //How much score to increase each time.	
 
-	//STEVENLOOKHERE
-	//These two vectors (editable from the inspector) are all the game actually knows about the lanes.
-	//Right now, the options for building a ship are set so that the ship will be built at the heights 
-	//listed in startPositions and the rotations given in laneRotations.
-	//I've added a bool newLaneSystem here. Set it to true if you want to implement your new lanes without destroying my code.
-	//YOU WILL HAVE TO SEARCH FOR THE OTHER STEVENLOOKHERE TAGS and add the relevant code that you want to run instead.
-	
-	private bool newLaneSystem = false;
 	public float[] laneRotations; //How much ship placed into each lane should be rotated. (Note that, if the ship has MoveInLane, it should follow the lane regardless of orientation.)
 	public float[] startPositions; //The starting z positions for ships to be built in the lanes which exist.
 	private int numLanes;
@@ -47,15 +39,8 @@ public class LevelController : MonoBehaviour
 		GameControllerScript.Instance.setCurrentLevel (Application.loadedLevel);
 		//Be careful here if we change the scene order!!!!!
 
-		//STEVENLOOKHERE
-		//Make sure to redefine numLanes appropriately so several for loops can run!
-
 		//We will need as many placingBoxes as there are lanes, and also the neutral drag ship.
-		if (newLaneSystem) {
-
-		} else {
-			numLanes = laneRotations.Length;
-		}
+		numLanes = laneRotations.Length;
 		placingShipObjects = new GameObject[numLanes + 1];
 
 
@@ -155,7 +140,7 @@ public class LevelController : MonoBehaviour
 		Destroy (block);
 
 		GameObject theShip = (GameObject)Instantiate (curShip, position, curShip.transform.rotation);
-		//Mike added this line
+
 		theShip.GetComponent<ShipHandler> ().laneID = laneID;
 
 		theShip.transform.Rotate (Vector3.up * rotation);
@@ -173,7 +158,7 @@ public class LevelController : MonoBehaviour
 		//		}
 		
 	}
-	
+
 	void Update ()
 	{
 		//If the game is over, tell the rest of the game to stop. This is true if we are out of points and have no ships left to earn us more.
@@ -351,24 +336,15 @@ public class LevelController : MonoBehaviour
 //******************************** WE NOW MOVE FROM BUTTON LOGIC TO SHIP-BUILDING LOGIC *************************** 
 
 			if (isPlacingShip) {
-				
-
-				//STEVENLOOKHERE
-				//This is the first place that startPositions/laneRotations are used - placingBoxes that you drag to in order
-				//to build a ship. Depending on how you've edited things, you may add your replacement code in the if statement.
-		
-				if (newLaneSystem) {
-
-				} else {
-					if (mustAddBoxes) {
-						//We place and orient the boxes according to the future orientation of the built ship. 
-						for (int j = 1; j <= numLanes; j++) {
-							float rotation = laneRotations [j - 1];
-							float zpos = startPositions [j - 1];
-							placingShipObjects [j] = (GameObject)Instantiate (GameControllerScript.Instance.getPlacingBox (), new Vector3 (9, -10, zpos), Quaternion.Euler (rotation * Vector3.up));
-						}
-						mustAddBoxes = false;
+			
+				if (mustAddBoxes) {
+					//We place and orient the boxes according to the future orientation of the built ship. 
+					for (int j = 1; j <= numLanes; j++) {
+						float rotation = laneRotations [j - 1];
+						float zpos = startPositions [j - 1];
+						placingShipObjects [j] = (GameObject)Instantiate (GameControllerScript.Instance.getPlacingBox (), new Vector3 (9, -10, zpos), Quaternion.Euler (rotation * Vector3.up));
 					}
+					mustAddBoxes = false;
 				}
 				//If we dragged the ship, move it accordingly.
 				if (input.Moved ()) {
@@ -395,11 +371,6 @@ public class LevelController : MonoBehaviour
 					}
 					
 					
-					//STEVENLOOKHERE
-					//This code is to figure out which box the player released on. Depending on how you built the boxes, you'll
-					//need to track their z positions right now. The for loop iterates over all possible z positions of the 
-					//various boxes and finds which one the release was closest to.
-					
 					int closestIndex = 0;
 
 					//Now we have to figure out which box you actually released on.
@@ -416,17 +387,11 @@ public class LevelController : MonoBehaviour
 					//If we released the neutralShip on a box, try to build it.
 					if (clickWasAtBoxes) {
 
-						//STEVENLOOKHERE
-						//Last one, instantiating the ships with a particular height and rotation. If you need to do that, change these values.
-						float rot = 0;
-						/*
-						if(newLaneSystem){
-					
-						}else{
+						
 						pos.z = startPositions [closestIndex];
-						rot = laneRotations [closestIndex];
-						}
-					*/
+						pos.x = 9;
+						pos.y = 0;
+						float rot = laneRotations [closestIndex];
 						
 						
 						//Check the score. Note that we are only checking it now so that we only decrease it if the player actually builds the ship.

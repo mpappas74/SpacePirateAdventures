@@ -43,7 +43,7 @@ public class Level_Controller : MonoBehaviour
 		hazard[i] = (GameObject)Instantiate(hazard[i], new Vector3(0, 0, 0), hazard[i].transform.rotation);
 		hazard[i].SetActive(false);
 		ShipHandler sh = hazard[i].GetComponent<ShipHandler>();
-		sh.shouldMoveInLane = sMIL[i];
+		//sh.shouldMoveInLane = sMIL[i];
 		sh.shipHealth = health[i];
 		sh.energyShieldHealth = shieldHealth[i];
 		sh.scoreValue = score[i];

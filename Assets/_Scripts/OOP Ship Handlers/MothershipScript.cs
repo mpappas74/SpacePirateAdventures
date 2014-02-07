@@ -19,7 +19,6 @@ public class MothershipScript : ShipHandler
 		deploysShield = false;
 		selfDestructs = false;
 		scoreValue = 0;
-		shouldMoveInLane = false;
 		turnsAroundOnCollision = false;
 		
 		base.Start ();
@@ -52,8 +51,8 @@ public class MothershipScript : ShipHandler
 		base.Die (diedOnscreen);
 	}
 
-//	public override void FixedUpdate(){
+	public override void FixedUpdate(){
 		//Do nothing.
-//	}
+	}
 
 }

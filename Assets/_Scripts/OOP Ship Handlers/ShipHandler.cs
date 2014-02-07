@@ -13,7 +13,6 @@ public class ShipHandler : MonoBehaviour
 	public float maxLength; //Maximum length of the ship's healthbar.
 	public Transform healthbar; //The physical healthbar above each ship.
 	public float cost;	//How much the ship costs to build.
-	public int laneID = -1;
 
 	//************** Bolt Firing Logic ********************//
 	public bool firesBolts;	//Does this ship fire bolts?
@@ -31,7 +30,6 @@ public class ShipHandler : MonoBehaviour
 	public bool wasClickedOn;	//Was this ship just clicked on?
 	public bool wasReleasedOn; //Did the same click just release over the ship?
 	
-
 	//************** Shield Deployment Logic ********************//
 	public bool deploysShield; //Does this ship deploy shields?
 	public GameObject shield; //Access to the shield to instantiate them.
@@ -48,17 +46,8 @@ public class ShipHandler : MonoBehaviour
 	public GameObject explosion; //Access to the explosion to instantiate it when the ship dies.
 	public float scoreValue;	//How many points this ship is worth upon destruction.
 	
-
-	//STEVENLOOKHERE
-	//The below variables handle the movement in the current lanes. If you want to disable all of this logic, just go into the Start()
-	//function below and set shouldMoveInLane to false. You can then freely add your own code to handle your lanes and activate it with another bool.
 	//************** Move In Lane Logic ********************//
-	public bool shouldMoveInLane;	//Should the ship follow a lane or just move directly forward?
-	private GameObject upperWall;   //The upper wall of the lane.
-	private GameObject lowerWall;	//The lower wall of the lane.
-	private bool amInLane = true;	//Whether or not the ship is actually in a lane as far as the code can tell.
-	private float deltaUp = 0;		//How much space there is between the ship and the upper wall of the lane.
-	private float deltaDown = 0;	//How much space between the ship and lower wall.
+	public int laneID = -1;
 		
 	//************** Turn Around On Collision Logic ********************//
 	public bool turnsAroundOnCollision;	//Should the ship turn around on collisions or fight the colliding ship?
@@ -87,34 +76,15 @@ public class ShipHandler : MonoBehaviour
 			maxLength = -1;
 		}
 		
-		//STEVENLOOKHERE
-		//If you are turning off shouldMoveInLane, do it before this line.
-		//DO NOT simply replace shouldMoveInLane with false below, as that would miss another call
-		//in update. It's easier to just set it to be false directly.
-		shouldMoveInLane = false;
 		//MIKELOOKHERE
 		//These are the lane movers 
 		//http://www.youtube.com/watch?v=qRafXt26a_E brief tutorial
 
 
 		if (laneID == 0) {
-
-
-				iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane 1"),"time", 10));
-				}
-
-			
-
-		if (laneID == 1) {
-
-
-			iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane 2"), "time", 10));
-
-		}
-
-		//If we are moving in a lane, we've got to find the one we are in.
-		if (shouldMoveInLane) {
-			DetermineCurrentLane ();
+			iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane 1"), "speed", speed));
+		} else if (laneID == 1) {
+			iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane 2"), "speed", speed));
 		}
 
 		//Set up the miniMap. First calculate the scaling factor for the miniMap : world ratio.
@@ -194,39 +164,6 @@ public class ShipHandler : MonoBehaviour
 			Die ();
 		}
 
-		
-		//STEVENLOOKHERE
-		//Below is the update logic for continuing to move in the current lane. 
-		//If you set shouldMoveInLane to false earlier, you can effectively ignore this logic.
-		//Note, though, that upperWall and lowerWall are currently the saved variables for the walls
-		//of the lanes. Hopefully your code will remove the need for this ugly raycasting.
-	
-		//If we are in a lane, we use this logic to track the distance between the ship and the two walls, and keep it vertically in between the walls.
-		if (shouldMoveInLane && amInLane) {
-			float upZ = transform.position.z;
-			RaycastHit hit;
-			if (Physics.Raycast (transform.position, new Vector3 (0, 0, 10), out hit)) {
-				if (hit.transform.gameObject.GetInstanceID () == upperWall.GetInstanceID ()) {
-					deltaUp = hit.point.z - upZ;
-					upZ = hit.point.z;
-				} else {
-					upZ = upZ + deltaUp;
-				}
-			}
-			float downZ = transform.position.z;
-			if (Physics.Raycast (transform.position, new Vector3 (0, 0, -10), out hit)) {
-				if (hit.transform.gameObject.GetInstanceID () == lowerWall.GetInstanceID ()) {
-					deltaDown = hit.point.z - downZ;
-					downZ = hit.point.z;
-				} else {
-					downZ = downZ + deltaDown;
-				}
-			}
-			transform.position += new Vector3 (0.0f, 0.0f, (upZ + downZ) / 2 - transform.position.z);			
-		}
-
-
-
 		//Flip the ship and healthbar around if the ship is turning backwards.
 		if (turnsAroundOnCollision) {
 			if (transform.position.x >= 80) {
@@ -240,17 +177,18 @@ public class ShipHandler : MonoBehaviour
 		}
 	}
 
-
 	// Meanwhile, we are also moving the ship forward, presuming the game is not paused.
-	/*public virtual void FixedUpdate ()
+	public virtual void FixedUpdate ()
 	{
-		if (button.paused) {
-			rigidbody.velocity = new Vector3 (0.0f, 0.0f, 0.0f);
-		} else {
-			rigidbody.velocity = transform.forward * speed;	
+		if (laneID < 0) {
+			if (button.paused) {
+				rigidbody.velocity = new Vector3 (0.0f, 0.0f, 0.0f);
+			} else {
+				rigidbody.velocity = transform.forward * speed;	
+			}
 		}
 	}
-	*/
+	
 	//If a ship dies, update the level score, explode, and then destroy both the ship and its minimap dot.
 	public virtual void Die (bool diedOnscreen = true)
 	{
@@ -305,61 +243,6 @@ public class ShipHandler : MonoBehaviour
 			nextFire = Time.time + timeDif;
 		}
 		timeDif = nextFire - Time.time;
-	}
-
-	//STEVENLOOKHERE
-	//This function determines the lane at the ship's instantiation that it is allegedly in.
-	//Presumably, you will be able to replace this entire function with simply an ID number that is set 
-	//when the ship is instantiated.
-
-	public void DetermineCurrentLane ()
-	{
-		//First, find all lanes that exist, period.
-		GameObject[] allLanes = GameObject.FindGameObjectsWithTag ("Lane");
-		if (allLanes.Length == 0) {
-			amInLane = false;
-		} else {
-			float minDist = 100;
-			float laneWidth = 3;
-			//Next, for each lane, figure out if we are close to any of them.
-			for (int i = 0; i < allLanes.Length; i++) {
-				GameObject curLane = allLanes [i];
-				string name = curLane.transform.name;
-				GameObject upW = GameObject.Find (name + "/UpperWall");
-				float upDistance = 0;
-				RaycastHit hit;
-				//Look up along the z direction and see if you can find this upper wall.
-				if (Physics.Raycast (transform.position, new Vector3 (0, 0, 1), out hit)) {
-					if (hit.transform.gameObject.GetInstanceID () == upW.GetInstanceID ()) {
-						upDistance = hit.distance;
-					} else {
-						upDistance = 1000;
-					}
-				}
-				GameObject lwW = GameObject.Find (name + "/LowerWall");
-				float downDistance = 0;
-				if (Physics.Raycast (transform.position, new Vector3 (0, 0, -1), out hit)) {
-					if (hit.transform.gameObject.GetInstanceID () == lwW.GetInstanceID ()) {
-						downDistance = hit.distance;
-					} else {
-						downDistance = -1000;
-					}
-				}
-				//If we can find both lower and upper walls of a lane correctly oriented around us and not too far away, we say we are in that lane.
-				if (Mathf.Abs (upDistance - downDistance) < minDist) {
-					minDist = upDistance - downDistance;
-					laneWidth = upDistance + downDistance;
-					upperWall = upW;
-					lowerWall = lwW;
-				}
-			}
-			if (minDist == 100) {
-				amInLane = false;
-				Debug.Log ("I'm not in a lane!");
-			}
-		
-			speed = speed * (3f / laneWidth);
-		}
 	}
 
 	//Replace the ship with a shield at the same place.
