@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class ShipHandler : MonoBehaviour
-	//Once they have ben built, this script moves ships and has them fire.
+	//Once they have been built, this script moves ships and has them fire.
 {
 	//************** Common Properties of All Ships ********************//
 	public float shipHealth; //basic health

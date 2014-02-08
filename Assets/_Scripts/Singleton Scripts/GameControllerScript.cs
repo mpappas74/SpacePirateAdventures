@@ -16,11 +16,15 @@ public class GameControllerScript : Singleton<GameControllerScript>
 	private float score; //The total score across multiple levels.
 	private int currentUnlockedLevel; //The highest level that has currently been unlocked.
 	private int currentLevel; //The level that is currently or most recently played.
+	private float gameVolume; //The relative volume level for the game.
 
 	//Now begins the probably huge stream of variables that determine particular ship upgrades.
 	private float tinyShipDamage;	//Damage done by a shot from the tinyShip.
 	
+
 	private bool canSetUpShipsNow = false;
+
+
 
 	void Awake ()
 	{
@@ -33,6 +37,11 @@ public class GameControllerScript : Singleton<GameControllerScript>
 			score = PlayerPrefs.GetFloat("Score");
 		} else{
 			score = 0;
+		}
+		if(PlayerPrefs.HasKey("Volume")){
+			gameVolume = PlayerPrefs.GetFloat("Volume");
+		} else{
+			gameVolume = 0.5f;
 		}
 		if(PlayerPrefs.HasKey("CurrentUnlockedLevel")){
 			currentUnlockedLevel = PlayerPrefs.GetInt("CurrentUnlockedLevel");
@@ -53,6 +62,16 @@ public class GameControllerScript : Singleton<GameControllerScript>
 		}
 
 		canSetUpShipsNow = true;
+		LoadSettings();
+	}
+
+	private void LoadSettings(){
+		AudioListener.volume = gameVolume;
+	}
+
+	public void setVolume(float V){
+		gameVolume = V;
+		AudioListener.volume = gameVolume;
 	}
 
 	IEnumerator GetShips(){

@@ -44,8 +44,16 @@ public class MainMenuScript : MonoBehaviour
 	private int levelGridInt = -1;
 	private string[] levelStrings = {"1", "2", "3", "4"};
 
+	private float theVolume = 0.5f;
+	private float theVolumeWas = 0.5f;
+	private GUIStyle volStyle;
+
+
 	void Start ()
 	{
+		volStyle = new GUIStyle();
+		volStyle.alignment = TextAnchor.LowerCenter;
+		volStyle.fontStyle = FontStyle.BoldAndItalic;
 		allSources = new AudioSource[6]{level1, level2, level3, boss1, boss2, shop};
 	}
 
@@ -62,7 +70,10 @@ public class MainMenuScript : MonoBehaviour
 	//should optimally be executed here as much as possible.
 	void Update ()
 	{
-		
+		if(theVolumeWas != theVolume){
+			theVolumeWas = theVolume;
+			GameControllerScript.Instance.setVolume(theVolume);
+		}
 	}
 	
 	void OnGUI ()
@@ -131,11 +142,13 @@ public class MainMenuScript : MonoBehaviour
 			}
 			levelGridInt = tempInt;
 		} else if (settingsMenu) {
-			if (GUI.Button (new Rect (.5f * Screen.width - 100, .35f * Screen.height, 200, .12f * Screen.height), "Sound Test")) {
+			GUI.Label(new Rect(.5f * Screen.width - 100, .2f * Screen.height, 200, .08f * Screen.height), "Volume", volStyle);
+			theVolume = GUI.HorizontalSlider(new Rect(.5f * Screen.width - 100, .3f * Screen.height, 200, .025f * Screen.height), theVolume, 0.0F, 1.0F);
+			if (GUI.Button (new Rect (.5f * Screen.width - 100, .4f * Screen.height, 200, .12f * Screen.height), "Sound Test")) {
 				settingsMenu = false;
 				soundTest = true;
 			}
-			if (GUI.Button (new Rect (.5f * Screen.width - 100, .5f * Screen.height, 200, .12f * Screen.height), "Credits")) {
+			if (GUI.Button (new Rect (.5f * Screen.width - 100, .55f * Screen.height, 200, .12f * Screen.height), "Credits")) {
 				settingsMenu = false;
 				text = "This game was made by Mark, Mike, Steven, and Terry. Find the best number.";
 				//Fun fact - in the text above, if you count the letters, punctuation, and spaces as characters, there are exactly 74.
