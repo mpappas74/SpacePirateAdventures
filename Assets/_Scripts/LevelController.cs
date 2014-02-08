@@ -27,35 +27,22 @@ public class LevelController : MonoBehaviour
 	public float scoreRegenTime = 1; //How long to wait before increasing score.
 	public float scoreRegenMag = 1; //How much score to increase each time.	
 
-	//STEVENLOOKHERE
-	//These two vectors (editable from the inspector) are all the game actually knows about the lanes.
-	//Right now, the options for building a ship are set so that the ship will be built at the heights 
-	//listed in startPositions and the rotations given in laneRotations.
-	//I've added a bool newLaneSystem here. Set it to true if you want to implement your new lanes without destroying my code.
-	//YOU WILL HAVE TO SEARCH FOR THE OTHER STEVENLOOKHERE TAGS and add the relevant code that you want to run instead.
-	
-	private bool newLaneSystem = false;
 	public float[] laneRotations; //How much ship placed into each lane should be rotated. (Note that, if the ship has MoveInLane, it should follow the lane regardless of orientation.)
 	public float[] startPositions; //The starting z positions for ships to be built in the lanes which exist.
 	private int numLanes;
 	public bool playerVictory = false; //Has the player won?
 	private ShipHandler mothership; //Need access to the player's and enemy's mothership so that we can tell if we've won.
 	private ShipHandler enemyMothership;
+	public GameObject specialBolt;
+	private bool canUseSpecial = true;
 	
 	void Start ()
 	{
 		GameControllerScript.Instance.setCurrentLevel (Application.loadedLevel);
 		//Be careful here if we change the scene order!!!!!
 
-		//STEVENLOOKHERE
-		//Make sure to redefine numLanes appropriately so several for loops can run!
-
 		//We will need as many placingBoxes as there are lanes, and also the neutral drag ship.
-		if (newLaneSystem) {
-
-		} else {
-			numLanes = laneRotations.Length;
-		}
+		numLanes = laneRotations.Length;
 		placingShipObjects = new GameObject[numLanes + 1];
 
 
@@ -107,8 +94,8 @@ public class LevelController : MonoBehaviour
 			//if (GameObject.FindWithTag ("BombShip") == null) {
 			//	input.setTrigger (false);
 			//}
-			if (input.Began ()) {
-				currentClickPos = input.startPos ();
+			if (input.Clicked ()) {
+				currentClickPos = input.getClickLoc ();
 				Vector3 pos = new Vector3 (currentClickPos.x, currentClickPos.y, 10.0f);
 				pos = Camera.main.ScreenToWorldPoint (pos);	
 				foundClickedShip = false;
@@ -120,22 +107,7 @@ public class LevelController : MonoBehaviour
 					}
 				}
 			}
-			if (foundClickedShip && input.Ended ()) {
-				foundClickedShip = false;
-				if ((input.endPos () - currentClickPos).sqrMagnitude < 9) {
-					Vector3 pos = new Vector3 (currentClickPos.x, currentClickPos.y, 10.0f);
-					pos = Camera.main.ScreenToWorldPoint (pos);
-					foreach (GameObject ss in clickableShips) {
-						if ((pos - ss.transform.position).sqrMagnitude < 9) {
-							ss.GetComponent<ShipHandler> ().wasReleasedOn = true;
-							foundClickedShip = true;
-							break;
-						}
-					}
-				}
-			}
-			
-
+			input.setClicked (false);
 			yield return new WaitForSeconds (0.2f);
 		}
 	}
@@ -155,7 +127,7 @@ public class LevelController : MonoBehaviour
 		Destroy (block);
 
 		GameObject theShip = (GameObject)Instantiate (curShip, position, curShip.transform.rotation);
-		//Mike added this line
+
 		theShip.GetComponent<ShipHandler> ().laneID = laneID;
 
 		theShip.transform.Rotate (Vector3.up * rotation);
@@ -173,7 +145,36 @@ public class LevelController : MonoBehaviour
 		//		}
 		
 	}
-	
+
+	IEnumerator SpecialAttack ()
+	{
+		yield return new WaitForSeconds (0.5f);
+		GameObject block = GameObject.Find("SpecialLoadingBar");
+		float initialHeight = block.transform.localScale.x;
+		block.transform.localScale += new Vector3(-initialHeight, 0, 0);
+		Color t = block.renderer.material.GetColor("_TintColor");
+		block.renderer.material.SetColor("_TintColor", new Color(t.r, t.g, t.b, 0.1f));
+		float time = Time.time;
+		while (Time.time < time + 5) {
+			for (int i = 0; i < 4; i++) {
+				int zWay = 2 * Random.Range (0, 2);
+				GameObject go = (GameObject)Instantiate (specialBolt, new Vector3 (1f * Random.Range (10, 80), 0.0f, (1 - zWay) * 10f), specialBolt.transform.rotation);
+				go.transform.Rotate (Vector3.up * 180 * ((2-zWay)/2f));
+				go.layer = LayerMask.NameToLayer ("PlayerAttacks");
+				go.GetComponent<ProjectileHandler> ().damageDone = 1f;
+				go.GetComponent<ProjectileHandler> ().doesSingleShotDamage = true;
+				go.GetComponent<ProjectileHandler> ().speed = 10;
+			}
+			yield return new WaitForSeconds (0.3f);
+		}
+		for (int i = 0; i < 30; i++) {
+			yield return new WaitForSeconds (0.2f);
+			block.transform.localScale += new Vector3 (initialHeight * (1) / 30f, 0, 0);
+		}
+		block.renderer.material.SetColor("_TintColor", new Color(t.r, t.g, t.b, 1));
+		canUseSpecial = true;
+	}
+
 	void Update ()
 	{
 		//If the game is over, tell the rest of the game to stop. This is true if we are out of points and have no ships left to earn us more.
@@ -194,14 +195,16 @@ public class LevelController : MonoBehaviour
 			
 			//If we are not currently paused...
 			if (!button.paused) {
-				//If we click the pause button, now we are paused.
-				if (button.pressed1) {
-					button.pressed1 = false;
-					button.paused = true;
-					input.setBegan (false);
-				}
-				//Otherwise, if we are not placing a ship and one of the other buttons has been pressed, do as the button commands.
+				//If we are not placing a ship and one of the other buttons has been pressed, do as the button commands.
 				if (!isPlacingShip) {
+					if (button.pressed1) {
+						button.pressed1 = false;
+						if(levelScore >= 20 && canUseSpecial){
+							StartCoroutine ("SpecialAttack");
+							canUseSpecial = false;
+							levelScore -= 20;
+						}
+					}
 					//Buttons 2 and 3 build tinyShips and crazyShips, respectively. 
 					if (button.pressed2) {
 						button.pressed2 = false;
@@ -316,59 +319,21 @@ public class LevelController : MonoBehaviour
 				}
 			} else {
 				//This else corresponds to the paused boolean, so this is the pause menu.
-				
-				//If we wanted to cancel a currently built ship, do so.
-				if (button.pressed3) {
-					button.pressed3 = false;
-					button.paused = false;
-					for (int i = 0; i <= numLanes; i++) {
-						Destroy (placingShipObjects [i]);
-					}
-					currentShip = GameControllerScript.Instance.getPlacingBox ();
-					isPlacingShip = false;
-					button.canCancelShip = false;
-					//Reset the input values. This is due to poorly designed sequencing of touches in my input script and may later be unnecessary.
-					//For now, though, it prevents the gameController from saving the touch position/angle information and immediately jumping on that the next time we try to build a ship.
-					input.Start ();
-					
-				}
-				//Otherwise, if we click Unpause, unpause the game.
-				if (button.pressed1) {
-					//OK, this is really dumb, but if you hit Unpause over the swiping box, the input handler thinks it is a swipe.
-					//This is because it cannot currently separate button presses from normal touches.
-					//We currently fix this by once again resetting the input values so that it doesn't think we've made a touch. 
-					button.pressed1 = false;
-					button.paused = false;
-					input.Start ();
-					
-				}
-				//If we click return to Menu, we will do so. Eventually we'll want to be able to save information before returning to menu.
-				if (button.pressed2) {
-					Application.LoadLevel ("MainMenu");
-				}
+				//All pause functionality is handled in ButtonHandler, as none of it needs access to Level info.
 			}
 
 //******************************** WE NOW MOVE FROM BUTTON LOGIC TO SHIP-BUILDING LOGIC *************************** 
 
 			if (isPlacingShip) {
-				
-
-				//STEVENLOOKHERE
-				//This is the first place that startPositions/laneRotations are used - placingBoxes that you drag to in order
-				//to build a ship. Depending on how you've edited things, you may add your replacement code in the if statement.
-		
-				if (newLaneSystem) {
-
-				} else {
-					if (mustAddBoxes) {
-						//We place and orient the boxes according to the future orientation of the built ship. 
-						for (int j = 1; j <= numLanes; j++) {
-							float rotation = laneRotations [j - 1];
-							float zpos = startPositions [j - 1];
-							placingShipObjects [j] = (GameObject)Instantiate (GameControllerScript.Instance.getPlacingBox (), new Vector3 (9, -10, zpos), Quaternion.Euler (rotation * Vector3.up));
-						}
-						mustAddBoxes = false;
+			
+				if (mustAddBoxes) {
+					//We place and orient the boxes according to the future orientation of the built ship. 
+					for (int j = 1; j <= numLanes; j++) {
+						float rotation = laneRotations [j - 1];
+						float zpos = startPositions [j - 1];
+						placingShipObjects [j] = (GameObject)Instantiate (GameControllerScript.Instance.getPlacingBox (), new Vector3 (9, -10, zpos), Quaternion.Euler (rotation * Vector3.up));
 					}
+					mustAddBoxes = false;
 				}
 				//If we dragged the ship, move it accordingly.
 				if (input.Moved ()) {
@@ -377,8 +342,10 @@ public class LevelController : MonoBehaviour
 				}
 				
 			
-				if (input.Ended ()) {
-					Vector3 pos = input.endPos ();
+				if (input.Ended () || input.Clicked ()) {
+					input.setClicked (false);
+					Vector3 pos = input.Ended () ? input.endPos () : input.getClickLoc ();
+					input.setEnded (false);
 					pos.z = 10.0f;
 					pos = Camera.main.ScreenToWorldPoint (pos);
 					
@@ -394,11 +361,6 @@ public class LevelController : MonoBehaviour
 						clickWasAtBoxes = false;
 					}
 					
-					
-					//STEVENLOOKHERE
-					//This code is to figure out which box the player released on. Depending on how you built the boxes, you'll
-					//need to track their z positions right now. The for loop iterates over all possible z positions of the 
-					//various boxes and finds which one the release was closest to.
 					
 					int closestIndex = 0;
 
@@ -416,37 +378,43 @@ public class LevelController : MonoBehaviour
 					//If we released the neutralShip on a box, try to build it.
 					if (clickWasAtBoxes) {
 
-						//STEVENLOOKHERE
-						//Last one, instantiating the ships with a particular height and rotation. If you need to do that, change these values.
-						float rot = 0;
-						/*
-						if(newLaneSystem){
-					
-						}else{
+						
 						pos.z = startPositions [closestIndex];
-						rot = laneRotations [closestIndex];
-						}
-					*/
+						pos.x = 9;
+						pos.y = 0;
+						float rot = laneRotations [closestIndex];
 						
 						
 						//Check the score. Note that we are only checking it now so that we only decrease it if the player actually builds the ship.
 						//We also want the players able to look at ships they don't have the points to build yet.
+						//We are no longer trying to place a ship.
+						isPlacingShip = false;
 						button.canCancelShip = false;
 						if (levelScore >= currentShip.GetComponent<ShipHandler> ().cost) {
 							levelScore -= currentShip.GetComponent<ShipHandler> ().cost;
 							StartCoroutine (BuildCurrentShip (currentShip, pos, rot, closestIndex));
 							//Remember, currentShip defaults to placingBox when we are no longer building a ship.
-							currentShip = GameControllerScript.Instance.getPlacingBox ();
+							if (button.shipRepeater) {
+								currentShip = currentNeutralShip;//GameControllerScript.Instance.getPlacingBox ();
+								placingShipObjects [0].transform.position = new Vector3 (8, 2, 0);
+								isPlacingShip = true;
+								button.canCancelShip = true;
+								input.setEnded (false);
+								input.setMoved (false);
+							} else {
+								currentShip = GameControllerScript.Instance.getPlacingBox ();
+								for (int i = 0; i <= numLanes; i++) {
+									Destroy (placingShipObjects [i]);
+								}
+							}
 						} else {
 							//If we didn't have enough points, make sure GuiTextHandler will know by changing the currentShip object.
 							currentShip = GameControllerScript.Instance.getNotEnoughMoneyObject ();
+							//Destroy the placingBoxes and the neutralShip.
+							for (int i = 0; i <= numLanes; i++) {
+								Destroy (placingShipObjects [i]);
+							}
 						}
-						//Destroy the placingBoxes and the neutralShip.
-						for (int i = 0; i <= numLanes; i++) {
-							Destroy (placingShipObjects [i]);
-						}
-						//We are no longer trying to place a ship.
-						isPlacingShip = false;
 					} else { //If we released the ship not at the boxes, cancel the build.
 						currentShip = GameControllerScript.Instance.getPlacingBox ();
 						for (int i = 0; i <= numLanes; i++) {

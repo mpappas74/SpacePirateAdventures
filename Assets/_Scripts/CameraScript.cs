@@ -17,6 +17,7 @@ public class CameraScript : MonoBehaviour
 	public GameObject miniMap; //Access to miniMap gameObject to keep it always in the correct camera view.
 	public GameObject healthbar;
 	public GameObject enemyHealthbar;
+	public GameObject specialLoadingBar;
 
 	void Start ()
 	{
@@ -73,6 +74,9 @@ public class CameraScript : MonoBehaviour
 			}
 			if(enemyHealthbar != null){
 				enemyHealthbar.transform.position = new Vector3(enemyHealthbar.transform.position.x + dist, enemyHealthbar.transform.position.y, enemyHealthbar.transform.position.z);
+			}
+			if(specialLoadingBar != null){
+				specialLoadingBar.transform.position = new Vector3(specialLoadingBar.transform.position.x + dist, specialLoadingBar.transform.position.y, specialLoadingBar.transform.position.z);
 			}
 		}
 		

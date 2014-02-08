@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class ShipHandler : MonoBehaviour
-	//Once they have ben built, this script moves ships and has them fire.
+	//Once they have been built, this script moves ships and has them fire.
 {
 	//************** Common Properties of All Ships ********************//
 	public float shipHealth; //basic health
@@ -13,7 +13,6 @@ public class ShipHandler : MonoBehaviour
 	public float maxLength; //Maximum length of the ship's healthbar.
 	public Transform healthbar; //The physical healthbar above each ship.
 	public float cost;	//How much the ship costs to build.
-	public int laneID = -1;
 
 	//************** Bolt Firing Logic ********************//
 	public bool firesBolts;	//Does this ship fire bolts?
@@ -29,9 +28,7 @@ public class ShipHandler : MonoBehaviour
 
 	//************** Input Logic ********************//
 	public bool wasClickedOn;	//Was this ship just clicked on?
-	public bool wasReleasedOn; //Did the same click just release over the ship?
 	
-
 	//************** Shield Deployment Logic ********************//
 	public bool deploysShield; //Does this ship deploy shields?
 	public GameObject shield; //Access to the shield to instantiate them.
@@ -39,26 +36,13 @@ public class ShipHandler : MonoBehaviour
 	//************** SelfDestruction Logic ********************//
 	public bool selfDestructs;	//Does this ship blow itself up?
 	public GameObject blastZone; //The physical blast zone in which things take damage from the bomb.
-
-	//************** PauseButton Access Variables ********************//
-	private GameObject testObject;	//The testObject holds the button information currently.
-	private ButtonHandler button;	//Access to the button script to check the booleans in it. 
 	
 	//************** Death Logic ********************//
 	public GameObject explosion; //Access to the explosion to instantiate it when the ship dies.
 	public float scoreValue;	//How many points this ship is worth upon destruction.
 	
-
-	//STEVENLOOKHERE
-	//The below variables handle the movement in the current lanes. If you want to disable all of this logic, just go into the Start()
-	//function below and set shouldMoveInLane to false. You can then freely add your own code to handle your lanes and activate it with another bool.
 	//************** Move In Lane Logic ********************//
-	public bool shouldMoveInLane;	//Should the ship follow a lane or just move directly forward?
-	private GameObject upperWall;   //The upper wall of the lane.
-	private GameObject lowerWall;	//The lower wall of the lane.
-	private bool amInLane = true;	//Whether or not the ship is actually in a lane as far as the code can tell.
-	private float deltaUp = 0;		//How much space there is between the ship and the upper wall of the lane.
-	private float deltaDown = 0;	//How much space between the ship and lower wall.
+	public int laneID = -1;
 		
 	//************** Turn Around On Collision Logic ********************//
 	public bool turnsAroundOnCollision;	//Should the ship turn around on collisions or fight the colliding ship?
@@ -73,10 +57,6 @@ public class ShipHandler : MonoBehaviour
  
 	public virtual void Start ()
 	{
-		testObject = GameObject.Find ("EmptyButtonObject");
-		button = testObject.GetComponent<ButtonHandler> ();
-		//As we've seen before, getting access to ButtonHandler's booleans to know if we are paused.
-		
 		//Set up the healthbar. If we have one, set its initial length based on the max health of the ship.
 		maxHealth = shipHealth;
 		healthbar = gameObject.transform.Find ("HealthBar");
@@ -87,35 +67,17 @@ public class ShipHandler : MonoBehaviour
 			maxLength = -1;
 		}
 		
-		//STEVENLOOKHERE
-		//If you are turning off shouldMoveInLane, do it before this line.
-		//DO NOT simply replace shouldMoveInLane with false below, as that would miss another call
-		//in update. It's easier to just set it to be false directly.
-		shouldMoveInLane = false;
-		//MIKELOOKHERE
-		//These are the lane movers 
-		//http://www.youtube.com/watch?v=qRafXt26a_E brief tutorial
-
 
 		if (laneID == 0) {
-
-
-				iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane 1"),"time", 10));
-				}
-
-			
-
-		if (laneID == 1) {
-
-
-			iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane 2"), "time", 10));
-
+			iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane 1"), "speed", speed, "movetopath", false));
+		} else if (laneID == 1) {
+			iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane 2"), "speed", speed, "movetopath", false));
+		} else if (laneID == 2) {
+			iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane 3"), "speed", speed, "movetopath", false));
+		} else if (laneID == 3) {
+			iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane 4"), "speed", speed, "movetopath", false));
 		}
 
-		//If we are moving in a lane, we've got to find the one we are in.
-		if (shouldMoveInLane) {
-			DetermineCurrentLane ();
-		}
 
 		//Set up the miniMap. First calculate the scaling factor for the miniMap : world ratio.
 		worldScale = GameObject.Find ("Background").transform.localScale;
@@ -138,6 +100,7 @@ public class ShipHandler : MonoBehaviour
 		//it can't collide with the player layer, so this script will only truly react to colliding with an enemy ship, which is what we want.
 		if (turnsAroundOnCollision) {
 			if (other.gameObject.layer == LayerMask.NameToLayer ("EnemyShips") || other.gameObject.layer == LayerMask.NameToLayer ("PlayerShips")) {
+				
 				transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
 				collectedResources += 5;
 				if (other.tag == "Enemy" || other.tag == "Player") {
@@ -173,6 +136,7 @@ public class ShipHandler : MonoBehaviour
 			ShieldDeploy ();
 		}
 		if (turnsAroundOnCollision && transform.position.x < 0) {
+			
 			GameObject.Find ("LevelController").GetComponent<LevelController> ().levelScore += collectedResources;
 			collectedResources = 0;
 			transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
@@ -183,9 +147,8 @@ public class ShipHandler : MonoBehaviour
 			}
 		}
 		if (selfDestructs) {
-			if (wasClickedOn && wasReleasedOn) {
+			if (wasClickedOn) {
 				wasClickedOn = false;
-				wasReleasedOn = false;
 				Explode ();
 			} else if (isDead) {
 				Explode ();
@@ -194,42 +157,10 @@ public class ShipHandler : MonoBehaviour
 			Die ();
 		}
 
-		
-		//STEVENLOOKHERE
-		//Below is the update logic for continuing to move in the current lane. 
-		//If you set shouldMoveInLane to false earlier, you can effectively ignore this logic.
-		//Note, though, that upperWall and lowerWall are currently the saved variables for the walls
-		//of the lanes. Hopefully your code will remove the need for this ugly raycasting.
-	
-		//If we are in a lane, we use this logic to track the distance between the ship and the two walls, and keep it vertically in between the walls.
-		if (shouldMoveInLane && amInLane) {
-			float upZ = transform.position.z;
-			RaycastHit hit;
-			if (Physics.Raycast (transform.position, new Vector3 (0, 0, 10), out hit)) {
-				if (hit.transform.gameObject.GetInstanceID () == upperWall.GetInstanceID ()) {
-					deltaUp = hit.point.z - upZ;
-					upZ = hit.point.z;
-				} else {
-					upZ = upZ + deltaUp;
-				}
-			}
-			float downZ = transform.position.z;
-			if (Physics.Raycast (transform.position, new Vector3 (0, 0, -10), out hit)) {
-				if (hit.transform.gameObject.GetInstanceID () == lowerWall.GetInstanceID ()) {
-					deltaDown = hit.point.z - downZ;
-					downZ = hit.point.z;
-				} else {
-					downZ = downZ + deltaDown;
-				}
-			}
-			transform.position += new Vector3 (0.0f, 0.0f, (upZ + downZ) / 2 - transform.position.z);			
-		}
-
-
-
 		//Flip the ship and healthbar around if the ship is turning backwards.
 		if (turnsAroundOnCollision) {
 			if (transform.position.x >= 80) {
+				
 				transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
 				foreach (Transform child in transform) {
 					if (child.name == "HealthBar") {
@@ -240,17 +171,14 @@ public class ShipHandler : MonoBehaviour
 		}
 	}
 
-
-	// Meanwhile, we are also moving the ship forward, presuming the game is not paused.
-	/*public virtual void FixedUpdate ()
+	// Meanwhile, we are also moving the ship forward.
+	public virtual void FixedUpdate ()
 	{
-		if (button.paused) {
-			rigidbody.velocity = new Vector3 (0.0f, 0.0f, 0.0f);
-		} else {
+		if (laneID < 0) {
 			rigidbody.velocity = transform.forward * speed;	
 		}
 	}
-	*/
+	
 	//If a ship dies, update the level score, explode, and then destroy both the ship and its minimap dot.
 	public virtual void Die (bool diedOnscreen = true)
 	{
@@ -284,99 +212,37 @@ public class ShipHandler : MonoBehaviour
 	public void FireBolts ()
 	{
 		//Fire bolts and place them on a layer according to whether we are an enemy or player ship.
-		if (!button.paused) {
-			if (Time.time > nextFire) {
-				nextFire = Time.time + fireLag;
-				GameObject thisBolt = (GameObject)Instantiate (bolt, shotSpawn.position, shotSpawn.rotation);
-				ProjectileHandler boltMover = thisBolt.GetComponent<ProjectileHandler> ();
-				thisBolt.layer = LayerMask.NameToLayer ("PlayerAttacks");
-				if (gameObject.layer == LayerMask.NameToLayer ("EnemyShips")) {
-					thisBolt.layer = LayerMask.NameToLayer ("EnemyAttacks");
-				}
-				boltMover.damageDone = shotDamage;
-				if (boltSurvivalTime > 0) {
-					boltMover.survivalTime = boltSurvivalTime;
-				}
-				//Give the bolt a relative speed boost from the ship.
-				boltMover.speed += speed;
+		if (Time.time > nextFire) {
+			nextFire = Time.time + fireLag;
+			GameObject thisBolt = (GameObject)Instantiate (bolt, shotSpawn.position, shotSpawn.rotation);
+			ProjectileHandler boltMover = thisBolt.GetComponent<ProjectileHandler> ();
+			thisBolt.layer = LayerMask.NameToLayer ("PlayerAttacks");
+			if (gameObject.layer == LayerMask.NameToLayer ("EnemyShips")) {
+				thisBolt.layer = LayerMask.NameToLayer ("EnemyAttacks");
 			}
-		} else {
-			//At all times, we track how much time is left before we fire again. This allows us to update nextFire in case we pause the game.
-			nextFire = Time.time + timeDif;
+			boltMover.damageDone = shotDamage;
+			if (boltSurvivalTime > 0) {
+				boltMover.survivalTime = boltSurvivalTime;
+			}
+			//Give the bolt a relative speed boost from the ship.
+			boltMover.speed += speed;
 		}
+	
 		timeDif = nextFire - Time.time;
-	}
-
-	//STEVENLOOKHERE
-	//This function determines the lane at the ship's instantiation that it is allegedly in.
-	//Presumably, you will be able to replace this entire function with simply an ID number that is set 
-	//when the ship is instantiated.
-
-	public void DetermineCurrentLane ()
-	{
-		//First, find all lanes that exist, period.
-		GameObject[] allLanes = GameObject.FindGameObjectsWithTag ("Lane");
-		if (allLanes.Length == 0) {
-			amInLane = false;
-		} else {
-			float minDist = 100;
-			float laneWidth = 3;
-			//Next, for each lane, figure out if we are close to any of them.
-			for (int i = 0; i < allLanes.Length; i++) {
-				GameObject curLane = allLanes [i];
-				string name = curLane.transform.name;
-				GameObject upW = GameObject.Find (name + "/UpperWall");
-				float upDistance = 0;
-				RaycastHit hit;
-				//Look up along the z direction and see if you can find this upper wall.
-				if (Physics.Raycast (transform.position, new Vector3 (0, 0, 1), out hit)) {
-					if (hit.transform.gameObject.GetInstanceID () == upW.GetInstanceID ()) {
-						upDistance = hit.distance;
-					} else {
-						upDistance = 1000;
-					}
-				}
-				GameObject lwW = GameObject.Find (name + "/LowerWall");
-				float downDistance = 0;
-				if (Physics.Raycast (transform.position, new Vector3 (0, 0, -1), out hit)) {
-					if (hit.transform.gameObject.GetInstanceID () == lwW.GetInstanceID ()) {
-						downDistance = hit.distance;
-					} else {
-						downDistance = -1000;
-					}
-				}
-				//If we can find both lower and upper walls of a lane correctly oriented around us and not too far away, we say we are in that lane.
-				if (Mathf.Abs (upDistance - downDistance) < minDist) {
-					minDist = upDistance - downDistance;
-					laneWidth = upDistance + downDistance;
-					upperWall = upW;
-					lowerWall = lwW;
-				}
-			}
-			if (minDist == 100) {
-				amInLane = false;
-				Debug.Log ("I'm not in a lane!");
-			}
-		
-			speed = speed * (3f / laneWidth);
-		}
 	}
 
 	//Replace the ship with a shield at the same place.
 	public void ShieldDeploy ()
 	{
-		if (!button.paused) {
-			if (wasClickedOn && wasReleasedOn) {
-				GameObject theShield = (GameObject)Instantiate (shield, shotSpawn.position, shotSpawn.rotation);
-				theShield.layer = LayerMask.NameToLayer ("PlayerAttacks");
-				if (gameObject.layer == LayerMask.NameToLayer ("EnemyShips")) {
-					theShield.layer = LayerMask.NameToLayer ("EnemyAttacks");
-				}
-				wasClickedOn = false;
-				wasReleasedOn = false;
-				Destroy (myDot);
-				Destroy (gameObject);
+		if (wasClickedOn) {
+			GameObject theShield = (GameObject)Instantiate (shield, shotSpawn.position, shotSpawn.rotation);
+			theShield.layer = LayerMask.NameToLayer ("PlayerAttacks");
+			if (gameObject.layer == LayerMask.NameToLayer ("EnemyShips")) {
+				theShield.layer = LayerMask.NameToLayer ("EnemyAttacks");
 			}
+			wasClickedOn = false;
+			Destroy (myDot);
+			Destroy (gameObject);
 		}
 	}
 

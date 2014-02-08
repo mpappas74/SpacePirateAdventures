@@ -79,23 +79,11 @@ public class TestLevelController : MonoBehaviour
 					input.setBegan (true);
 				}
 			}
-			if (foundClickedShip && input.Ended ()) {
-				foundClickedShip = false;
-				if ((input.endPos () - currentClickPos).sqrMagnitude < 9) {
-					Vector3 pos = new Vector3 (currentClickPos.x, currentClickPos.y, 10.0f);
-					pos = Camera.main.ScreenToWorldPoint (pos);
-					foreach (GameObject ss in clickableShips) {
-						if ((pos - ss.transform.position).sqrMagnitude < 9) {
-							ss.GetComponent<ShipHandler> ().wasReleasedOn = true;
-							foundClickedShip = true;
-							break;
-						}
-					}
-				}
+			
 				if (!foundClickedShip) {
 					input.setEnded (true);
 				}
-			}
+			
 			
 			
 			yield return new WaitForSeconds (0.2f);
