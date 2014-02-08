@@ -34,6 +34,7 @@ public class LevelController : MonoBehaviour
 	private ShipHandler mothership; //Need access to the player's and enemy's mothership so that we can tell if we've won.
 	private ShipHandler enemyMothership;
 	public GameObject specialBolt;
+	private bool canUseSpecial = true;
 	
 	void Start ()
 	{
@@ -148,8 +149,13 @@ public class LevelController : MonoBehaviour
 	IEnumerator SpecialAttack ()
 	{
 		yield return new WaitForSeconds (0.5f);
+		GameObject block = GameObject.Find("SpecialLoadingBar");
+		float initialHeight = block.transform.localScale.x;
+		block.transform.localScale += new Vector3(-initialHeight, 0, 0);
+		Color t = block.renderer.material.GetColor("_TintColor");
+		block.renderer.material.SetColor("_TintColor", new Color(t.r, t.g, t.b, 0.1f));
 		float time = Time.time;
-		while (Time.time < time + 8) {
+		while (Time.time < time + 5) {
 			for (int i = 0; i < 4; i++) {
 				int zWay = 2 * Random.Range (0, 2);
 				GameObject go = (GameObject)Instantiate (specialBolt, new Vector3 (1f * Random.Range (10, 80), 0.0f, (1 - zWay) * 10f), specialBolt.transform.rotation);
@@ -161,6 +167,12 @@ public class LevelController : MonoBehaviour
 			}
 			yield return new WaitForSeconds (0.3f);
 		}
+		for (int i = 0; i < 30; i++) {
+			yield return new WaitForSeconds (0.2f);
+			block.transform.localScale += new Vector3 (initialHeight * (1) / 30f, 0, 0);
+		}
+		block.renderer.material.SetColor("_TintColor", new Color(t.r, t.g, t.b, 1));
+		canUseSpecial = true;
 	}
 
 	void Update ()
@@ -187,8 +199,9 @@ public class LevelController : MonoBehaviour
 				if (!isPlacingShip) {
 					if (button.pressed1) {
 						button.pressed1 = false;
-						if(levelScore >= 20){
+						if(levelScore >= 20 && canUseSpecial){
 							StartCoroutine ("SpecialAttack");
+							canUseSpecial = false;
 							levelScore -= 20;
 						}
 					}
