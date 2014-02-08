@@ -1,25 +1,25 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\_Scripts\LevelController.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\_Scripts\OOP Ship Handlers\ShipHandler.cs">
     <Files>
-      <File FileName="Assets\_Scripts\OOP Ship Handlers\ShipHandler.cs" Line="393" Column="1" />
+      <File FileName="Assets\_Scripts\OOP Ship Handlers\ShipHandler.cs" Line="114" Column="1" />
       <File FileName="Assets\_Scripts\Level#Controllers\Level_Controller.cs" Line="1" Column="1" />
       <File FileName="Assets\iTween\Plugins\iTween.cs" Line="1" Column="1" />
-      <File FileName="Assets\_Scripts\LevelController.cs" Line="27" Column="31" />
+      <File FileName="Assets\_Scripts\LevelController.cs" Line="145" Column="75" />
       <File FileName="Assets\_Scripts\MainMenuScript.cs" Line="1" Column="1" />
       <File FileName="Assets\_Scripts\OrientationAdjustment.cs" Line="1" Column="1" />
       <File FileName="Assets\iTween\ReadMe!\ReadMe!.txt" Line="1" Column="1" />
       <File FileName="Assets\Pixelplacement\iTweenPath\iTweenPath.cs" Line="1" Column="1" />
       <File FileName="Assets\_Scripts\Level#Controllers\Level2Controller.cs" Line="1" Column="1" />
-      <File FileName="Assets\_Scripts\OOP Ship Handlers\ShieldShipHandler.cs" Line="1" Column="1" />
-      <File FileName="Assets\_Scripts\OOP Ship Handlers\ShipHandler.cs" Line="393" Column="1" />
+      <File FileName="Assets\_Scripts\OOP Ship Handlers\ShieldShipHandler.cs" Line="27" Column="1" />
+      <File FileName="Assets\_Scripts\OOP Ship Handlers\ShipHandler.cs" Line="391" Column="1" />
       <File FileName="Assets\_Scripts\OOP Ship Handlers\BombShipHandler.cs" Line="1" Column="1" />
       <File FileName="Assets\_Scripts\Level#Controllers\Level3Controller.cs" Line="1" Column="1" />
       <File FileName="Assets\_Scripts\OOP Ship Handlers\MothershipScript.cs" Line="1" Column="1" />
       <File FileName="Assets\_Scripts\OOP Ship Handlers\TinyShipHandler.cs" Line="1" Column="1" />
       <File FileName="Assets\_Scripts\OOP Projectile Handler\ProjectileHandler.cs" Line="1" Column="1" />
       <File FileName="Assets\_Scripts\OOP Projectile Handler\BoltHandler.cs" Line="1" Column="1" />
-      <File FileName="Assets\_Scripts\OOP Ship Handlers\StealthShipHandler.cs" Line="1" Column="1" />
+      <File FileName="Assets\_Scripts\OOP Ship Handlers\StealthShipHandler.cs" Line="31" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
