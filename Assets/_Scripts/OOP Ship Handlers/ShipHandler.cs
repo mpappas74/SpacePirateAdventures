@@ -67,13 +67,13 @@ public class ShipHandler : MonoBehaviour
 			maxLength = -1;
 		}
 
-		
 		if (laneID >= 0) {
-			int Inlane = laneID + 1;
-			string Mylane = Inlane.ToString ();
-			iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane " + Mylane), "speed", speed, "movetopath", false));
-		}
-
+				int Inlane=laneID+1;
+				string Mylane=Inlane.ToString();
+			    iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane " + Mylane), "speed", speed, "movetopath", false, iTween.EaseType.linear));
+				}
+		UnityEngine.Vector3[] the_path= iTweenPath.GetPath("lane 1");
+		Debug.Log (the_path [1]);
 
 
 		//Set up the miniMap. First calculate the scaling factor for the miniMap : world ratio.
