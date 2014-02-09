@@ -57,15 +57,16 @@ public class ShipHandler : MonoBehaviour
 
 	//***************************************** Virtual Methods ******************************************************//
 
-	void Tween (UnityEngine.Vector3[] path) {
+	void Tween (Vector3[] path) {
 
-		UnityEngine.Vector3 toPoint = path[nextPoint];
-		Vector3.Distance(toPoint, transform.position);
-		iTween.MoveTo (gameObject, iTween.Hash ("position", toPoint, "time", Vector3.Distance(toPoint, transform.position)/speed, "movetopath", false, "oncomplete","complete",
-		"completeparams", path, "easetype", iTween.EaseType.linear));
+		Vector3 toPoint = path[nextPoint];
+		//Vector3.Distance(toPoint, transform.position);
+		iTween.MoveTo (gameObject, iTween.Hash ("position", toPoint, "time", Vector3.Distance(toPoint, transform.position)/speed, "movetopath", false, "oncomplete", "CompleteNode",
+		"oncompleteparams", path, "easetype", iTween.EaseType.linear));
 	
 	}
-	void complete(UnityEngine.Vector3[] path) {
+	void CompleteNode(Vector3[] path) {
+		Debug.Log("I'm in!");
 		nextPoint++;
 		if (nextPoint < path.Length) Tween(path);
 	}
@@ -85,7 +86,7 @@ public class ShipHandler : MonoBehaviour
 		if (laneID >= 0) {
 				int Inlane=laneID+1;
 				string Mylane=Inlane.ToString();
-			UnityEngine.Vector3[] the_path= iTweenPath.GetPath("lane"+Mylane);
+			UnityEngine.Vector3[] the_path= iTweenPath.GetPath("lane "+Mylane);
 			Tween (the_path);
 			   // iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane " + Mylane), "time", speed, "movetopath", false));
 				}
