@@ -52,23 +52,27 @@ public class ShipHandler : MonoBehaviour
 	private GameObject myDot; //The actual dot representing this particular ship.
 	private Vector3 worldScale; //A scaling vector representing the relative size of the miniMap to the actual arena.
 	private Vector3 mapShift; //The shift off of the center of the map to orient the dots correctly.
-	int nextPoint=1;
+	int nextPoint = 1;
 
 
 	//***************************************** Virtual Methods ******************************************************//
 
-	void Tween (Vector3[] path) {
+	public void Tween (Vector3[] path)
+	{
 
-		Vector3 toPoint = path[nextPoint];
+		Vector3 toPoint = path [nextPoint];
 		//Vector3.Distance(toPoint, transform.position);
-		iTween.MoveTo (gameObject, iTween.Hash ("position", toPoint, "time", Vector3.Distance(toPoint, transform.position)/speed, "movetopath", false, "oncomplete", "CompleteNode",
-		"oncompleteparams", path, "easetype", iTween.EaseType.linear));
+		iTween.MoveTo (gameObject, iTween.Hash ("position", toPoint, "time", Vector3.Distance (toPoint, transform.position) / speed, "movetopath", false, "oncomplete", "CompleteNode",
+		"oncompleteparams", path, "oncompletetarget", gameObject, "easetype", iTween.EaseType.linear));
 	
 	}
-	void CompleteNode(Vector3[] path) {
-		Debug.Log("I'm in!");
+
+	public void CompleteNode (Vector3[] path)
+	{
+		//Debug.Log("I'm in!");
 		nextPoint++;
-		if (nextPoint < path.Length) Tween(path);
+		if (nextPoint < path.Length)
+			Tween (path);
 	}
  
 	public virtual void Start ()
@@ -84,12 +88,12 @@ public class ShipHandler : MonoBehaviour
 		}
 
 		if (laneID >= 0) {
-				int Inlane=laneID+1;
-				string Mylane=Inlane.ToString();
-			UnityEngine.Vector3[] the_path= iTweenPath.GetPath("lane "+Mylane);
+			int Inlane = laneID + 1;
+			string Mylane = Inlane.ToString ();
+			UnityEngine.Vector3[] the_path = iTweenPath.GetPath ("lane " + Mylane);
 			Tween (the_path);
-			   // iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane " + Mylane), "time", speed, "movetopath", false));
-				}
+			// iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane " + Mylane), "time", speed, "movetopath", false));
+		}
 
 
 
@@ -141,7 +145,7 @@ public class ShipHandler : MonoBehaviour
 	public virtual void Update ()
 	{
 		//Update your dot position.
-	//	myDot.transform.localPosition = Vector3.Scale (transform.position, worldScale) - mapShift;
+		//	myDot.transform.localPosition = Vector3.Scale (transform.position, worldScale) - mapShift;
 
 		//Run a bunch of boolean checks based on what kind of behavior this ship is meant to exhibit, and then run the corresponding function.
 		if (firesBolts) {
