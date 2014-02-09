@@ -52,11 +52,27 @@ public class ShipHandler : MonoBehaviour
 	private GameObject myDot; //The actual dot representing this particular ship.
 	private Vector3 worldScale; //A scaling vector representing the relative size of the miniMap to the actual arena.
 	private Vector3 mapShift; //The shift off of the center of the map to orient the dots correctly.
+	int nextPoint=1;
+
 
 	//***************************************** Virtual Methods ******************************************************//
+
+	void Tween (UnityEngine.Vector3[] path) {
+
+		UnityEngine.Vector3 toPoint = path[nextPoint];
+		Vector3.Distance(toPoint, transform.position);
+		iTween.MoveTo (gameObject, iTween.Hash ("position", toPoint, "time", Vector3.Distance(toPoint, transform.position)/speed, "movetopath", false, "oncomplete","complete",
+		"completeparams", path, "easetype", iTween.EaseType.linear));
+	
+	}
+	void complete(UnityEngine.Vector3[] path) {
+		nextPoint++;
+		if (nextPoint < path.Length) Tween(path);
+	}
  
 	public virtual void Start ()
 	{
+		speed = 10f;
 		//Set up the healthbar. If we have one, set its initial length based on the max health of the ship.
 		maxHealth = shipHealth;
 		healthbar = gameObject.transform.Find ("HealthBar");
@@ -64,16 +80,17 @@ public class ShipHandler : MonoBehaviour
 			healthbar.localScale *= maxHealth / 3;
 			maxLength = healthbar.localScale.x;
 		} else {
-			maxLength = -1;
 		}
 
 		if (laneID >= 0) {
 				int Inlane=laneID+1;
 				string Mylane=Inlane.ToString();
-			    iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane " + Mylane), "speed", 10f*speed, "movetopath", false, "easetype", iTween.EaseType.linear));
+			UnityEngine.Vector3[] the_path= iTweenPath.GetPath("lane"+Mylane);
+			Tween (the_path);
+			   // iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane " + Mylane), "time", speed, "movetopath", false));
 				}
-		UnityEngine.Vector3[] the_path= iTweenPath.GetPath("lane 1");
-		Debug.Log (the_path [1]);
+
+
 
 
 		//Set up the miniMap. First calculate the scaling factor for the miniMap : world ratio.
@@ -123,7 +140,7 @@ public class ShipHandler : MonoBehaviour
 	public virtual void Update ()
 	{
 		//Update your dot position.
-		myDot.transform.localPosition = Vector3.Scale (transform.position, worldScale) - mapShift;
+	//	myDot.transform.localPosition = Vector3.Scale (transform.position, worldScale) - mapShift;
 
 		//Run a bunch of boolean checks based on what kind of behavior this ship is meant to exhibit, and then run the corresponding function.
 		if (firesBolts) {
