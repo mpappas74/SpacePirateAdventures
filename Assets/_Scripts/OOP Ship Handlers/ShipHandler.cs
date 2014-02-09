@@ -68,24 +68,14 @@ public class ShipHandler : MonoBehaviour
 		}
 		
 
-		if (laneID == 0) {
-			iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane 1"), "speed", speed, "movetopath", false));
-		} else if (laneID == 1) {
-			iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane 2"), "speed", speed, "movetopath", false));
-		} else if (laneID == 2) {
-			iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane 3"), "speed", speed, "movetopath", false));
-		} else if (laneID == 3) {
-			iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane 4"), "speed", speed, "movetopath", false));
-		}
 
-		/*
 		if (laneID >= 0) {
 				int Inlane=laneID+1;
 				string Mylane=Inlane.ToString();
-			    iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane " + Mylane), "speed", speed, "movetopath", false));
+			    iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane " + Mylane), "speed", speed, "movetopath", false, iTween.EaseType.linear));
 				}
-*/
-
+		UnityEngine.Vector3[] the_path= iTweenPath.GetPath("lane 1");
+		Debug.Log (the_path [1]);
 
 		//Set up the miniMap. First calculate the scaling factor for the miniMap : world ratio.
 		worldScale = GameObject.Find ("Background").transform.localScale;
