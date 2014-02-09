@@ -57,27 +57,9 @@ public class ShipHandler : MonoBehaviour
 
 	//***************************************** Virtual Methods ******************************************************//
 
-	public void Tween (Vector3[] path)
-	{
-
-		Vector3 toPoint = path [nextPoint];
-		//Vector3.Distance(toPoint, transform.position);
-		iTween.MoveTo (gameObject, iTween.Hash ("position", toPoint, "time", Vector3.Distance (toPoint, transform.position) / speed, "movetopath", false, "oncomplete", "CompleteNode",
-		"oncompleteparams", path, "oncompletetarget", gameObject, "easetype", iTween.EaseType.linear));
-	
-	}
-
-	public void CompleteNode (Vector3[] path)
-	{
-		//Debug.Log("I'm in!");
-		nextPoint++;
-		if (nextPoint < path.Length)
-			Tween (path);
-	}
  
 	public virtual void Start ()
 	{
-		speed = 10f;
 		//Set up the healthbar. If we have one, set its initial length based on the max health of the ship.
 		maxHealth = shipHealth;
 		healthbar = gameObject.transform.Find ("HealthBar");
@@ -145,7 +127,7 @@ public class ShipHandler : MonoBehaviour
 	public virtual void Update ()
 	{
 		//Update your dot position.
-		//	myDot.transform.localPosition = Vector3.Scale (transform.position, worldScale) - mapShift;
+		myDot.transform.localPosition = Vector3.Scale (transform.position, worldScale) - mapShift;
 
 		//Run a bunch of boolean checks based on what kind of behavior this ship is meant to exhibit, and then run the corresponding function.
 		if (firesBolts) {
@@ -270,6 +252,24 @@ public class ShipHandler : MonoBehaviour
 	{
 		Instantiate (blastZone, transform.position, transform.rotation);
 		Die ();
+	}
+
+	public void Tween (Vector3[] path)
+	{
+		
+		Vector3 toPoint = path [nextPoint];
+		//Vector3.Distance(toPoint, transform.position);
+		iTween.MoveTo (gameObject, iTween.Hash ("position", toPoint, "time", Vector3.Distance (toPoint, transform.position) / speed, "movetopath", false, "oncomplete", "CompleteNode",
+		                                        "oncompleteparams", path, "easetype", iTween.EaseType.linear));
+		
+	}
+	
+	public void CompleteNode (Vector3[] path)
+	{
+		//Debug.Log("I'm in!");
+		nextPoint++;
+		if (nextPoint < path.Length)
+			Tween (path);
 	}
 
 }

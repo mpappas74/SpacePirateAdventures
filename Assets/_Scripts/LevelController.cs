@@ -35,6 +35,9 @@ public class LevelController : MonoBehaviour
 	private ShipHandler enemyMothership;
 	public GameObject specialBolt;
 	private bool canUseSpecial = true;
+	private GameObject specialBar;
+	private float specialBarInitialHeight;
+	private bool amITheRightTint;
 	
 	void Start ()
 	{
@@ -58,6 +61,10 @@ public class LevelController : MonoBehaviour
 		
 		//Slowly heal level score.
 		StartCoroutine (GrowLevelScore ());
+
+		specialBar = GameObject.Find("SpecialLoadingBar");
+		specialBarInitialHeight = specialBar.transform.localScale.x;
+		StartCoroutine (RecoverSpecialBar());
 
 		mothership = GameObject.Find ("Mothership").GetComponent<ShipHandler> ();
 		enemyMothership = GameObject.Find ("EnemyMothership").GetComponent<ShipHandler> ();
@@ -106,6 +113,19 @@ public class LevelController : MonoBehaviour
 						break;
 					}
 				}
+				if (!foundClickedShip && currentClickPos.x > Screen.width * .2f && specialBar.transform.localScale.x >= specialBarInitialHeight/6f) {
+					GameObject theBolt = (GameObject)Instantiate (specialBolt, new Vector3 (6.5f, 0, 0), specialBolt.transform.rotation);
+					theBolt.transform.localScale *= 2;
+					theBolt.GetComponent<ProjectileHandler> ().speed *= 10;
+					theBolt.GetComponent<ProjectileHandler> ().damageDone = 5;
+					theBolt.GetComponent<ProjectileHandler> ().survivalTime = 1.2f;
+					//find the vector pointing from our position to the target
+					Vector3 _direction = (pos - theBolt.transform.position).normalized;
+					//create the rotation we need to be in to look at the target
+					theBolt.transform.rotation = Quaternion.LookRotation (_direction);
+					specialBar.transform.localScale += new Vector3 (-specialBarInitialHeight/4f, 0, 0);
+					amITheRightTint = false;
+				}
 			}
 			input.setClicked (false);
 			yield return new WaitForSeconds (0.2f);
@@ -146,20 +166,41 @@ public class LevelController : MonoBehaviour
 		
 	}
 
+	IEnumerator RecoverSpecialBar ()
+	{
+		while (!button.gameOver) {
+			yield return new WaitForSeconds (0.2f);
+			if (specialBar.transform.localScale.x < specialBarInitialHeight) {
+				canUseSpecial = false;
+				specialBar.transform.localScale += new Vector3 (specialBarInitialHeight * (1) / 60f, 0, 0);
+				if (specialBar.transform.localScale.x >= specialBarInitialHeight) {
+					Color t = specialBar.renderer.material.GetColor ("_TintColor");
+					specialBar.renderer.material.SetColor ("_TintColor", new Color (t.r, t.g, t.b, 1));
+					canUseSpecial = true;
+					amITheRightTint = true;
+				} else if(!amITheRightTint){
+					Color t = specialBar.renderer.material.GetColor ("_TintColor");
+					specialBar.renderer.material.SetColor ("_TintColor", new Color (t.r, t.g, t.b, 0.1f));
+					amITheRightTint = true;
+				}
+			} else {
+				specialBar.transform.localScale = new Vector3(specialBarInitialHeight, specialBar.transform.localScale.y, specialBar.transform.localScale.z);
+			}
+		}
+		
+	}
+
 	IEnumerator SpecialAttack ()
 	{
 		yield return new WaitForSeconds (0.5f);
-		GameObject block = GameObject.Find("SpecialLoadingBar");
-		float initialHeight = block.transform.localScale.x;
-		block.transform.localScale += new Vector3(-initialHeight, 0, 0);
-		Color t = block.renderer.material.GetColor("_TintColor");
-		block.renderer.material.SetColor("_TintColor", new Color(t.r, t.g, t.b, 0.1f));
+		amITheRightTint = false;
+		specialBar.transform.localScale += new Vector3 (-specialBarInitialHeight, 0, 0);
 		float time = Time.time;
 		while (Time.time < time + 5) {
 			for (int i = 0; i < 4; i++) {
 				int zWay = 2 * Random.Range (0, 2);
-				GameObject go = (GameObject)Instantiate (specialBolt, new Vector3 (1f * Random.Range (10, 80), 0.0f, (1 - zWay) * 10f), specialBolt.transform.rotation);
-				go.transform.Rotate (Vector3.up * 180 * ((2-zWay)/2f));
+				GameObject go = (GameObject)Instantiate (specialBolt, new Vector3 (1f * Random.Range (10, 70), 0.0f, (1 - zWay) * 10f), specialBolt.transform.rotation);
+				go.transform.Rotate (Vector3.up * 180 * ((2 - zWay) / 2f));
 				go.layer = LayerMask.NameToLayer ("PlayerAttacks");
 				go.GetComponent<ProjectileHandler> ().damageDone = 1f;
 				go.GetComponent<ProjectileHandler> ().doesSingleShotDamage = true;
@@ -167,12 +208,6 @@ public class LevelController : MonoBehaviour
 			}
 			yield return new WaitForSeconds (0.3f);
 		}
-		for (int i = 0; i < 30; i++) {
-			yield return new WaitForSeconds (0.2f);
-			block.transform.localScale += new Vector3 (initialHeight * (1) / 30f, 0, 0);
-		}
-		block.renderer.material.SetColor("_TintColor", new Color(t.r, t.g, t.b, 1));
-		canUseSpecial = true;
 	}
 
 	void Update ()
@@ -199,7 +234,7 @@ public class LevelController : MonoBehaviour
 				if (!isPlacingShip) {
 					if (button.pressed1) {
 						button.pressed1 = false;
-						if(levelScore >= 20 && canUseSpecial){
+						if (levelScore >= 20 && canUseSpecial) {
 							StartCoroutine ("SpecialAttack");
 							canUseSpecial = false;
 							levelScore -= 20;
