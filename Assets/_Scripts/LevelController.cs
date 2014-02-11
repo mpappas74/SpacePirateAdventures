@@ -38,7 +38,8 @@ public class LevelController : MonoBehaviour
 	private GameObject specialBar;
 	private float specialBarInitialHeight;
 	private bool amITheRightTint;
-	
+	private bool[] busyBuildSite;	
+
 	void Start ()
 	{
 		GameControllerScript.Instance.setCurrentLevel (Application.loadedLevel);
@@ -47,7 +48,7 @@ public class LevelController : MonoBehaviour
 		//We will need as many placingBoxes as there are lanes, and also the neutral drag ship.
 		numLanes = laneRotations.Length;
 		placingShipObjects = new GameObject[numLanes + 1];
-
+		busyBuildSite = new bool[numLanes];
 
 		button = testObject.GetComponent<ButtonHandler> ();
 		//We will check during a build if the click missed the boxes and set it to false if it did.
@@ -134,16 +135,28 @@ public class LevelController : MonoBehaviour
 
 	
 	//This function allows us to build the ship we have chosen in the correct place cleanly while deleting all the other objects in the main script.
-	public IEnumerator BuildCurrentShip (GameObject curShip, Vector3 position, float rotation, int laneID)
+	public IEnumerator BuildCurrentShip (GameObject curShip, int laneID)
 	{
+		Vector3 position;
+		position.z = startPositions [laneID];
+		position.x = 9;
+		position.y = 0;
+		float rotation = laneRotations [laneID];
+
+		while(busyBuildSite[laneID]){
+			yield return new WaitForSeconds(0.3f);
+		}
+
 		//Keep one placingBox visible to show that the ship is being built. Hold it for one minute, then replace it with a ship.
 		//We rotate both the placingBox and the ship by the movementAngle about the y axis.
-		GameObject block = (GameObject)Instantiate (GameControllerScript.Instance.getLoadingBar (), new Vector3 (9, -10, position.z), Quaternion.Euler (new Vector3 (0.0f, rotation, 0.0f)));
+		GameObject block = (GameObject)Instantiate (GameControllerScript.Instance.getLoadingBar (), new Vector3 (10.5f, -10, position.z), Quaternion.Euler (new Vector3 (0.0f, rotation, 0.0f)));
 		float initialHeight = block.transform.localScale.z;
+		busyBuildSite[laneID] = true;
 		for (int i = 0; i < 5; i++) {
 			yield return new WaitForSeconds (0.2f);
 			block.transform.localScale = new Vector3 (block.transform.localScale.x, block.transform.localScale.y, initialHeight * (5f - i) / 5f);
 		}
+		busyBuildSite[laneID] = false;
 		Destroy (block);
 
 		GameObject theShip = (GameObject)Instantiate (curShip, position, curShip.transform.rotation);
@@ -415,12 +428,6 @@ public class LevelController : MonoBehaviour
 					if (clickWasAtBoxes) {
 
 						
-						pos.z = startPositions [closestIndex];
-						pos.x = 9;
-						pos.y = 0;
-						float rot = laneRotations [closestIndex];
-						
-						
 						//Check the score. Note that we are only checking it now so that we only decrease it if the player actually builds the ship.
 						//We also want the players able to look at ships they don't have the points to build yet.
 						//We are no longer trying to place a ship.
@@ -428,7 +435,7 @@ public class LevelController : MonoBehaviour
 						button.canCancelShip = false;
 						if (levelScore >= currentShip.GetComponent<ShipHandler> ().cost) {
 							levelScore -= currentShip.GetComponent<ShipHandler> ().cost;
-							StartCoroutine (BuildCurrentShip (currentShip, pos, rot, closestIndex));
+							StartCoroutine (BuildCurrentShip (currentShip, closestIndex));
 							//Remember, currentShip defaults to placingBox when we are no longer building a ship.
 							if (button.shipRepeater) {
 								currentShip = currentNeutralShip;//GameControllerScript.Instance.getPlacingBox ();
