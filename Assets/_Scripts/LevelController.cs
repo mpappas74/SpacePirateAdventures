@@ -372,6 +372,7 @@ public class LevelController : MonoBehaviour
 				}
 				//If we dragged the ship, move it accordingly.
 				if (input.Moved ()) {
+					
 					Vector2 movePos = input.currentDragPos ();
 					placingShipObjects [0].transform.position = Camera.main.ScreenToWorldPoint (new Vector3 (movePos.x, movePos.y, 10.0f));
 				}

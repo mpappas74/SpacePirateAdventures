@@ -127,7 +127,7 @@ public class ShipHandler : MonoBehaviour
 	public virtual void Update ()
 	{
 		//Update your dot position.
-		myDot.transform.localPosition = Vector3.Scale (transform.position, worldScale) - mapShift;
+		myDot.transform.localPosition = Vector3.Scale (new Vector3(transform.position.x, 0.0f, transform.position.z), worldScale) - mapShift;
 
 		//Run a bunch of boolean checks based on what kind of behavior this ship is meant to exhibit, and then run the corresponding function.
 		if (firesBolts) {
