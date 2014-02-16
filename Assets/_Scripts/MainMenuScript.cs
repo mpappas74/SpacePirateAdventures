@@ -15,6 +15,8 @@ public class MainMenuScript : MonoBehaviour
 	public bool settingsMenu;
 	public bool levelMenu;
 	public bool soundTest;
+
+	public GUISkin customSkin;
 	//The audioSources are for the sound test. We need to know what they are, what they are called, etc.
 	public AudioSource level1;
 	public AudioSource level2;
@@ -78,6 +80,7 @@ public class MainMenuScript : MonoBehaviour
 	
 	void OnGUI ()
 	{
+		GUI.skin = customSkin;
 		//Generate the buttons in locations based on screen size to keep a consistent positioning.
 		//Start by declaring the title just as a text box.
 		//We also declare a currently empty text box which we will use if we need to put text onscreen anywhere in the menu.
@@ -106,15 +109,13 @@ public class MainMenuScript : MonoBehaviour
 				levelMenu = true;
 				backButton = true;
 			}
-			if (GUI.Button (new Rect (.5f * Screen.width - 100, .5f * Screen.height, 200, .12f * Screen.height), "Settings")) {
+			if (GUI.Button (new Rect (.5f * Screen.width - 100, .5f * Screen.height, 200, .12f * Screen.height), "Options")) {
 				settingsMenu = true;
 				main = false;
 				backButton = true;
 			}
-			if (GUI.Button (new Rect (.5f * Screen.width - 100, .65f * Screen.height, 200, .12f * Screen.height), "High Score")) {
-				main = false;
-				text = "There are no high scores yet. We need a game first.";
-				backButton = true;
+			if (GUI.Button (new Rect (.5f * Screen.width - 100, .65f * Screen.height, 200, .12f * Screen.height), "How To Play")) {
+				Application.LoadLevel("TutorialScene");
 			} 
 		} else if (levelMenu) {
 			//The selectionGrid will allow you to choose exactly one of a set of buttons. levelGridInt is initialized to -1 so no level starts out selected.
@@ -143,7 +144,7 @@ public class MainMenuScript : MonoBehaviour
 			levelGridInt = tempInt;
 		} else if (settingsMenu) {
 			GUI.Label(new Rect(.5f * Screen.width - 100, .2f * Screen.height, 200, .08f * Screen.height), "Volume", volStyle);
-			theVolume = GUI.HorizontalSlider(new Rect(.5f * Screen.width - 100, .3f * Screen.height, 200, .025f * Screen.height), theVolume, 0.0F, 1.0F);
+			theVolume = GUI.HorizontalSlider(new Rect(.5f * Screen.width - 100, .3f * Screen.height, 200, .1f * Screen.height), theVolume, 0.0F, 1.0F);
 			if (GUI.Button (new Rect (.5f * Screen.width - 100, .4f * Screen.height, 200, .12f * Screen.height), "Sound Test")) {
 				settingsMenu = false;
 				soundTest = true;

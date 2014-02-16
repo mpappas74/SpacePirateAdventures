@@ -39,6 +39,7 @@ public class LevelController : MonoBehaviour
 	private float specialBarInitialHeight;
 	private bool amITheRightTint;
 	private bool[] busyBuildSite;	
+	public bool amTutorial = false;
 
 	void Start ()
 	{
@@ -114,7 +115,7 @@ public class LevelController : MonoBehaviour
 						break;
 					}
 				}
-				if (!foundClickedShip && currentClickPos.x > Screen.width * .2f && specialBar.transform.localScale.x >= specialBarInitialHeight/6f) {
+				if (!amTutorial && !foundClickedShip && currentClickPos.x > Screen.width * .2f && specialBar.transform.localScale.x >= specialBarInitialHeight/6f) {
 					GameObject theBolt = (GameObject)Instantiate (specialBolt, new Vector3 (6.5f, 0, 0), specialBolt.transform.rotation);
 					theBolt.transform.localScale *= 2;
 					theBolt.GetComponent<ProjectileHandler> ().speed *= 10;
@@ -486,7 +487,7 @@ public class LevelController : MonoBehaviour
 			} 
 			if (GUI.Button (new Rect (.5f * Screen.width - 100, .4f * Screen.height, 200, .13f * Screen.height), "Next Level")) {
 				//Be careful here if we change the scene order!!!!
-				if (Application.loadedLevel < 3) {
+				if (Application.loadedLevel < 4) {
 					Application.LoadLevel (Application.loadedLevel + 1);
 					GameControllerScript.Instance.setCurrentUnlockedLevel (GameControllerScript.Instance.getCurrentUnlockedLevel () + 1);
 				} else {
