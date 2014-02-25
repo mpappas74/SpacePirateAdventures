@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class ShipHandler : MonoBehaviour
@@ -13,7 +13,7 @@ public class ShipHandler : MonoBehaviour
 	public float maxLength; //Maximum length of the ship's healthbar.
 	public Transform healthbar; //The physical healthbar above each ship.
 	public float cost;	//How much the ship costs to build.
-
+	
 	//************** Bolt Firing Logic ********************//
 	public bool firesBolts;	//Does this ship fire bolts?
 	public float fireLag; //How long to wait between shots.
@@ -25,14 +25,14 @@ public class ShipHandler : MonoBehaviour
 	//This keeps one from abusing pausing to make the bolts reload faster.
 	public float shotDamage = 1; //How much each bolt should do.
 	public float boltSurvivalTime = -1; //How long each bolt should survive. Negative values mean they last forever.
-
+	
 	//************** Input Logic ********************//
 	public bool wasClickedOn;	//Was this ship just clicked on?
 	
 	//************** Shield Deployment Logic ********************//
 	public bool deploysShield; //Does this ship deploy shields?
 	public GameObject shield; //Access to the shield to instantiate them.
-
+	
 	//************** SelfDestruction Logic ********************//
 	public bool selfDestructs;	//Does this ship blow itself up?
 	public GameObject blastZone; //The physical blast zone in which things take damage from the bomb.
@@ -43,7 +43,7 @@ public class ShipHandler : MonoBehaviour
 	
 	//************** Move In Lane Logic ********************//
 	public int laneID = -1;
-		
+	
 	//************** Turn Around On Collision Logic ********************//
 	public bool turnsAroundOnCollision;	//Should the ship turn around on collisions or fight the colliding ship?
 	public float collectedResources = 0;	//How many resources the thief ship has collected.
@@ -53,11 +53,11 @@ public class ShipHandler : MonoBehaviour
 	private Vector3 worldScale; //A scaling vector representing the relative size of the miniMap to the actual arena.
 	private Vector3 mapShift; //The shift off of the center of the map to orient the dots correctly.
 	int nextPoint = 1;
-
-
+	
+	
 	//***************************************** Virtual Methods ******************************************************//
-
- 
+	
+	
 	public virtual void Start ()
 	{
 		//Set up the healthbar. If we have one, set its initial length based on the max health of the ship.
@@ -68,7 +68,7 @@ public class ShipHandler : MonoBehaviour
 			maxLength = healthbar.localScale.x;
 		} else {
 		}
-
+		
 		if (laneID >= 0) {
 			int Inlane = laneID + 1;
 			string Mylane = Inlane.ToString ();
@@ -76,14 +76,14 @@ public class ShipHandler : MonoBehaviour
 			Tween (the_path);
 			// iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane " + Mylane), "time", speed, "movetopath", false));
 		}
-
-
-
-
+		
+		
+		
+		
 		//Set up the miniMap. First calculate the scaling factor for the miniMap : world ratio.
 		worldScale = GameObject.Find ("Background").transform.localScale;
 		worldScale = new Vector3 (1 / worldScale.x, 1, 1 / worldScale.z);
-
+		
 		//Then instantiate a dot for this ship as a child of the map and orient it correctly.
 		GameObject miniMap = GameObject.Find ("MiniMap");
 		myDot = (gameObject.layer == LayerMask.NameToLayer ("EnemyShips")) ? (GameObject)Resources.Load ("EnemyshipDot") : (GameObject)Resources.Load ("PlayershipDot");
@@ -91,9 +91,9 @@ public class ShipHandler : MonoBehaviour
 		myDot.transform.parent = miniMap.transform;
 		mapShift = new Vector3 (0.5f, -1.2f, 0.0f);
 		myDot.transform.localPosition = Vector3.Scale (transform.position, worldScale) - mapShift;
-
+		
 	}
-
+	
 	public virtual void OnTriggerEnter (Collider other)
 	{
 		//If we turn around on collisions, check if we collided with a ship. If we did, turn around, and be sure to reposition the health bar so it is still above the ship.
@@ -101,7 +101,7 @@ public class ShipHandler : MonoBehaviour
 		//it can't collide with the player layer, so this script will only truly react to colliding with an enemy ship, which is what we want.
 		if (turnsAroundOnCollision) {
 			if (other.gameObject.layer == LayerMask.NameToLayer ("EnemyShips") || other.gameObject.layer == LayerMask.NameToLayer ("PlayerShips")) {
-				
+				GetComponent<iTween>().ActivateReversal();
 				transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
 				collectedResources += 5;
 				if (other.tag == "Enemy" || other.tag == "Player") {
@@ -117,18 +117,18 @@ public class ShipHandler : MonoBehaviour
 			
 			//If we don't turn around on collisions, then collide with the other ship. The above isItAnEnemyAndI'mNot logic is to keep from double subtracting accidentally.
 			//A collision results in both ships taking damage equal to the weaker one's health.
-
+			
 			float damage = Mathf.Min (shipHealth, other.gameObject.GetComponent<ShipHandler> ().shipHealth);
 			DecreaseHealth (damage);
 			other.gameObject.GetComponent<ShipHandler> ().DecreaseHealth (damage);
 		}
 	}
-
+	
 	public virtual void Update ()
 	{
 		//Update your dot position.
 		myDot.transform.localPosition = Vector3.Scale (new Vector3(transform.position.x, 0.0f, transform.position.z), worldScale) - mapShift;
-
+		
 		//Run a bunch of boolean checks based on what kind of behavior this ship is meant to exhibit, and then run the corresponding function.
 		if (firesBolts) {
 			FireBolts ();
@@ -137,7 +137,7 @@ public class ShipHandler : MonoBehaviour
 			ShieldDeploy ();
 		}
 		if (turnsAroundOnCollision && transform.position.x < 0) {
-			
+			GetComponent<iTween>().ActivateReversal();
 			GameObject.Find ("LevelController").GetComponent<LevelController> ().levelScore += collectedResources;
 			collectedResources = 0;
 			transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
@@ -157,11 +157,11 @@ public class ShipHandler : MonoBehaviour
 		} else if (isDead) {
 			Die ();
 		}
-
+		
 		//Flip the ship and healthbar around if the ship is turning backwards.
 		if (turnsAroundOnCollision) {
 			if (transform.position.x >= 80) {
-				
+				GetComponent<iTween>().ActivateReversal();
 				transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
 				foreach (Transform child in transform) {
 					if (child.name == "HealthBar") {
@@ -171,7 +171,7 @@ public class ShipHandler : MonoBehaviour
 			}
 		}
 	}
-
+	
 	// Meanwhile, we are also moving the ship forward.
 	public virtual void FixedUpdate ()
 	{
@@ -192,10 +192,10 @@ public class ShipHandler : MonoBehaviour
 		Destroy (myDot);
 		Destroy (gameObject);
 	}
-
-
+	
+	
 	//***************************************** Standard Methods ******************************************************//
-
+	
 	public void DecreaseHealth (float healthChange)
 	{
 		//Decrease health according to the damage done. If the ship is down to 0 health, destroy it,
@@ -209,7 +209,7 @@ public class ShipHandler : MonoBehaviour
 			healthbar.localScale = new Vector3 (maxLength * shipHealth / maxHealth, healthbar.localScale.y, healthbar.localScale.z);
 		}
 	}
-
+	
 	public void FireBolts ()
 	{
 		//Fire bolts and place them on a layer according to whether we are an enemy or player ship.
@@ -228,10 +228,10 @@ public class ShipHandler : MonoBehaviour
 			//Give the bolt a relative speed boost from the ship.
 			boltMover.speed += speed;
 		}
-	
+		
 		timeDif = nextFire - Time.time;
 	}
-
+	
 	//Replace the ship with a shield at the same place.
 	public void ShieldDeploy ()
 	{
@@ -246,14 +246,14 @@ public class ShipHandler : MonoBehaviour
 			Destroy (gameObject);
 		}
 	}
-
+	
 	//If the bomb explodes, remove it, and replace it with an explosion and blastzone.
 	public void Explode ()
 	{
 		Instantiate (blastZone, transform.position, transform.rotation);
 		Die ();
 	}
-
+	
 	public void Tween (Vector3[] path)
 	{
 		
@@ -271,5 +271,5 @@ public class ShipHandler : MonoBehaviour
 		if (nextPoint < path.Length)
 			Tween (path);
 	}
-
+	
 }
