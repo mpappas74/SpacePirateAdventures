@@ -47,7 +47,8 @@ public class ShipHandler : MonoBehaviour
 	//************** Turn Around On Collision Logic ********************//
 	public bool turnsAroundOnCollision;	//Should the ship turn around on collisions or fight the colliding ship?
 	public float collectedResources = 0;	//How many resources the thief ship has collected.
-	
+	public bool imInReverse = false;	
+
 	//************** MiniMap Logic ********************//
 	private GameObject myDot; //The actual dot representing this particular ship.
 	private Vector3 worldScale; //A scaling vector representing the relative size of the miniMap to the actual arena.
@@ -102,6 +103,7 @@ public class ShipHandler : MonoBehaviour
 		if (turnsAroundOnCollision) {
 			if (other.gameObject.layer == LayerMask.NameToLayer ("EnemyShips") || other.gameObject.layer == LayerMask.NameToLayer ("PlayerShips")) {
 				GetComponent<iTween>().ActivateReversal();
+				imInReverse = !imInReverse;
 				transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
 				collectedResources += 5;
 				if (other.tag == "Enemy" || other.tag == "Player") {
@@ -136,8 +138,9 @@ public class ShipHandler : MonoBehaviour
 		if (deploysShield) {
 			ShieldDeploy ();
 		}
-		if (turnsAroundOnCollision && transform.position.x < 0) {
+		if (turnsAroundOnCollision && transform.position.x < 5) {
 			GetComponent<iTween>().ActivateReversal();
+			imInReverse = !imInReverse;
 			GameObject.Find ("LevelController").GetComponent<LevelController> ().levelScore += collectedResources;
 			collectedResources = 0;
 			transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
@@ -162,6 +165,7 @@ public class ShipHandler : MonoBehaviour
 		if (turnsAroundOnCollision) {
 			if (transform.position.x >= 80) {
 				GetComponent<iTween>().ActivateReversal();
+				imInReverse = !imInReverse;
 				transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
 				foreach (Transform child in transform) {
 					if (child.name == "HealthBar") {
@@ -266,8 +270,11 @@ public class ShipHandler : MonoBehaviour
 	
 	public void CompleteNode (Vector3[] path)
 	{
-		//Debug.Log("I'm in!");
-		nextPoint++;
+		if(imInReverse){
+			nextPoint--;
+		} else {
+			nextPoint++;
+		}
 		if (nextPoint < path.Length)
 			Tween (path);
 	}
