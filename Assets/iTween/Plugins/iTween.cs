@@ -4261,6 +4261,20 @@ public class iTween : MonoBehaviour
 	public void ActivateReversal(){
 		reverse = !reverse;
 	}
+	public void AdjustTime(float mult){
+		time = mult*time;
+	}
+	public void BackAndThenKeepGoing(float theSeconds, float backMult){
+		StartCoroutine(ZhuLiDoTheThing(theSeconds, backMult));
+	}
+
+	IEnumerator ZhuLiDoTheThing(float theSeconds, float backMult){
+		reverse = !reverse;
+		AdjustTime(backMult);
+		yield return new WaitForSeconds(theSeconds);
+		reverse = !reverse;
+		AdjustTime(1f/backMult);
+	}
 
 	void ApplyMoveToPathTargets ()
 	{
