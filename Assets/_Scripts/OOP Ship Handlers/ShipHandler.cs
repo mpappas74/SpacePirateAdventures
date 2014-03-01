@@ -13,7 +13,8 @@ public class ShipHandler : MonoBehaviour
 	public float maxLength; //Maximum length of the ship's healthbar.
 	public Transform healthbar; //The physical healthbar above each ship.
 	public float cost;	//How much the ship costs to build.
-	
+	public bool isThisPlayers = true; //Is the ship this players, meaning it can take inputs, etc?	
+
 	//************** Bolt Firing Logic ********************//
 	public bool firesBolts;	//Does this ship fire bolts?
 	public float fireLag; //How long to wait between shots.
@@ -43,17 +44,19 @@ public class ShipHandler : MonoBehaviour
 	
 	//************** Move In Lane Logic ********************//
 	public int laneID = -1;
+	public int direction = 1;
+	private int nextPoint = 1;
+	private Vector3[] the_path;
 	
 	//************** Turn Around On Collision Logic ********************//
 	public bool turnsAroundOnCollision;	//Should the ship turn around on collisions or fight the colliding ship?
 	public float collectedResources = 0;	//How many resources the thief ship has collected.
-	public bool imInReverse = false;	
+	private bool justTurned = false;
 
 	//************** MiniMap Logic ********************//
 	private GameObject myDot; //The actual dot representing this particular ship.
 	private Vector3 worldScale; //A scaling vector representing the relative size of the miniMap to the actual arena.
 	private Vector3 mapShift; //The shift off of the center of the map to orient the dots correctly.
-	int nextPoint = 1;
 	
 	
 	//***************************************** Virtual Methods ******************************************************//
@@ -73,7 +76,11 @@ public class ShipHandler : MonoBehaviour
 		if (laneID >= 0) {
 			int Inlane = laneID + 1;
 			string Mylane = Inlane.ToString ();
-			UnityEngine.Vector3[] the_path = iTweenPath.GetPath ("lane " + Mylane);
+			if(isThisPlayers){
+				the_path = iTweenPath.GetPath ("lane " + Mylane);
+			} else {
+				the_path = iTweenPath.GetPathReversed("lane " + Mylane);
+			}
 			Tween (the_path);
 			// iTween.MoveTo (gameObject, iTween.Hash ("path", iTweenPath.GetPath ("lane " + Mylane), "time", speed, "movetopath", false));
 		}
@@ -103,7 +110,9 @@ public class ShipHandler : MonoBehaviour
 		if (turnsAroundOnCollision) {
 			if (other.gameObject.layer == LayerMask.NameToLayer ("EnemyShips") || other.gameObject.layer == LayerMask.NameToLayer ("PlayerShips")) {
 				GetComponent<iTween>().ActivateReversal();
-				imInReverse = !imInReverse;
+				direction = -1*direction;
+				iTween.Stop(gameObject);
+				CompleteNode(the_path);
 				transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
 				collectedResources += 5;
 				if (other.tag == "Enemy" || other.tag == "Player") {
@@ -138,9 +147,13 @@ public class ShipHandler : MonoBehaviour
 		if (deploysShield) {
 			ShieldDeploy ();
 		}
-		if (turnsAroundOnCollision && transform.position.x < 5) {
+		if (turnsAroundOnCollision && transform.position.x < 5 && !justTurned) {
+			justTurned = true;
+			StartCoroutine("FinishTurning");
 			GetComponent<iTween>().ActivateReversal();
-			imInReverse = !imInReverse;
+			direction = -1*direction;
+			iTween.Stop(gameObject);
+			CompleteNode(the_path);
 			GameObject.Find ("LevelController").GetComponent<LevelController> ().levelScore += collectedResources;
 			collectedResources = 0;
 			transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
@@ -163,9 +176,13 @@ public class ShipHandler : MonoBehaviour
 		
 		//Flip the ship and healthbar around if the ship is turning backwards.
 		if (turnsAroundOnCollision) {
-			if (transform.position.x >= 80) {
+			if (transform.position.x >= 80 && !justTurned) {
+				justTurned = true;
+				StartCoroutine("FinishTurning");
 				GetComponent<iTween>().ActivateReversal();
-				imInReverse = !imInReverse;
+				direction = -1*direction;
+				iTween.Stop(gameObject);
+				CompleteNode(the_path);
 				transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
 				foreach (Transform child in transform) {
 					if (child.name == "HealthBar") {
@@ -270,13 +287,14 @@ public class ShipHandler : MonoBehaviour
 	
 	public void CompleteNode (Vector3[] path)
 	{
-		if(imInReverse){
-			nextPoint--;
-		} else {
-			nextPoint++;
-		}
+		nextPoint += direction;
 		if (nextPoint < path.Length)
 			Tween (path);
+	}
+
+	IEnumerator FinishTurning(){
+		yield return new WaitForSeconds(0.5f);
+		justTurned = false;
 	}
 	
 }
