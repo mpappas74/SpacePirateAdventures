@@ -26,7 +26,8 @@ public class ShipHandler : MonoBehaviour
 	//This keeps one from abusing pausing to make the bolts reload faster.
 	public float shotDamage = 1; //How much each bolt should do.
 	public float boltSurvivalTime = -1; //How long each bolt should survive. Negative values mean they last forever.
-	
+	public float boltScale = 1;	
+
 	//************** Input Logic ********************//
 	public bool wasClickedOn;	//Was this ship just clicked on?
 	
@@ -66,7 +67,9 @@ public class ShipHandler : MonoBehaviour
 	{
 		//Set up the healthbar. If we have one, set its initial length based on the max health of the ship.
 		maxHealth = shipHealth;
-		healthbar = gameObject.transform.Find ("HealthBar");
+		if(healthbar == null){
+			healthbar = gameObject.transform.Find ("HealthBar");
+		}
 		if (healthbar != null) {
 			healthbar.localScale *= maxHealth / 3;
 			maxLength = healthbar.localScale.x;
@@ -124,7 +127,7 @@ public class ShipHandler : MonoBehaviour
 					}
 				}
 			}
-		} else if (other.gameObject.layer == LayerMask.NameToLayer ("EnemyShips") && gameObject.layer != LayerMask.NameToLayer ("EnemyShips")) {
+		} else if (other.gameObject.layer == LayerMask.NameToLayer ("EnemyShips") || other.gameObject.layer == LayerMask.NameToLayer ("PlayerShips")) {
 			
 			//If we don't turn around on collisions, then collide with the other ship. The above isItAnEnemyAndI'mNot logic is to keep from double subtracting accidentally.
 			//A collision results in both ships taking damage equal to the weaker one's health.
@@ -237,6 +240,7 @@ public class ShipHandler : MonoBehaviour
 		if (Time.time > nextFire) {
 			nextFire = Time.time + fireLag;
 			GameObject thisBolt = (GameObject)Instantiate (bolt, shotSpawn.position, shotSpawn.rotation);
+			thisBolt.transform.localScale *= boltScale;
 			ProjectileHandler boltMover = thisBolt.GetComponent<ProjectileHandler> ();
 			thisBolt.layer = LayerMask.NameToLayer ("PlayerAttacks");
 			if (gameObject.layer == LayerMask.NameToLayer ("EnemyShips")) {

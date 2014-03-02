@@ -29,6 +29,7 @@ public class LevelController : MonoBehaviour
 
 	public float[] laneRotations; //How much ship placed into each lane should be rotated. (Note that, if the ship has MoveInLane, it should follow the lane regardless of orientation.)
 	public float[] startPositions; //The starting z positions for ships to be built in the lanes which exist.
+	public float[] endPositions; //The starting z position for enemy ships to be built in lanes.
 	private int numLanes;
 	public bool playerVictory = false; //Has the player won?
 	private ShipHandler mothership; //Need access to the player's and enemy's mothership so that we can tell if we've won.
@@ -40,6 +41,7 @@ public class LevelController : MonoBehaviour
 	private bool amITheRightTint;
 	private bool[] busyBuildSite;	
 	public bool amTutorial = false;
+	public float SpecialBarRecoveryTime;
 
 	void Start ()
 	{
@@ -186,7 +188,7 @@ public class LevelController : MonoBehaviour
 			yield return new WaitForSeconds (0.2f);
 			if (specialBar.transform.localScale.x < specialBarInitialHeight) {
 				canUseSpecial = false;
-				specialBar.transform.localScale += new Vector3 (specialBarInitialHeight * (1) / 60f, 0, 0);
+				specialBar.transform.localScale += new Vector3 (specialBarInitialHeight * (1) / SpecialBarRecoveryTime, 0, 0);
 				if (specialBar.transform.localScale.x >= specialBarInitialHeight) {
 					Color t = specialBar.renderer.material.GetColor ("_TintColor");
 					specialBar.renderer.material.SetColor ("_TintColor", new Color (t.r, t.g, t.b, 1));
@@ -228,7 +230,7 @@ public class LevelController : MonoBehaviour
 	{
 		//If the game is over, tell the rest of the game to stop. This is true if we are out of points and have no ships left to earn us more.
 		//Notice the order - we only check if we have ships if we are already low on level score. There is still a worst case, but this keeps this from being too big of an efficiency drain.
-		if (!button.gameOver && (mothership.isDead || (levelScore < 5 && GameObject.FindWithTag ("TinyShip") == null && GameObject.FindWithTag ("CrazyShip") == null && GameObject.FindWithTag ("LoadingBar") == null && GameObject.FindWithTag ("BombShip") == null && GameObject.FindWithTag ("ShieldShip") == null && GameObject.FindWithTag ("Shield") == null && GameObject.FindWithTag ("StealthShip") == null))) {
+		if (!button.gameOver && (mothership.isDead || (levelScore < -5 && GameObject.FindWithTag ("TinyShip") == null && GameObject.FindWithTag ("CrazyShip") == null && GameObject.FindWithTag ("LoadingBar") == null && GameObject.FindWithTag ("BombShip") == null && GameObject.FindWithTag ("ShieldShip") == null && GameObject.FindWithTag ("Shield") == null && GameObject.FindWithTag ("StealthShip") == null))) {
 			gameOver = true;
 			button.gameOver = true;
 		} else if (!button.gameOver && (playerVictory || enemyMothership.isDead)) { //Similarly, if playerVictory is true (set by Level_Controller when the waves end
@@ -487,7 +489,7 @@ public class LevelController : MonoBehaviour
 			} 
 			if (GUI.Button (new Rect (.5f * Screen.width - 100, .4f * Screen.height, 200, .13f * Screen.height), "Next Level")) {
 				//Be careful here if we change the scene order!!!!
-				if (Application.loadedLevel < 4) {
+				if (Application.loadedLevel < 5) {
 					Application.LoadLevel (Application.loadedLevel + 1);
 					GameControllerScript.Instance.setCurrentUnlockedLevel (GameControllerScript.Instance.getCurrentUnlockedLevel () + 1);
 				} else {

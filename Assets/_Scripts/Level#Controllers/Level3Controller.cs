@@ -18,7 +18,7 @@ public class Level3Controller : Level_Controller
 		waveWait = new float[2]{0, 3};
 		numberWaves = new int[2]{1, 3};
 		
-		sMIL = new bool[2]{false, false};
+		lanes = new int[2]{-1, -1};
 		health = new float[2]{1, 4};
 		shieldHealth = new float[2]{0, 0};
 		score = new float[2]{2, 6};		

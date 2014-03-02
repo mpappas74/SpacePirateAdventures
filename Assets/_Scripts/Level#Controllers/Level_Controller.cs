@@ -14,8 +14,9 @@ public class Level_Controller : MonoBehaviour
 	public int[] numberWaves;	//How many attack waves of each type?
 	private int[] goneWaves;	//How many attack waves have happened so far?
 	private LevelController lc;
+	private float[] startPos;
 	
-	public bool[] sMIL;
+	public int[] lanes;
 	public float[] health;
 	public float[] shieldHealth;
 	public float[] score;
@@ -23,7 +24,7 @@ public class Level_Controller : MonoBehaviour
 	public virtual void Start ()
 	{
 		lc = gameObject.GetComponent<LevelController>();
-
+		startPos = lc.endPositions;
 		//Someone sometime should really write a check that all of these arrays are the same length.
 		//But I haven't yet.
 		goneWaves = new int[numberWaves.Length];
@@ -40,7 +41,7 @@ public class Level_Controller : MonoBehaviour
 		hazard[i] = (GameObject)Instantiate(hazard[i], new Vector3(0, 0, 0), hazard[i].transform.rotation);
 		hazard[i].SetActive(false);
 		ShipHandler sh = hazard[i].GetComponent<ShipHandler>();
-		//sh.shouldMoveInLane = sMIL[i];
+		sh.laneID = lanes[i];
 		sh.shipHealth = health[i];
 		sh.energyShieldHealth = shieldHealth[i];
 		sh.scoreValue = score[i];
@@ -76,7 +77,21 @@ public class Level_Controller : MonoBehaviour
 			for (int i = 0; i < hazardCount[j]; i++) {
 				//We spawn them at a range of z values, but always at the given x and y values. Note that Random.Range is inclusive on the lower end (-2), but not on the upper end. So it will return -2, -1, 0, 1, or 2.
 				Vector3 spawnPosition = new Vector3 (spawnValues[j].x, spawnValues[j].y, (spawnValues[j].z / 2) * Random.Range (-2, 3));
-				GameObject newHazard = (GameObject)Instantiate (hazard[j], spawnPosition, hazard[j].transform.rotation);
+				GameObject newHazard;
+				if(lanes[j] != -1){
+					if(lanes[j] == -2){
+						int laneIndex = Random.Range(0, startPos.Length);
+						spawnPosition.z = startPos[laneIndex];
+						newHazard = (GameObject)Instantiate (hazard[j], spawnPosition, hazard[j].transform.rotation);
+						ShipHandler sh = newHazard.GetComponent<ShipHandler>();
+						sh.laneID = laneIndex;
+					} else {
+						spawnPosition.z = startPos[lanes[j]];
+						newHazard = (GameObject)Instantiate (hazard[j], spawnPosition, hazard[j].transform.rotation);
+					}
+				} else {
+					newHazard = (GameObject)Instantiate (hazard[j], spawnPosition, hazard[j].transform.rotation);
+				}
 				newHazard.SetActive(true);
 				//Now wait until the next hazard is meant to spawn.
 				yield return new WaitForSeconds (spawnWait[j]);

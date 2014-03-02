@@ -44,7 +44,7 @@ public class MainMenuScript : MonoBehaviour
 	
 	//This is for the level grid, which will automatically nicely format our level selection screen.
 	private int levelGridInt = -1;
-	private string[] levelStrings = {"1", "2", "3", "4"};
+	private string[] levelStrings = {"1", "2", "3", "4", "5"};
 
 	private float theVolume = 0.5f;
 	private float theVolumeWas = 0.5f;
@@ -119,7 +119,7 @@ public class MainMenuScript : MonoBehaviour
 			} 
 		} else if (levelMenu) {
 			//The selectionGrid will allow you to choose exactly one of a set of buttons. levelGridInt is initialized to -1 so no level starts out selected.
-			int tempInt = GUI.SelectionGrid (new Rect (.5f * Screen.width - 125, .4f * Screen.height, 250, .4f * Screen.height), levelGridInt, levelStrings, 4);
+			int tempInt = GUI.SelectionGrid (new Rect (.5f * Screen.width - 125, .4f * Screen.height, 250, .4f * Screen.height), levelGridInt, levelStrings, 5);
 			//This if statement is used to prevent us from running the remaining logic too often, especially in OnGUI.
 			if (tempInt != levelGridInt) {
 				if (GameControllerScript.Instance.getCurrentUnlockedLevel () <= tempInt) {
@@ -136,7 +136,10 @@ public class MainMenuScript : MonoBehaviour
 						Application.LoadLevel ("Level3");
 						break;
 					case 3:
-						text = "There is no level 4 yet!";
+						Application.LoadLevel ("Level4");
+						break;
+					case 4:
+						text = "No Level 5 Built Yet";
 						break;
 					}
 				}
