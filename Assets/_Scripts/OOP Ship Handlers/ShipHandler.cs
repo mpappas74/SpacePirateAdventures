@@ -131,10 +131,13 @@ public class ShipHandler : MonoBehaviour
 			
 			//If we don't turn around on collisions, then collide with the other ship. The above isItAnEnemyAndI'mNot logic is to keep from double subtracting accidentally.
 			//A collision results in both ships taking damage equal to the weaker one's health.
-			GetComponent<iTween>().BackAndThenKeepGoing(0.2f, 0.1f);
-			//float damage = Mathf.Min (shipHealth, other.gameObject.GetComponent<ShipHandler> ().shipHealth);
-			//DecreaseHealth (damage);
-			//other.gameObject.GetComponent<ShipHandler> ().DecreaseHealth (damage);
+			if(GetComponent<iTween>() != null){
+				GetComponent<iTween>().BackAndThenKeepGoing(0.2f, 0.1f);
+			} else {
+				//float damage = Mathf.Min (shipHealth, other.gameObject.GetComponent<ShipHandler> ().shipHealth);
+				//DecreaseHealth (damage);
+				//other.gameObject.GetComponent<ShipHandler> ().DecreaseHealth (damage);
+			}
 		}
 	}
 	
