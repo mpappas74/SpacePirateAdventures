@@ -184,8 +184,8 @@ public class GameControllerScript : Singleton<GameControllerScript>
 	
 	//TinyShip setter. I currently have two versions in case we don't want to save to playerPrefs every time something changes.
 	//Depending on how frequently things happen, this may or may not be the way to go.
-	public void setTinyShip(float tsD){
-		tinyShipDamage = tsD;
+	public void setTinyShip(float shipDamageIncrease){
+		tinyShipDamage += shipDamageIncrease;
 	}
 	public void prefSetTinyShip(float tsD){
 		tinyShipDamage = tsD;

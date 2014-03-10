@@ -30,12 +30,38 @@ public class UpgradesMenu : MonoBehaviour
 
 	private int secondaryUpgradeInt = -1;
 	private string[] secondaryUpgradeStrings;
-	private string[] basicShipMenuStrings = {"Health Increase", "Shield Increase", "Make Better"};
+	private string[] basicShipMenuStrings = {"Damage Increase", "Shield Increase", "Make Better"};
+
+	private int upgrade = -1;
 
 	void Start ()
 	{
 	}
 	
+	void Update(){
+		if(upgrade > -1){
+			if(basicShipMenu){
+				if(upgrade == 0){
+					GameControllerScript.Instance.setTinyShip(2f);
+				} else if(upgrade == 1){
+
+				} else if(upgrade == 2){
+
+				}
+			}
+			upgrade = -1;
+			main = true;
+			backButton = false;
+			basicShipMenu = false;
+			fighterShipMenu = false;
+			stealthShipMenu = false;
+			mothershipMenu = false;
+			mainShopInt = -1;
+			secondaryUpgradeInt = -1;
+			text = "Upgrade Selected";
+		}
+	}
+
 	void OnGUI ()
 	{
 		GUI.skin = customSkin;
@@ -45,6 +71,10 @@ public class UpgradesMenu : MonoBehaviour
 		GUI.Box (new Rect (.5f * Screen.width - 200, .1f * Screen.height, 400, .15f * Screen.height), "Upgrades", titleStyle);
 		GUI.Box (new Rect (.5f * Screen.width - 200, .25f * Screen.height, 400, .7f * Screen.height), text, theGuiTextStyle);
 		
+		if (GUI.Button (new Rect (.8f * Screen.width - 100, .1f * Screen.height, 200, .12f * Screen.height), "Back to Main Menu")) {
+			Application.LoadLevel("MainMenu");
+		}
+
 		//If we are not on the main menu, we need a back button to return to it.
 		if (backButton) {
 			if (GUI.Button (new Rect (.5f * Screen.width - 100, .8f * Screen.height, 200, .12f * Screen.height), "Back to Main Shop")) {
@@ -104,20 +134,7 @@ public class UpgradesMenu : MonoBehaviour
 			int tempInt = GUI.SelectionGrid (new Rect (.2f * Screen.width, .4f * Screen.height, .6f * Screen.width, .4f * Screen.height), secondaryUpgradeInt, secondaryUpgradeStrings, secondaryUpgradeStrings.Length/3);
 			//This if statement is used to prevent us from running the remaining logic too often, especially in OnGUI.
 			if (tempInt != secondaryUpgradeInt) {
-				switch (tempInt) {
-				case 0:
-					
-					break;
-				case 1:
-					
-					break;
-				case 2:
-					
-					break;
-				case 3:
-					
-					break;
-				}
+				upgrade = tempInt;
 				secondaryUpgradeInt = tempInt;
 			}
 			

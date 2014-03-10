@@ -484,12 +484,11 @@ public class LevelController : MonoBehaviour
 			//	Application.LoadLevel ("MainMenu");
 			//} 
 			if (GUI.Button (new Rect (.5f * Screen.width - 100, .55f * Screen.height, 200, .13f * Screen.height), "Upgrades")) {
-				Application.LoadLevel ("MainMenu");
-				//Application.LoadLevel("UpgradeScene");
+				Application.LoadLevel("Upgrades");
 			} 
 			if (GUI.Button (new Rect (.5f * Screen.width - 100, .4f * Screen.height, 200, .13f * Screen.height), "Next Level")) {
 				//Be careful here if we change the scene order!!!!
-				if (Application.loadedLevel < 5) {
+				if (Application.loadedLevel < 6) {
 					Application.LoadLevel (Application.loadedLevel + 1);
 					GameControllerScript.Instance.setCurrentUnlockedLevel (GameControllerScript.Instance.getCurrentUnlockedLevel () + 1);
 				} else {

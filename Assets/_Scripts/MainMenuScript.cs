@@ -147,7 +147,7 @@ public class MainMenuScript : MonoBehaviour
 			levelGridInt = tempInt;
 		} else if (settingsMenu) {
 			GUI.Label(new Rect(.5f * Screen.width - 100, .2f * Screen.height, 200, .08f * Screen.height), "Volume", volStyle);
-			theVolume = GUI.HorizontalSlider(new Rect(.5f * Screen.width - 100, .3f * Screen.height, 200, .1f * Screen.height), theVolume, 0.0F, 1.0F);
+			theVolume = GUI.HorizontalSlider(new Rect(.5f * Screen.width - 100, .3f * Screen.height, 200, .15f * Screen.height), theVolume, 0.0F, 1.0F);
 			if (GUI.Button (new Rect (.5f * Screen.width - 100, .4f * Screen.height, 200, .12f * Screen.height), "Sound Test")) {
 				settingsMenu = false;
 				soundTest = true;
