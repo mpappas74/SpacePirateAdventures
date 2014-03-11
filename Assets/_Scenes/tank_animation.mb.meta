@@ -1,0 +1,225 @@
+fileFormatVersion: 2
+guid: 0a079f78199aa454e9a614c94532287e
+ModelImporter:
+  serializedVersion: 16
+  fileIDToRecycleName:
+    100000: emitter1
+    100002: group
+    100004: group1
+    100006: nParticle1
+    100008: pasted__group
+    100010: pasted__pasted__pCylinder2
+    100012: pasted__pCylinder2
+    100014: pCube1
+    100016: pCylinder1
+    100018: pCylinder2
+    100020: planarTrimmedSurface1
+    100022: polySurface1
+    100024: pSphere1
+    100026: //RootNode
+    100028: transform1
+    100030: transform2
+    400000: emitter1
+    400002: group
+    400004: group1
+    400006: nParticle1
+    400008: pasted__group
+    400010: pasted__pasted__pCylinder2
+    400012: pasted__pCylinder2
+    400014: pCube1
+    400016: pCylinder1
+    400018: pCylinder2
+    400020: planarTrimmedSurface1
+    400022: polySurface1
+    400024: pSphere1
+    400026: //RootNode
+    400028: transform1
+    400030: transform2
+    2300000: pasted__pasted__pCylinder2
+    2300002: pasted__pCylinder2
+    2300004: pCylinder2
+    2300006: polySurface1
+    2300008: pSphere1
+    3300000: pasted__pasted__pCylinder2
+    3300002: pasted__pCylinder2
+    3300004: pCylinder2
+    3300006: polySurface1
+    3300008: pSphere1
+    4300000: pSphere1
+    4300002: polySurface1
+    4300004: pCylinder2
+    4300006: pasted__pCylinder2
+    4300008: pasted__pasted__pCylinder2
+    7400000: Startup
+    7400002: Loop
+    9500000: //RootNode
+    11100000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Startup
+      takeName: Take 001
+      firstFrame: 1
+      lastFrame: 48
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: group
+        weight: 1
+      - path: group/pasted__pCylinder2
+        weight: 1
+      - path: group1
+        weight: 1
+      - path: group1/pasted__group
+        weight: 1
+      - path: group1/pasted__group/pasted__pasted__pCylinder2
+        weight: 1
+      - path: nParticle1
+        weight: 1
+      - path: pCube1
+        weight: 1
+      - path: pCube1/transform2
+        weight: 1
+      - path: pCylinder1
+        weight: 1
+      - path: pCylinder1/transform1
+        weight: 1
+      - path: pCylinder2
+        weight: 1
+      - path: planarTrimmedSurface1
+        weight: 1
+      - path: planarTrimmedSurface1/emitter1
+        weight: 1
+      - path: polySurface1
+        weight: 1
+      - path: pSphere1
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Loop
+      takeName: Take 001
+      firstFrame: 49
+      lastFrame: 96
+      wrapMode: 2
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: group
+        weight: 1
+      - path: group/pasted__pCylinder2
+        weight: 1
+      - path: group1
+        weight: 1
+      - path: group1/pasted__group
+        weight: 1
+      - path: group1/pasted__group/pasted__pasted__pCylinder2
+        weight: 1
+      - path: nParticle1
+        weight: 1
+      - path: pCube1
+        weight: 1
+      - path: pCube1/transform2
+        weight: 1
+      - path: pCylinder1
+        weight: 1
+      - path: pCylinder1/transform1
+        weight: 1
+      - path: pCylinder2
+        weight: 1
+      - path: planarTrimmedSurface1
+        weight: 1
+      - path: planarTrimmedSurface1/emitter1
+        weight: 1
+      - path: polySurface1
+        weight: 1
+      - path: pSphere1
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 1
+  additionalBone: 0
+  userData: 

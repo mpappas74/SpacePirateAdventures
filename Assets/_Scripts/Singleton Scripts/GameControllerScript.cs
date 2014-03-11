@@ -13,6 +13,7 @@ public class GameControllerScript : Singleton<GameControllerScript>
 	public GameObject placingBox; //The placingBox prefab.
 	public GameObject loadingBar; //The placingBox prefab.
 	public GameObject notEnoughMoneyObject; //The notEnoughMoneyObject prefab.
+	public GameObject testObject;
 	private float score; //The total score across multiple levels.
 	private int currentUnlockedLevel; //The highest level that has currently been unlocked.
 	private int currentLevel; //The level that is currently or most recently played.
@@ -85,7 +86,8 @@ public class GameControllerScript : Singleton<GameControllerScript>
 		placingBox = (GameObject)Resources.Load("PlacementBox"); //The placingBox prefab.
 		loadingBar = (GameObject)Resources.Load("LoadingBar"); //The placingBox prefab.
 		notEnoughMoneyObject = (GameObject)Resources.Load("NotEnoughMoneyObject"); //The notEnoughMoneyObject prefab.
-		
+		testObject = (GameObject)Resources.Load ("tank_animation");
+
 		//The below code is to keep clonable instances of the ships without changing the actual prefabs. When we get to 
 		//the point where we don't mind prefabs being changed (ie the game is actually deployed) we can remove this bit.
 		tinyShip = (GameObject)Instantiate(tinyShip, new Vector3(0.0f, 0.0f, 0.0f), tinyShip.transform.rotation);

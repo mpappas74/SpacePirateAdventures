@@ -259,8 +259,8 @@ public class LevelController : MonoBehaviour
 					//Buttons 2 and 3 build tinyShips and crazyShips, respectively. 
 					if (button.pressed2) {
 						button.pressed2 = false;
-						currentShip = GameControllerScript.Instance.getTinyShip ();
-						currentNeutralShip = GameControllerScript.Instance.getTinyShip ();
+						currentShip = GameControllerScript.Instance.testObject;
+						currentNeutralShip = GameControllerScript.Instance.testObject;
 						
 						//OK, so first, we need the position of the click so we can start dragging.
 						//We also need to disable various elements of the neutralShip to keep it from firing or exploding.
@@ -271,8 +271,8 @@ public class LevelController : MonoBehaviour
 						placingShipObjects [0] = (GameObject)Instantiate (currentNeutralShip, pos, currentNeutralShip.transform.rotation);
 						placingShipObjects [0].SetActive (true);
 						placingShipObjects [0].GetComponent<ShipHandler> ().enabled = false;
-						placingShipObjects [0].GetComponent<CapsuleCollider> ().enabled = false;
-						placingShipObjects [0].transform.Find ("HealthBar").gameObject.GetComponent<MeshRenderer> ().enabled = false;
+						placingShipObjects [0].GetComponent<Collider> ().enabled = false;
+						//placingShipObjects [0].transform.Find ("HealthBar").gameObject.GetComponent<MeshRenderer> ().enabled = false;
 
 						isPlacingShip = true;
 						//Set canCancelShip to be true so that, on pause, there is an option to cancel the build.
