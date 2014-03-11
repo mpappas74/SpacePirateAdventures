@@ -36,7 +36,7 @@ public class GameControllerScript : Singleton<GameControllerScript>
 		if(PlayerPrefs.HasKey("Score")){
 			score = PlayerPrefs.GetFloat("Score");
 		} else{
-			score = 0;
+			score = 10;
 		}
 		if(PlayerPrefs.HasKey("Volume")){
 			gameVolume = PlayerPrefs.GetFloat("Volume");

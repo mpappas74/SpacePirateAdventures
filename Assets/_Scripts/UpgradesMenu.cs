@@ -10,7 +10,6 @@ public class UpgradesMenu : MonoBehaviour
 	//backButton determines whether there currently needs to be a button allowing return to the main menu.
 	public bool main;
 	public bool backButton;
-
 	public GUISkin customSkin;
 	
 	//The guiText object will display information such as "There are no settings yet."
@@ -21,31 +20,41 @@ public class UpgradesMenu : MonoBehaviour
 	
 	//This is for the upgrades grid, which will automatically nicely format our upgrade selection screen.
 	private int mainShopInt = -1;
-	private string[] mainUpgradeTypeStrings = {"Basic Ship", "Fighter Ship", "Stealth Ship", "Mothership"};
-	
+	private string[] mainUpgradeTypeStrings = {
+		"Basic Ship",
+		"Fighter Ship",
+		"Stealth Ship",
+		"Mothership"
+	};
 	private bool basicShipMenu;
 	private bool fighterShipMenu;
 	private bool stealthShipMenu;
 	private bool mothershipMenu;
-
 	private int secondaryUpgradeInt = -1;
-	private string[] secondaryUpgradeStrings;
-	private string[] basicShipMenuStrings = {"Damage Increase", "Shield Increase", "Make Better"};
-
+	private string[] secondaryUpgradeStrings = {"", "", ""};
+	private string[] basicShipMenuStrings = {
+		"Damage Increase",
+		"Shield Increase",
+		"Make Better"
+	};
+	private float[] basicShipMenuCosts = {8, 8, 5};
+	private float[] upgradeCosts;
 	private int upgrade = -1;
-
+	private bool upgradeButtonSelected;
+	
 	void Start ()
 	{
 	}
 	
-	void Update(){
-		if(upgrade > -1){
-			if(basicShipMenu){
-				if(upgrade == 0){
-					GameControllerScript.Instance.setTinyShip(2f);
-				} else if(upgrade == 1){
+	void Update ()
+	{
+		if (upgrade > -1) {
+			if (basicShipMenu) {
+				if (upgrade == 0) {
+					GameControllerScript.Instance.setTinyShip (2f);
+				} else if (upgrade == 1) {
 
-				} else if(upgrade == 2){
+				} else if (upgrade == 2) {
 
 				}
 			}
@@ -58,86 +67,103 @@ public class UpgradesMenu : MonoBehaviour
 			mothershipMenu = false;
 			mainShopInt = -1;
 			secondaryUpgradeInt = -1;
-			text = "Upgrade Selected";
+			text = "";
+			upgradeButtonSelected = true;
 		}
 	}
 
 	void OnGUI ()
 	{
 		GUI.skin = customSkin;
-		//Generate the buttons in locations based on screen size to keep a consistent positioning.
-		//Start by declaring the title just as a text box.
-		//We also declare a currently empty text box which we will use if we need to put text onscreen anywhere in the menu.
-		GUI.Box (new Rect (.5f * Screen.width - 200, .1f * Screen.height, 400, .15f * Screen.height), "Upgrades", titleStyle);
-		GUI.Box (new Rect (.5f * Screen.width - 200, .25f * Screen.height, 400, .7f * Screen.height), text, theGuiTextStyle);
-		
-		if (GUI.Button (new Rect (.8f * Screen.width - 100, .1f * Screen.height, 200, .12f * Screen.height), "Back to Main Menu")) {
-			Application.LoadLevel("MainMenu");
-		}
 
-		//If we are not on the main menu, we need a back button to return to it.
-		if (backButton) {
-			if (GUI.Button (new Rect (.5f * Screen.width - 100, .8f * Screen.height, 200, .12f * Screen.height), "Back to Main Shop")) {
-				main = true;
-				backButton = false;
-				basicShipMenu = false;
-				fighterShipMenu = false;
-				stealthShipMenu = false;
-				mothershipMenu = false;
-				mainShopInt = -1;
-				secondaryUpgradeInt = -1;
-				text = "";
-			}
-		}
-		
-		//If we are on the main menu, show it.
-		//Notice that it is only in these few options that we need to declare the backButton bool as true, since otherwise it just holds its value.
-		if (main) {
-			//The selectionGrid will allow you to choose exactly one of a set of buttons. mainShopInt is initialized to -1 so no level starts out selected.
-			int tempInt = GUI.SelectionGrid (new Rect (.2f * Screen.width, .4f * Screen.height, .6f * Screen.width, .4f * Screen.height), mainShopInt, mainUpgradeTypeStrings, mainUpgradeTypeStrings.Length/3);
-			//This if statement is used to prevent us from running the remaining logic too often, especially in OnGUI.
-			if (tempInt != mainShopInt) {
-				switch (tempInt) {
-				case 0:
-					basicShipMenu = true;
-					main = false;
-					backButton = true;
-					break;
-				case 1:
-					fighterShipMenu = true;
-					main = false;
-					backButton = true;
-					break;
-				case 2:
-					stealthShipMenu = true;
-					main = false;
-					backButton = true;
-					break;
-				case 3:
-					mothershipMenu = true;
-					main = false;
-					backButton = true;
-					break;
-				}
-				mainShopInt = tempInt;
+		if (upgradeButtonSelected){
+			if(GUI.Button (new Rect (.05f * Screen.width, .05f * Screen.height, .9f * Screen.width, .9f * Screen.height), "Upgrade Purchased")) {
+				upgradeButtonSelected = false;
 			}
 		} else {
-			if (basicShipMenu){
-				secondaryUpgradeStrings = basicShipMenuStrings;
-			} else if (fighterShipMenu) {
 
-			} else if (stealthShipMenu) {
+			//Generate the buttons in locations based on screen size to keep a consistent positioning.
+			//Start by declaring the title just as a text box.
+			//We also declare a currently empty text box which we will use if we need to put text onscreen anywhere in the menu.
+			GUI.Box (new Rect (.5f * Screen.width - 200, .1f * Screen.height, 400, .15f * Screen.height), "Upgrades", titleStyle);
+			GUI.Box (new Rect (.5f * Screen.width - 200, .25f * Screen.height, 400, .7f * Screen.height), text, theGuiTextStyle);
 
-			} else if (mothershipMenu) {
-
+			if (GUI.Button (new Rect (.8f * Screen.width - 100, .1f * Screen.height, 200, .12f * Screen.height), "Back to Main Menu")) {
+				GameControllerScript.Instance.prepareAllShips();
+				Application.LoadLevel ("MainMenu");
 			}
-			int tempInt = GUI.SelectionGrid (new Rect (.2f * Screen.width, .4f * Screen.height, .6f * Screen.width, .4f * Screen.height), secondaryUpgradeInt, secondaryUpgradeStrings, secondaryUpgradeStrings.Length/3);
-			//This if statement is used to prevent us from running the remaining logic too often, especially in OnGUI.
-			if (tempInt != secondaryUpgradeInt) {
-				upgrade = tempInt;
-				secondaryUpgradeInt = tempInt;
+
+			//If we are not on the main menu, we need a back button to return to it.
+			if (backButton) {
+				if (GUI.Button (new Rect (.5f * Screen.width - 100, .8f * Screen.height, 200, .12f * Screen.height), "Back to Main Shop")) {
+					main = true;
+					backButton = false;
+					basicShipMenu = false;
+					fighterShipMenu = false;
+					stealthShipMenu = false;
+					mothershipMenu = false;
+					mainShopInt = -1;
+					secondaryUpgradeInt = -1;
+					text = "";
+				}
 			}
-			
+		
+			//If we are on the main menu, show it.
+			//Notice that it is only in these few options that we need to declare the backButton bool as true, since otherwise it just holds its value.
+			if (main) {
+				//The selectionGrid will allow you to choose exactly one of a set of buttons. mainShopInt is initialized to -1 so no level starts out selected.
+				int tempInt = GUI.SelectionGrid (new Rect (.2f * Screen.width, .4f * Screen.height, .6f * Screen.width, .4f * Screen.height), mainShopInt, mainUpgradeTypeStrings, mainUpgradeTypeStrings.Length / 3);
+				//This if statement is used to prevent us from running the remaining logic too often, especially in OnGUI.
+				if (tempInt != mainShopInt) {
+					switch (tempInt) {
+					case 0:
+						basicShipMenu = true;
+						main = false;
+						backButton = true;
+						break;
+					case 1:
+						fighterShipMenu = true;
+						main = false;
+						backButton = true;
+						break;
+					case 2:
+						stealthShipMenu = true;
+						main = false;
+						backButton = true;
+						break;
+					case 3:
+						mothershipMenu = true;
+						main = false;
+						backButton = true;
+						break;
+					}
+					mainShopInt = tempInt;
+				}
+			} else {
+				if (basicShipMenu) {
+					for (int i = 0; i < secondaryUpgradeStrings.Length; i++){
+						secondaryUpgradeStrings[i] = basicShipMenuStrings[i] + " :: COST = " + basicShipMenuCosts[i];
+						upgradeCosts = basicShipMenuCosts;
+					}
+				} else if (fighterShipMenu) {
+
+				} else if (stealthShipMenu) {
+
+				} else if (mothershipMenu) {
+
+				}
+				int tempInt = GUI.SelectionGrid (new Rect (.2f * Screen.width, .4f * Screen.height, .6f * Screen.width, .4f * Screen.height), secondaryUpgradeInt, secondaryUpgradeStrings, secondaryUpgradeStrings.Length / 3);
+				//This if statement is used to prevent us from running the remaining logic too often, especially in OnGUI.
+				if (tempInt != secondaryUpgradeInt) {
+					if(GameControllerScript.Instance.getScore() > upgradeCosts[tempInt]){
+						GameControllerScript.Instance.setScore(GameControllerScript.Instance.getScore() - upgradeCosts[tempInt]);
+						upgrade = tempInt;
+					} else {
+						text = "You can't afford that upgrade!";
+					}
+					secondaryUpgradeInt = tempInt;
+				}
+			}
 		}
 	}
 }
