@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: 0a079f78199aa454e9a614c94532287e
 ModelImporter:
-  serializedVersion: 16
+  serializedVersion: 15
   fileIDToRecycleName:
     100000: emitter1
     100002: group
@@ -19,6 +19,7 @@ ModelImporter:
     100026: //RootNode
     100028: transform1
     100030: transform2
+    100032: nucleus1
     400000: emitter1
     400002: group
     400004: group1
@@ -35,6 +36,7 @@ ModelImporter:
     400026: //RootNode
     400028: transform1
     400030: transform2
+    400032: nucleus1
     2300000: pasted__pasted__pCylinder2
     2300002: pasted__pCylinder2
     2300004: pCylinder2
@@ -221,5 +223,4 @@ ModelImporter:
     rootMotionBoneName: 
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   animationType: 1
-  additionalBone: 0
   userData: 

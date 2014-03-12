@@ -51,7 +51,7 @@ public class UpgradesMenu : MonoBehaviour
 		if (upgrade > -1) {
 			if (basicShipMenu) {
 				if (upgrade == 0) {
-					GameControllerScript.Instance.setTinyShip (2f);
+					GameControllerScript.Instance.setBasicShip (2f);
 				} else if (upgrade == 1) {
 
 				} else if (upgrade == 2) {

@@ -259,8 +259,8 @@ public class LevelController : MonoBehaviour
 					//Buttons 2 and 3 build tinyShips and crazyShips, respectively. 
 					if (button.pressed2) {
 						button.pressed2 = false;
-						currentShip = GameControllerScript.Instance.testObject;
-						currentNeutralShip = GameControllerScript.Instance.testObject;
+						currentShip = GameControllerScript.Instance.getBasicShip();
+						currentNeutralShip = GameControllerScript.Instance.getBasicShip();
 						
 						//OK, so first, we need the position of the click so we can start dragging.
 						//We also need to disable various elements of the neutralShip to keep it from firing or exploding.

@@ -4,7 +4,7 @@ using System.Collections;
 public class GameControllerScript : Singleton<GameControllerScript>
 {
 	protected GameControllerScript(){}
-	public GameObject tinyShip; //The tinyShip prefab.
+	public GameObject basicShip; //The tinyShip prefab.
 	public GameObject crazyShip; //The crazyShip prefab.
 	public GameObject shieldShip; //The shieldShip prefab.
 	public GameObject bombShip; //The bombShip prefab.
@@ -77,7 +77,7 @@ public class GameControllerScript : Singleton<GameControllerScript>
 
 	IEnumerator GetShips(){
 		yield return new WaitForSeconds(0.0f);
-		tinyShip = (GameObject)Resources.Load("TinyShip"); //The tinyShip prefab.
+		basicShip = (GameObject)Resources.Load("BasicShip"); //The basicShip prefab.
 		crazyShip = (GameObject)Resources.Load("CrazyShip"); //The crazyShip prefab.
 		shieldShip = (GameObject)Resources.Load("ShieldShip"); //The shieldShip prefab.
 		bombShip = (GameObject)Resources.Load("BombShip"); //The bombShip prefab.
@@ -86,13 +86,12 @@ public class GameControllerScript : Singleton<GameControllerScript>
 		placingBox = (GameObject)Resources.Load("PlacementBox"); //The placingBox prefab.
 		loadingBar = (GameObject)Resources.Load("LoadingBar"); //The placingBox prefab.
 		notEnoughMoneyObject = (GameObject)Resources.Load("NotEnoughMoneyObject"); //The notEnoughMoneyObject prefab.
-		testObject = (GameObject)Resources.Load ("tank_animation");
 
 		//The below code is to keep clonable instances of the ships without changing the actual prefabs. When we get to 
 		//the point where we don't mind prefabs being changed (ie the game is actually deployed) we can remove this bit.
-		tinyShip = (GameObject)Instantiate(tinyShip, new Vector3(0.0f, 0.0f, 0.0f), tinyShip.transform.rotation);
-		tinyShip.SetActive(false);
-		DontDestroyOnLoad(tinyShip);
+		basicShip = (GameObject)Instantiate(basicShip, new Vector3(0.0f, 0.0f, 0.0f), basicShip.transform.rotation);
+		basicShip.SetActive(false);
+		DontDestroyOnLoad(basicShip);
 		crazyShip = (GameObject)Instantiate(crazyShip, new Vector3(0.0f, 0.0f, 0.0f), crazyShip.transform.rotation);
 		crazyShip.SetActive(false);
 		DontDestroyOnLoad(crazyShip);
@@ -118,7 +117,7 @@ public class GameControllerScript : Singleton<GameControllerScript>
 	
 	//This method will set all relevant variables. It should be called at the end of Start() as well as any time we have upgraded and then entered a new level.
 	public void prepareAllShips(){
-		tinyShip.GetComponent<ShipHandler>().shotDamage = tinyShipDamage;
+		basicShip.GetComponent<ShipHandler>().shotDamage = tinyShipDamage;
 	}
 
 	//A series of getters and setters to modify the prefabs. 
@@ -156,8 +155,8 @@ public class GameControllerScript : Singleton<GameControllerScript>
 	public int getCurrentUnlockedLevel(){
 		return currentUnlockedLevel;
 	}
-	public GameObject getTinyShip(){
-		return tinyShip;
+	public GameObject getBasicShip(){
+		return basicShip;
 	}
 	public GameObject getCrazyShip(){
 		return crazyShip;
@@ -186,10 +185,10 @@ public class GameControllerScript : Singleton<GameControllerScript>
 	
 	//TinyShip setter. I currently have two versions in case we don't want to save to playerPrefs every time something changes.
 	//Depending on how frequently things happen, this may or may not be the way to go.
-	public void setTinyShip(float shipDamageIncrease){
+	public void setBasicShip(float shipDamageIncrease){
 		tinyShipDamage += shipDamageIncrease;
 	}
-	public void prefSetTinyShip(float tsD){
+	public void prefSetBasicShip(float tsD){
 		tinyShipDamage = tsD;
 		PlayerPrefs.SetFloat("TinyShipDamage", tinyShipDamage);
 	}
