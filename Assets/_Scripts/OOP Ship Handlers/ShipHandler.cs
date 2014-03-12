@@ -129,7 +129,6 @@ public class ShipHandler : MonoBehaviour
 			}
 		} else if (other.gameObject.layer == LayerMask.NameToLayer ("EnemyShips") || other.gameObject.layer == LayerMask.NameToLayer ("PlayerShips")) {
 			
-			Debug.Log(other.gameObject.tag);
 			//If we don't turn around on collisions, then collide with the other ship. The above isItAnEnemyAndI'mNot logic is to keep from double subtracting accidentally.
 			//A collision results in both ships taking damage equal to the weaker one's health.
 			if(GetComponent<iTween>() != null){
@@ -249,6 +248,13 @@ public class ShipHandler : MonoBehaviour
 			thisBolt.layer = LayerMask.NameToLayer ("PlayerAttacks");
 			if (gameObject.layer == LayerMask.NameToLayer ("EnemyShips")) {
 				thisBolt.layer = LayerMask.NameToLayer ("EnemyAttacks");
+				GameObject go = null;
+				foreach(Transform child in thisBolt.transform){
+					if(child.name == "VFX"){
+						go = child.gameObject;
+					}
+				}
+				go.renderer.material.SetColor ("_TintColor", new Color(0.9f, 0.05f, 0.1f, 1f));
 			}
 			boltMover.damageDone = shotDamage;
 			if (boltSurvivalTime > 0) {
