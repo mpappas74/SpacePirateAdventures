@@ -114,6 +114,7 @@ public class ShipHandler : MonoBehaviour
 			if (other.gameObject.layer == LayerMask.NameToLayer ("EnemyShips") || other.gameObject.layer == LayerMask.NameToLayer ("PlayerShips")) {
 				GetComponent<iTween>().ActivateReversal();
 				direction = -1*direction;
+				firesBolts = !firesBolts;
 				iTween.Stop(gameObject);
 				CompleteNode(the_path);
 				transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
@@ -155,6 +156,7 @@ public class ShipHandler : MonoBehaviour
 		}
 		if (turnsAroundOnCollision && transform.position.x < 5 && !justTurned) {
 			justTurned = true;
+			firesBolts = !firesBolts;
 			StartCoroutine("FinishTurning");
 			GetComponent<iTween>().ActivateReversal();
 			direction = -1*direction;
@@ -184,6 +186,7 @@ public class ShipHandler : MonoBehaviour
 		if (turnsAroundOnCollision) {
 			if (transform.position.x >= 80 && !justTurned) {
 				justTurned = true;
+				firesBolts = !firesBolts;
 				StartCoroutine("FinishTurning");
 				GetComponent<iTween>().ActivateReversal();
 				direction = -1*direction;
