@@ -13,7 +13,7 @@ public class Level2Controller : Level_Controller
 		startWait = new float[1]{0};
 		hazardCount = new float[1]{4};
 		spawnValues = new Vector3[1]{new Vector3(80.0f, 0.0f, 5.5f)};
-		hazardNames = new string[1]{"EnemyTinyShip"};
+		hazardNames = new string[1]{"EnemyBasicShip"};
 		spawnWait = new float[1]{1.5f};
 		waveWait = new float[1]{3};
 		numberWaves = new int[1]{3};
