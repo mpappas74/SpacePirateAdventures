@@ -130,10 +130,17 @@ public class ShipHandler : MonoBehaviour
 			}
 		} else if (other.gameObject.layer == LayerMask.NameToLayer ("EnemyShips") || other.gameObject.layer == LayerMask.NameToLayer ("PlayerShips")) {
 			
+			if(other.tag == "Enemy" || other.tag == "Player"){
+				other.gameObject.GetComponent<ShipHandler>().board();
+				Destroy(myDot);
+				Destroy(gameObject);
+			}
+
 			//If we don't turn around on collisions, then collide with the other ship. The above isItAnEnemyAndI'mNot logic is to keep from double subtracting accidentally.
 			//A collision results in both ships taking damage equal to the weaker one's health.
 			if(GetComponent<iTween>() != null){
 				GetComponent<iTween>().BackAndThenKeepGoing(0.2f, 0.1f);
+				DecreaseHealth(1);
 			} else {
 				//float damage = Mathf.Min (shipHealth, other.gameObject.GetComponent<ShipHandler> ().shipHealth);
 				//DecreaseHealth (damage);
@@ -223,7 +230,10 @@ public class ShipHandler : MonoBehaviour
 		Destroy (gameObject);
 	}
 	
-	
+	public virtual void board(){
+		//Do nothing.
+	}
+
 	//***************************************** Standard Methods ******************************************************//
 	
 	public void DecreaseHealth (float healthChange)
@@ -296,12 +306,14 @@ public class ShipHandler : MonoBehaviour
 	{
 		
 		Vector3 toPoint = path [nextPoint];
+		
 		//Vector3.Distance(toPoint, transform.position);
 		iTween.MoveTo (gameObject, iTween.Hash ("position", toPoint, "time", Vector3.Distance (toPoint, transform.position) / speed, "movetopath", false, "oncomplete", "CompleteNode",
 		                                        "oncompleteparams", path, "easetype", iTween.EaseType.linear));
 		
 	}
 	
+
 	public void CompleteNode (Vector3[] path)
 	{
 		nextPoint += direction;

@@ -9,6 +9,7 @@ public class MothershipScript : ShipHandler
 
 	public GUIText shipHealthText;
 	private float wasHealth;
+	private int numBoarded;
 
 	public override void Start ()
 	{
@@ -23,9 +24,11 @@ public class MothershipScript : ShipHandler
 		
 		base.Start ();
 		wasHealth = shipHealth;
-		shipHealthText.text =  shipHealth.ToString ();
+		shipHealthText.text =  shipHealth.ToString () + "/" + numBoarded.ToString();
 		healthbar.localScale *= 3/maxHealth;
 		maxLength = healthbar.localScale.x;
+
+		StartCoroutine("takeDamage");
 	}
 	
 	public override void Update ()
@@ -36,7 +39,7 @@ public class MothershipScript : ShipHandler
 				shipHealth = 0;
 			}
 			shipHealth = Mathf.Round(shipHealth * 100) / 100;
-			shipHealthText.text = shipHealth.ToString ();
+			shipHealthText.text = shipHealth.ToString () + "/" + numBoarded.ToString();
 		}
 		base.Update ();
 	}
@@ -53,6 +56,19 @@ public class MothershipScript : ShipHandler
 
 	public override void FixedUpdate(){
 		//Do nothing.
+	}
+
+	public override void board(){
+		numBoarded = numBoarded + 1;
+	}
+
+	IEnumerator takeDamage(){
+		float damageTaken = 0;
+		while(true){
+			yield return new WaitForSeconds(1);
+			damageTaken = 0.1f*numBoarded;
+			DecreaseHealth(damageTaken);
+		}
 	}
 
 }

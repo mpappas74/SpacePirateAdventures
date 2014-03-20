@@ -85,6 +85,7 @@ public class Level_Controller : MonoBehaviour
 						newHazard = (GameObject)Instantiate (hazard[j], spawnPosition, hazard[j].transform.rotation);
 						ShipHandler sh = newHazard.GetComponent<ShipHandler>();
 						sh.laneID = laneIndex;
+						sh.isThisPlayers = false;
 					} else {
 						spawnPosition.z = startPos[lanes[j]];
 						newHazard = (GameObject)Instantiate (hazard[j], spawnPosition, hazard[j].transform.rotation);
