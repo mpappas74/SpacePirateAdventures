@@ -11,14 +11,14 @@ public class Level2Controller : Level_Controller
 	public override void Start ()
 	{
 		startWait = new float[1]{0};
-		hazardCount = new float[1]{4};
+		hazardCount = new float[1]{3};
 		spawnValues = new Vector3[1]{new Vector3(80.0f, 0.0f, 5.5f)};
 		hazardNames = new string[1]{"EnemyBasicShip"};
 		spawnWait = new float[1]{1.5f};
-		waveWait = new float[1]{3};
+		waveWait = new float[1]{5};
 		numberWaves = new int[1]{3};
 
-		lanes = new int[1]{-1};
+		lanes = new int[1]{-2};
 		health = new float[1]{2};
 		shieldHealth = new float[1]{0};
 		score = new float[1]{5};		

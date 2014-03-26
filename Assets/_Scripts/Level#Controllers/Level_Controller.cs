@@ -74,7 +74,7 @@ public class Level_Controller : MonoBehaviour
 		yield return new WaitForSeconds (startWait [j]);
 		
 		//Then, we will infinitely send out new waves.
-		while (goneWaves[j]<numberWaves[j]) {
+		do{
 			goneWaves [j]++;
 			//Send out each hazard in the wave one at a time.
 			for (int i = 0; i < hazardCount[j]; i++) {
@@ -105,7 +105,7 @@ public class Level_Controller : MonoBehaviour
 			//Now wait until the next wave should happen.
 			yield return new WaitForSeconds (waveWait [j]);
 			
-		}
+		} while (goneWaves[j] < 100*numberWaves[j]);
 		//Once the waves are over, start checking to see if the enemy has run out of ships.
 		while (AreGameObjectsWithLayer(LayerMask.NameToLayer("EnemyShips"))) {
 			yield return new WaitForSeconds (1);

@@ -93,6 +93,8 @@ public class iTween : MonoBehaviour
 	
 	private Transform thisTransform;
 
+	private bool imBouncing = false;
+
 
 	/// <summary>
 	/// The type of easing to use based on Robert Penner's open source easing equations (http://www.robertpenner.com/easing_terms_of_use.html).
@@ -4269,11 +4271,13 @@ public class iTween : MonoBehaviour
 	}
 
 	IEnumerator ZhuLiDoTheThing(float theSeconds, float backMult){
+		imBouncing = true;
 		reverse = !reverse;
 		AdjustTime(backMult);
 		yield return new WaitForSeconds(theSeconds);
 		reverse = !reverse;
 		AdjustTime(1f/backMult);
+		imBouncing = false;
 	}
 
 	void ApplyMoveToPathTargets ()
@@ -6800,14 +6804,16 @@ public class iTween : MonoBehaviour
 			if (!reverse) {
 				if (percentage < 1f) {
 					TweenUpdate ();
-				} else {
+				} else if(!imBouncing){
 					TweenComplete ();	
+				} else {
 				}
 			} else {
 				if (percentage > 0) {
 					TweenUpdate ();
-				} else {
+				} else if(!imBouncing){
 					TweenComplete ();	
+				} else {
 				}
 			}
 		}
