@@ -32,6 +32,8 @@ public class GameControllerScript : Singleton<GameControllerScript>
 
 	private bool canSetUpShipsNow = false;
 
+	public bool[] hasObtainedUpgrade = new bool[12];
+
 
 
 	void Awake ()

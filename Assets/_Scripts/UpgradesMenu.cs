@@ -56,9 +56,10 @@ public class UpgradesMenu : MonoBehaviour
 	private float[] stealthShipMenuCosts = {10, 10, 10};
 	private float[] fighterShipMenuCosts = {10, 10, 10};
 	private float[] motherShipMenuCosts = {10, 10, 10};
-	private float[] upgradeCosts;
+	private float[] upgradeCosts = new float[3];
 	private int upgrade = -1;
 	private bool upgradeButtonSelected;
+	private int label = -1;
 	
 	void Start ()
 	{
@@ -103,7 +104,7 @@ public class UpgradesMenu : MonoBehaviour
 			//Generate the buttons in locations based on screen size to keep a consistent positioning.
 			//Start by declaring the title just as a text box.
 			//We also declare a currently empty text box which we will use if we need to put text onscreen anywhere in the menu.
-			GUI.Box (new Rect (.5f * Screen.width - 200, .1f * Screen.height, 400, .15f * Screen.height), "Upgrades", titleStyle);
+			GUI.Box (new Rect (.5f * Screen.width - 200, .1f * Screen.height, 400, .15f * Screen.height), "Upgrades\nYour Score:: " + GameControllerScript.Instance.getScore (), titleStyle);
 			GUI.Box (new Rect (.5f * Screen.width - 200, .25f * Screen.height, 400, .7f * Screen.height), text, theGuiTextStyle);
 
 			if (GUI.Button (new Rect (.8f * Screen.width - 100, .1f * Screen.height, 200, .12f * Screen.height), "Back to Main Menu")) {
@@ -159,24 +160,48 @@ public class UpgradesMenu : MonoBehaviour
 				}
 			} else {
 				if (basicShipMenu) {
+					label = 0;
 					for (int i = 0; i < secondaryUpgradeStrings.Length; i++) {
-						secondaryUpgradeStrings [i] = basicShipMenuStrings [i] + " :: COST = " + basicShipMenuCosts [i];
-						upgradeCosts = basicShipMenuCosts;
+						if (GameControllerScript.Instance.hasObtainedUpgrade [(4 * label) + i]) {
+							secondaryUpgradeStrings [i] = "Already Obtained";
+							upgradeCosts [i] = 1000;
+						} else {
+							secondaryUpgradeStrings [i] = basicShipMenuStrings [i] + " :: COST = " + basicShipMenuCosts [i];
+							upgradeCosts = basicShipMenuCosts;
+						}
 					}
 				} else if (fighterShipMenu) {
+					label = 1;
 					for (int i = 0; i < secondaryUpgradeStrings.Length; i++) {
-						secondaryUpgradeStrings [i] = fighterShipMenuStrings [i] + " :: COST = " + fighterShipMenuCosts [i];
-						upgradeCosts = fighterShipMenuCosts;
+						if (GameControllerScript.Instance.hasObtainedUpgrade [(4 * label) + i]) {
+							secondaryUpgradeStrings [i] = "Already Obtained";
+							upgradeCosts [i] = 1000;
+						} else {
+							secondaryUpgradeStrings [i] = fighterShipMenuStrings [i] + " :: COST = " + fighterShipMenuCosts [i];
+							upgradeCosts = fighterShipMenuCosts;
+						}
 					}
 				} else if (stealthShipMenu) {
+					label = 2;
 					for (int i = 0; i < secondaryUpgradeStrings.Length; i++) {
-						secondaryUpgradeStrings [i] = stealthShipMenuStrings [i] + " :: COST = " + stealthShipMenuCosts [i];
-						upgradeCosts = stealthShipMenuCosts;
+						if (GameControllerScript.Instance.hasObtainedUpgrade [(4 * label) + i]) {
+							secondaryUpgradeStrings [i] = "Already Obtained";
+							upgradeCosts [i] = 1000;
+						} else {
+							secondaryUpgradeStrings [i] = stealthShipMenuStrings [i] + " :: COST = " + stealthShipMenuCosts [i];
+							upgradeCosts = stealthShipMenuCosts;
+						}
 					}
 				} else if (mothershipMenu) {
+					label = 3;
 					for (int i = 0; i < secondaryUpgradeStrings.Length; i++) {
-						secondaryUpgradeStrings [i] = motherShipMenuStrings [i] + " :: COST = " + motherShipMenuCosts [i];
-						upgradeCosts = motherShipMenuCosts;
+						if (GameControllerScript.Instance.hasObtainedUpgrade [(4 * label) + i]) {
+							secondaryUpgradeStrings [i] = "Already Obtained";
+							upgradeCosts [i] = 1000;
+						} else {
+							secondaryUpgradeStrings [i] = motherShipMenuStrings [i] + " :: COST = " + motherShipMenuCosts [i];
+							upgradeCosts = motherShipMenuCosts;
+						}
 					}
 				}
 				int tempInt = GUI.SelectionGrid (new Rect (.2f * Screen.width, .4f * Screen.height, .6f * Screen.width, .4f * Screen.height), secondaryUpgradeInt, secondaryUpgradeStrings, secondaryUpgradeStrings.Length / 3);
@@ -185,6 +210,9 @@ public class UpgradesMenu : MonoBehaviour
 					if (GameControllerScript.Instance.getScore () > upgradeCosts [tempInt]) {
 						GameControllerScript.Instance.setScore (GameControllerScript.Instance.getScore () - upgradeCosts [tempInt]);
 						upgrade = tempInt;
+						GameControllerScript.Instance.hasObtainedUpgrade [(4 * label) + upgrade] = true;
+					} else if(upgradeCosts[tempInt] == 1000){
+						text = "You've already purchased that upgrade!";
 					} else {
 						text = "You can't afford that upgrade!";
 					}
