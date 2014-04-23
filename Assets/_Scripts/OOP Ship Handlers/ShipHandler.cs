@@ -234,6 +234,10 @@ public class ShipHandler : MonoBehaviour
 		//Do nothing.
 	}
 
+	public virtual void ActivateUpgrades(int UpgradeInt){
+		//Do Nothing.
+	}
+
 	//***************************************** Standard Methods ******************************************************//
 	
 	public void DecreaseHealth (float healthChange)

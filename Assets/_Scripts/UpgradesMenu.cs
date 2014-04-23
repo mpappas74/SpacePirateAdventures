@@ -34,10 +34,10 @@ public class UpgradesMenu : MonoBehaviour
 	private string[] secondaryUpgradeStrings = {"", "", ""};
 	private string[] basicShipMenuStrings = {
 		"Damage Increase",
-		"Shield Increase",
-		"Make Better"
+		"Fire Rate Increase",
+		"Health Increase"
 	};
-	private float[] basicShipMenuCosts = {8, 8, 5};
+	private float[] basicShipMenuCosts = {10, 10, 10};
 	private float[] upgradeCosts;
 	private int upgrade = -1;
 	private bool upgradeButtonSelected;
@@ -50,13 +50,16 @@ public class UpgradesMenu : MonoBehaviour
 	{
 		if (upgrade > -1) {
 			if (basicShipMenu) {
-				if (upgrade == 0) {
-					GameControllerScript.Instance.setBasicShip (2f);
-				} else if (upgrade == 1) {
-
-				} else if (upgrade == 2) {
-
-				}
+				GameControllerScript.Instance.setBasicShip(upgrade);
+			}
+			else if(stealthShipMenu){
+				GameControllerScript.Instance.setStealthShip(upgrade);
+			}
+			else if(fighterShipMenu){
+				GameControllerScript.Instance.setFighterShip(upgrade);
+			}
+			else if(mothershipMenu){
+				GameControllerScript.Instance.setMotherShip(upgrade);
 			}
 			upgrade = -1;
 			main = true;

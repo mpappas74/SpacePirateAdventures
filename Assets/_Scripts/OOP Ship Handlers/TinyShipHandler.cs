@@ -19,4 +19,21 @@ public class TinyShipHandler : ShipHandler {
 		//Add anything else BEFORE you call base.Die, as base.Die will destroy the gameObject.
 		base.Die(diedOnscreen);
 	}
+
+	public override void ActivateUpgrades(int UpgradeInt){
+		if(UpgradeInt % 10 == 1){
+			UpgradeInt = UpgradeInt - 1;
+			shotDamage = 2;
+		}
+		UpgradeInt = UpgradeInt/10;
+		if(UpgradeInt % 10 == 1){
+			UpgradeInt = UpgradeInt - 1;
+			fireLag = 1;
+		}
+		UpgradeInt = UpgradeInt/10;
+		if(UpgradeInt % 10 == 1){
+			UpgradeInt = UpgradeInt - 1;
+			shipHealth = 8;
+		}
+	}
 }

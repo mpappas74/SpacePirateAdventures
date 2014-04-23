@@ -18,4 +18,8 @@ public class BombShipHandler : ShipHandler {
 		//Add anything else BEFORE you call base.Die, as base.Die will destroy the gameObject.
 		base.Die(diedOnscreen);
 	}
+
+	public override void ActivateUpgrades(int UpgradeInt){
+		//Do Nothing.
+	}
 }

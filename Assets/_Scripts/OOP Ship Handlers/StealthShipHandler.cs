@@ -22,4 +22,8 @@ public class StealthShipHandler : ShipHandler {
 	public override void OnTriggerEnter(Collider other){
 		base.OnTriggerEnter(other);
 	}
+
+	public override void ActivateUpgrades(int UpgradeInt){
+		//Do Nothing.
+	}
 }

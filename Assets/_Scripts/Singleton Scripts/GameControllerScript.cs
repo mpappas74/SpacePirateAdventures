@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class GameControllerScript : Singleton<GameControllerScript>
 {
@@ -20,7 +21,10 @@ public class GameControllerScript : Singleton<GameControllerScript>
 	private float gameVolume; //The relative volume level for the game.
 
 	//Now begins the probably huge stream of variables that determine particular ship upgrades.
-	private float tinyShipDamage;	//Damage done by a shot from the tinyShip.
+	private int basicShipUpgrade = 0;	
+	private int fighterShipUpgrade = 0;	
+	private int stealthShipUpgrade = 0;	
+	private int motherShipUpgrade = 0;	
 	
 
 	private bool canSetUpShipsNow = false;
@@ -54,13 +58,27 @@ public class GameControllerScript : Singleton<GameControllerScript>
 		} else {
 			currentLevel = 0;
 		}
-
-		//tinyShipDamage
-		if(PlayerPrefs.HasKey("TinyShipDamage")){
-			tinyShipDamage = PlayerPrefs.GetFloat("TinyShipDamage");
+		if(PlayerPrefs.HasKey("BasicShipUpgrades")){
+			basicShipUpgrade = PlayerPrefs.GetInt("BasicShipUpgrades");
 		} else {
-			tinyShipDamage = 1;
+			basicShipUpgrade = 0;
 		}
+		if(PlayerPrefs.HasKey("FighterShipUpgrades")){
+			fighterShipUpgrade = PlayerPrefs.GetInt("FighterShipUpgrades");
+		} else {
+			fighterShipUpgrade = 0;
+		}
+		if(PlayerPrefs.HasKey("StealthShipUpgrades")){
+			stealthShipUpgrade = PlayerPrefs.GetInt("StealthShipUpgrades");
+		} else {
+			stealthShipUpgrade = 0;
+		}
+		if(PlayerPrefs.HasKey("MotherShipUpgrades")){
+			motherShipUpgrade = PlayerPrefs.GetInt("MotherShipUpgrades");
+		} else {
+			motherShipUpgrade = 0;
+		}
+
 
 		canSetUpShipsNow = true;
 		LoadSettings();
@@ -117,7 +135,14 @@ public class GameControllerScript : Singleton<GameControllerScript>
 	
 	//This method will set all relevant variables. It should be called at the end of Start() as well as any time we have upgraded and then entered a new level.
 	public void prepareAllShips(){
-		basicShip.GetComponent<ShipHandler>().shotDamage = tinyShipDamage;
+		basicShip.GetComponent<ShipHandler>().ActivateUpgrades(basicShipUpgrade);
+		shieldShip.GetComponent<ShipHandler>().ActivateUpgrades(fighterShipUpgrade);
+		stealthShip.GetComponent<ShipHandler>().ActivateUpgrades(stealthShipUpgrade);
+		//motherShip.GetComponent<ShipHandler>().ActivateUpgrades(motherShipUpgrade);
+		PlayerPrefs.SetInt("BasicShipUpgrades", basicShipUpgrade);
+		PlayerPrefs.SetInt("FighterShipUpgrades", fighterShipUpgrade);
+		PlayerPrefs.SetInt("StealthShipUpgrades", stealthShipUpgrade);
+		PlayerPrefs.SetInt("MotherShipUpgrades", motherShipUpgrade);
 	}
 
 	//A series of getters and setters to modify the prefabs. 
@@ -185,13 +210,19 @@ public class GameControllerScript : Singleton<GameControllerScript>
 	
 	//TinyShip setter. I currently have two versions in case we don't want to save to playerPrefs every time something changes.
 	//Depending on how frequently things happen, this may or may not be the way to go.
-	public void setBasicShip(float shipDamageIncrease){
-		tinyShipDamage += shipDamageIncrease;
+	public void setBasicShip(int newUpgrade){
+		basicShipUpgrade += (int)Math.Pow(10, newUpgrade);
 	}
-	public void prefSetBasicShip(float tsD){
-		tinyShipDamage = tsD;
-		PlayerPrefs.SetFloat("TinyShipDamage", tinyShipDamage);
+	public void setFighterShip(int newUpgrade){
+		fighterShipUpgrade += (int)Math.Pow(10, newUpgrade);
 	}
+	public void setStealthShip(int newUpgrade){
+		stealthShipUpgrade += (int)Math.Pow(10, newUpgrade);
+	}
+	public void setMotherShip(int newUpgrade){
+		motherShipUpgrade += (int)Math.Pow(10, newUpgrade);
+	}
+	
 
 	
 }

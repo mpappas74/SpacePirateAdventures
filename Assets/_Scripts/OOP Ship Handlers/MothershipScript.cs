@@ -71,4 +71,8 @@ public class MothershipScript : ShipHandler
 		}
 	}
 
+	public override void ActivateUpgrades(int UpgradeInt){
+		//Do Nothing.
+	}
+
 }
