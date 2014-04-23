@@ -27,6 +27,7 @@ public class ShipHandler : MonoBehaviour
 	public float shotDamage = 1; //How much each bolt should do.
 	public float boltSurvivalTime = -1; //How long each bolt should survive. Negative values mean they last forever.
 	public float boltScale = 1;	
+	public bool explodingBolt = false;
 
 	//************** Input Logic ********************//
 	public bool wasClickedOn;	//Was this ship just clicked on?
@@ -34,6 +35,7 @@ public class ShipHandler : MonoBehaviour
 	//************** Shield Deployment Logic ********************//
 	public bool deploysShield; //Does this ship deploy shields?
 	public GameObject shield; //Access to the shield to instantiate them.
+	public bool hasRamShield = false;
 	
 	//************** SelfDestruction Logic ********************//
 	public bool selfDestructs;	//Does this ship blow itself up?
@@ -53,6 +55,8 @@ public class ShipHandler : MonoBehaviour
 	public bool turnsAroundOnCollision;	//Should the ship turn around on collisions or fight the colliding ship?
 	public float collectedResources = 0;	//How many resources the thief ship has collected.
 	private bool justTurned = false;
+	public bool improvedThieving = false;
+	public bool damageThieving = false;
 
 	//************** MiniMap Logic ********************//
 	private GameObject myDot; //The actual dot representing this particular ship.
@@ -118,9 +122,18 @@ public class ShipHandler : MonoBehaviour
 				iTween.Stop(gameObject);
 				CompleteNode(the_path);
 				transform.Rotate (new Vector3 (0.0f, 180f, 0.0f));
-				collectedResources += 5;
+				collectedResources += 2;
+				if(improvedThieving){
+					collectedResources += 3;
+				}	
+				if(damageThieving){
+					other.GetComponent<ShipHandler>().DecreaseHealth(1);
+				}
 				if (other.tag == "Enemy" || other.tag == "Player") {
-					collectedResources += 10;
+					collectedResources += 5;
+					if(improvedThieving){
+						collectedResources += 5;
+					}
 				}
 				foreach (Transform child in transform) {
 					if (child.name == "HealthBar") {
@@ -140,7 +153,11 @@ public class ShipHandler : MonoBehaviour
 			//A collision results in both ships taking damage equal to the weaker one's health.
 			if(GetComponent<iTween>() != null){
 				GetComponent<iTween>().BackAndThenKeepGoing(0.2f, 0.1f);
-				DecreaseHealth(1);
+				if(hasRamShield){
+					DecreaseHealth(0);
+				} else {
+					DecreaseHealth(1);
+				}
 			} else {
 				//float damage = Mathf.Min (shipHealth, other.gameObject.GetComponent<ShipHandler> ().shipHealth);
 				//DecreaseHealth (damage);
@@ -262,6 +279,7 @@ public class ShipHandler : MonoBehaviour
 			GameObject thisBolt = (GameObject)Instantiate (bolt, shotSpawn.position, shotSpawn.rotation);
 			thisBolt.transform.localScale *= boltScale;
 			ProjectileHandler boltMover = thisBolt.GetComponent<ProjectileHandler> ();
+			boltMover.explodes = explodingBolt;
 			thisBolt.layer = LayerMask.NameToLayer ("PlayerAttacks");
 			if (gameObject.layer == LayerMask.NameToLayer ("EnemyShips")) {
 				thisBolt.layer = LayerMask.NameToLayer ("EnemyAttacks");

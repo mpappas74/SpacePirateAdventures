@@ -37,7 +37,25 @@ public class UpgradesMenu : MonoBehaviour
 		"Fire Rate Increase",
 		"Health Increase"
 	};
+	private string[] fighterShipMenuStrings = {
+		"Exploding Bullets",
+		"Ramming Shield",
+		"Health Increase"
+	};
+	private string[] stealthShipMenuStrings = {
+		"Improved Thieving",
+		"Thieving Damage",
+		"Health Increase"
+	};
+	private string[] motherShipMenuStrings = {
+		"Initial Score Increase",
+		"Score Rate Increase",
+		"Health Increase"
+	};
 	private float[] basicShipMenuCosts = {10, 10, 10};
+	private float[] stealthShipMenuCosts = {10, 10, 10};
+	private float[] fighterShipMenuCosts = {10, 10, 10};
+	private float[] motherShipMenuCosts = {10, 10, 10};
 	private float[] upgradeCosts;
 	private int upgrade = -1;
 	private bool upgradeButtonSelected;
@@ -50,16 +68,13 @@ public class UpgradesMenu : MonoBehaviour
 	{
 		if (upgrade > -1) {
 			if (basicShipMenu) {
-				GameControllerScript.Instance.setBasicShip(upgrade);
-			}
-			else if(stealthShipMenu){
-				GameControllerScript.Instance.setStealthShip(upgrade);
-			}
-			else if(fighterShipMenu){
-				GameControllerScript.Instance.setFighterShip(upgrade);
-			}
-			else if(mothershipMenu){
-				GameControllerScript.Instance.setMotherShip(upgrade);
+				GameControllerScript.Instance.setBasicShip (upgrade);
+			} else if (stealthShipMenu) {
+				GameControllerScript.Instance.setStealthShip (upgrade);
+			} else if (fighterShipMenu) {
+				GameControllerScript.Instance.setFighterShip (upgrade);
+			} else if (mothershipMenu) {
+				GameControllerScript.Instance.setMotherShip (upgrade);
 			}
 			upgrade = -1;
 			main = true;
@@ -79,8 +94,8 @@ public class UpgradesMenu : MonoBehaviour
 	{
 		GUI.skin = customSkin;
 
-		if (upgradeButtonSelected){
-			if(GUI.Button (new Rect (.05f * Screen.width, .05f * Screen.height, .9f * Screen.width, .9f * Screen.height), "Upgrade Purchased")) {
+		if (upgradeButtonSelected) {
+			if (GUI.Button (new Rect (.05f * Screen.width, .05f * Screen.height, .9f * Screen.width, .9f * Screen.height), "Upgrade Purchased")) {
 				upgradeButtonSelected = false;
 			}
 		} else {
@@ -92,7 +107,7 @@ public class UpgradesMenu : MonoBehaviour
 			GUI.Box (new Rect (.5f * Screen.width - 200, .25f * Screen.height, 400, .7f * Screen.height), text, theGuiTextStyle);
 
 			if (GUI.Button (new Rect (.8f * Screen.width - 100, .1f * Screen.height, 200, .12f * Screen.height), "Back to Main Menu")) {
-				GameControllerScript.Instance.prepareAllShips();
+				GameControllerScript.Instance.prepareAllShips ();
 				Application.LoadLevel ("MainMenu");
 			}
 
@@ -144,22 +159,31 @@ public class UpgradesMenu : MonoBehaviour
 				}
 			} else {
 				if (basicShipMenu) {
-					for (int i = 0; i < secondaryUpgradeStrings.Length; i++){
-						secondaryUpgradeStrings[i] = basicShipMenuStrings[i] + " :: COST = " + basicShipMenuCosts[i];
+					for (int i = 0; i < secondaryUpgradeStrings.Length; i++) {
+						secondaryUpgradeStrings [i] = basicShipMenuStrings [i] + " :: COST = " + basicShipMenuCosts [i];
 						upgradeCosts = basicShipMenuCosts;
 					}
 				} else if (fighterShipMenu) {
-
+					for (int i = 0; i < secondaryUpgradeStrings.Length; i++) {
+						secondaryUpgradeStrings [i] = fighterShipMenuStrings [i] + " :: COST = " + fighterShipMenuCosts [i];
+						upgradeCosts = fighterShipMenuCosts;
+					}
 				} else if (stealthShipMenu) {
-
+					for (int i = 0; i < secondaryUpgradeStrings.Length; i++) {
+						secondaryUpgradeStrings [i] = stealthShipMenuStrings [i] + " :: COST = " + stealthShipMenuCosts [i];
+						upgradeCosts = stealthShipMenuCosts;
+					}
 				} else if (mothershipMenu) {
-
+					for (int i = 0; i < secondaryUpgradeStrings.Length; i++) {
+						secondaryUpgradeStrings [i] = motherShipMenuStrings [i] + " :: COST = " + motherShipMenuCosts [i];
+						upgradeCosts = motherShipMenuCosts;
+					}
 				}
 				int tempInt = GUI.SelectionGrid (new Rect (.2f * Screen.width, .4f * Screen.height, .6f * Screen.width, .4f * Screen.height), secondaryUpgradeInt, secondaryUpgradeStrings, secondaryUpgradeStrings.Length / 3);
 				//This if statement is used to prevent us from running the remaining logic too often, especially in OnGUI.
 				if (tempInt != secondaryUpgradeInt) {
-					if(GameControllerScript.Instance.getScore() > upgradeCosts[tempInt]){
-						GameControllerScript.Instance.setScore(GameControllerScript.Instance.getScore() - upgradeCosts[tempInt]);
+					if (GameControllerScript.Instance.getScore () > upgradeCosts [tempInt]) {
+						GameControllerScript.Instance.setScore (GameControllerScript.Instance.getScore () - upgradeCosts [tempInt]);
 						upgrade = tempInt;
 					} else {
 						text = "You can't afford that upgrade!";

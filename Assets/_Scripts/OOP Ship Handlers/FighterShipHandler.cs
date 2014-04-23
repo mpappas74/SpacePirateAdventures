@@ -20,15 +20,22 @@ public class FighterShipHandler : ShipHandler {
 		base.Die(diedOnscreen);
 	}
 	
+	/*private string[] fighterShipMenuStrings = {
+		"Exploding Bullets",
+		"Ramming Shield",
+		"Health Increase"
+	};*/
+
+
 	public override void ActivateUpgrades(int UpgradeInt){
 		if(UpgradeInt % 10 == 1){
 			UpgradeInt = UpgradeInt - 1;
-			shotDamage = 2;
+			explodingBolt = true;
 		}
 		UpgradeInt = UpgradeInt/10;
 		if(UpgradeInt % 10 == 1){
 			UpgradeInt = UpgradeInt - 1;
-			fireLag = 1;
+			hasRamShield = true;
 		}
 		UpgradeInt = UpgradeInt/10;
 		if(UpgradeInt % 10 == 1){

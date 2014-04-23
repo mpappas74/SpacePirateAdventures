@@ -23,7 +23,21 @@ public class StealthShipHandler : ShipHandler {
 		base.OnTriggerEnter(other);
 	}
 
+
 	public override void ActivateUpgrades(int UpgradeInt){
-		//Do Nothing.
+		if(UpgradeInt % 10 == 1){
+			UpgradeInt = UpgradeInt - 1;
+			improvedThieving = true;
+		}
+		UpgradeInt = UpgradeInt/10;
+		if(UpgradeInt % 10 == 1){
+			UpgradeInt = UpgradeInt - 1;
+			damageThieving = true;
+		}
+		UpgradeInt = UpgradeInt/10;
+		if(UpgradeInt % 10 == 1){
+			UpgradeInt = UpgradeInt - 1;
+			shipHealth = 3.5f;
+		}
 	}
 }

@@ -33,7 +33,7 @@ public class TinyShipHandler : ShipHandler {
 		UpgradeInt = UpgradeInt/10;
 		if(UpgradeInt % 10 == 1){
 			UpgradeInt = UpgradeInt - 1;
-			shipHealth = 8;
+			shipHealth = 5;
 		}
 	}
 }

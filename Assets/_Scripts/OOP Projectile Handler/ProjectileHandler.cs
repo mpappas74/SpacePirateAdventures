@@ -13,6 +13,8 @@ public class ProjectileHandler : MonoBehaviour
 	//************** Damage Projectile Logic ********************//
 	public bool doesSingleShotDamage; //Does this projectile impact other projectiles and ships?
 	public float damageDone; //damageDone is set by the firing ship, and controls how much damage the bolt does.
+	public bool explodes;
+	public GameObject explosion;
 
 	//************** Explosion Logic ********************//
 	public bool isExplosion; //Is this projectile an explosion?
@@ -82,8 +84,14 @@ public class ProjectileHandler : MonoBehaviour
 		if (doesSingleShotDamage) {
 			if (other.gameObject.layer == LayerMask.NameToLayer ("EnemyShips") || other.gameObject.layer == LayerMask.NameToLayer("PlayerShips")) {
 					if(other.tag == "Enemy" || other.tag == "Player"){
+						if(explodes){
+							Instantiate (explosion, transform.position, transform.rotation);
+						}
 						Destroy(gameObject);
 					} else {
+						if(explodes){
+							Instantiate (explosion, transform.position, transform.rotation);
+						}
 						other.gameObject.GetComponent<ShipHandler> ().DecreaseHealth (damageDone);
 						Destroy (gameObject);
 					}
