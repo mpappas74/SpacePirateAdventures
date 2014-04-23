@@ -26,6 +26,9 @@ public class GameControllerScript : Singleton<GameControllerScript>
 	private int stealthShipUpgrade = 0;	
 	private int motherShipUpgrade = 0;	
 	
+	public bool IncreasedStartingScore = false;
+	public bool IncreasedScoreRate = false;
+	public bool mothershipHealth = false;
 
 	private bool canSetUpShipsNow = false;
 
@@ -138,7 +141,23 @@ public class GameControllerScript : Singleton<GameControllerScript>
 		basicShip.GetComponent<ShipHandler>().ActivateUpgrades(basicShipUpgrade);
 		shieldShip.GetComponent<ShipHandler>().ActivateUpgrades(fighterShipUpgrade);
 		stealthShip.GetComponent<ShipHandler>().ActivateUpgrades(stealthShipUpgrade);
-		//motherShip.GetComponent<ShipHandler>().ActivateUpgrades(motherShipUpgrade);
+
+		int UpgradeInt = motherShipUpgrade;
+		if(UpgradeInt % 10 == 1){
+			UpgradeInt = UpgradeInt - 1;
+			IncreasedStartingScore = true;
+		}
+		UpgradeInt = UpgradeInt/10;
+		if(UpgradeInt % 10 == 1){
+			UpgradeInt = UpgradeInt - 1;
+			IncreasedScoreRate = true;
+		}
+		UpgradeInt = UpgradeInt/10;
+		if(UpgradeInt % 10 == 1){
+			UpgradeInt = UpgradeInt - 1;
+			mothershipHealth = true;
+		}
+
 		PlayerPrefs.SetInt("BasicShipUpgrades", basicShipUpgrade);
 		PlayerPrefs.SetInt("FighterShipUpgrades", fighterShipUpgrade);
 		PlayerPrefs.SetInt("StealthShipUpgrades", stealthShipUpgrade);

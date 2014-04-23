@@ -21,7 +21,11 @@ public class MothershipScript : ShipHandler
 		selfDestructs = false;
 		scoreValue = 0;
 		turnsAroundOnCollision = false;
-		
+	
+		if(GameControllerScript.Instance.mothershipHealth){
+			shipHealth += 15;
+		}
+
 		base.Start ();
 		wasHealth = shipHealth;
 		shipHealthText.text =  shipHealth.ToString () + "/" + numBoarded.ToString();

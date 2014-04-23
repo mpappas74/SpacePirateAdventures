@@ -19,12 +19,6 @@ public class FighterShipHandler : ShipHandler {
 		//Add anything else BEFORE you call base.Die, as base.Die will destroy the gameObject.
 		base.Die(diedOnscreen);
 	}
-	
-	/*private string[] fighterShipMenuStrings = {
-		"Exploding Bullets",
-		"Ramming Shield",
-		"Health Increase"
-	};*/
 
 
 	public override void ActivateUpgrades(int UpgradeInt){

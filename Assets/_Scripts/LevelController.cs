@@ -77,8 +77,15 @@ public class LevelController : MonoBehaviour
 	
 	IEnumerator GrowLevelScore ()
 	{
+		if(GameControllerScript.Instance.IncreasedStartingScore){
+			levelScore += 30;
+		}
+		int mult = 1;
+		if(GameControllerScript.Instance.IncreasedScoreRate){
+			mult = 2;
+		}
 		while (!button.gameOver) {
-			levelScore += scoreRegenMag;
+			levelScore += scoreRegenMag*mult;
 			yield return new WaitForSeconds (scoreRegenTime);
 		}
 	}
