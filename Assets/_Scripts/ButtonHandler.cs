@@ -103,30 +103,30 @@ public class ButtonHandler : MonoBehaviour
 				//is the size of the view on screen, while the second is the size of the interior of the view.
 				//The two empty GUIStyle()'s are there to remove the scroll bar.
 				//The scrollview is where the build ship buttons go.
-				scrollPosition = GUI.BeginScrollView(new Rect(0.03f*Screen.height, 0.19f*Screen.height, 0.2f*Screen.height, 0.64f*Screen.height), scrollPosition, new Rect(0.0f, 0.0f, 0.13f*Screen.height, 0.96f*Screen.height), new GUIStyle(), new GUIStyle());
+				//scrollPosition = GUI.BeginScrollView(new Rect(0.03f*Screen.height, 0.19f*Screen.height, 0.2f*Screen.height, 0.64f*Screen.height), scrollPosition, new Rect(0.0f, 0.0f, 0.13f*Screen.height, 0.96f*Screen.height), new GUIStyle(), new GUIStyle());
 				
 				//All of these buttons are now RepeatButtons, which return true at all times that they are pressed down, rather than 
 				//just when they are pressed down and fully released. This is useful to allow the click and drag feature, since we
 				//don't want to force the player to click a button and then select a thing and drag it.
-				if (GUI.RepeatButton (new Rect (0f, 0.0f * Screen.height, .13f * Screen.height, .13f * Screen.height), image1)) {
+				if (GUI.RepeatButton (new Rect (0.03f*Screen.height, 0.19f * Screen.height, .13f * Screen.height, .13f * Screen.height), image1)) {
 					pressed2 = true;
 				}
-				if (GUI.RepeatButton (new Rect  (0f, 0.16f * Screen.height, .13f * Screen.height, .13f * Screen.height), image2)) {
+				if (GUI.RepeatButton (new Rect  (0.03f*Screen.height, 0.35f * Screen.height, .13f * Screen.height, .13f * Screen.height), image2)) {
 					pressed3 = true;
 				} 
-				if (GUI.RepeatButton (new Rect  (0f, 0.32f * Screen.height, .13f * Screen.height, .13f * Screen.height), image3)) {
+				/*if (GUI.RepeatButton (new Rect  (0f, 0.32f * Screen.height, .13f * Screen.height, .13f * Screen.height), image3)) {
 					pressed4 = true;
 				} 
 				if (GUI.RepeatButton (new Rect  (0f, 0.48f * Screen.height, .13f * Screen.height, .13f * Screen.height), image4)) {
 					pressed5 = true;
+				} */
+				if (GUI.RepeatButton (new Rect  (0.03f*Screen.height, 0.51f * Screen.height, .2f * Screen.height, .13f * Screen.height), "Thief")) {
+					pressed4 = true;
 				} 
-				if (GUI.RepeatButton (new Rect  (0f, 0.64f * Screen.height, .2f * Screen.height, .13f * Screen.height), "Thief")) {
-					pressed6 = true;
-				} 
-				if (GUI.Button (new Rect  (0f, 0.80f * Screen.height, .2f * Screen.height, .13f * Screen.height), "Hell")) {
+				if (GUI.Button (new Rect  (0.03f*Screen.height, 0.67f * Screen.height, .2f * Screen.height, .13f * Screen.height), "Hell")) {
 					pressed1 = true;
 				} 
-				GUI.EndScrollView();
+			//	GUI.EndScrollView();
 
 			} else {
 				//We also now how speed up/slow down buttons that allow you to change the speed of the game.

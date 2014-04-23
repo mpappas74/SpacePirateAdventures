@@ -299,7 +299,7 @@ public class LevelController : MonoBehaviour
 						mustAddBoxes = true;
 						input.setBegan (false);
 					}
-					//Button 4 generates bomb ships, and button 5 generates shield ships.
+					/*//Button 4 generates bomb ships, and button 5 generates shield ships.
 					if (button.pressed4) {
 						button.pressed4 = false;
 						currentShip = GameControllerScript.Instance.getBombShip ();
@@ -337,11 +337,11 @@ public class LevelController : MonoBehaviour
 						button.canCancelShip = true;
 						mustAddBoxes = true;
 						input.setBegan (false);
-					}
+					}*/
 					//Finally, the bottom button sets main to false, bringing up a sub-menu. So, we could imagine 
 					//button6 being the "Heavy Armor" button, and then clicking it brings up two possible heavily armored ships.
-					if (button.pressed6) {
-						button.pressed6 = false;
+					if (button.pressed4) {
+						button.pressed4 = false;
 						currentShip = GameControllerScript.Instance.getStealthShip ();
 						currentNeutralShip = GameControllerScript.Instance.getStealthShip ();
 						
