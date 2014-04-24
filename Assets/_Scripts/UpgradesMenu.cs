@@ -162,55 +162,55 @@ public class UpgradesMenu : MonoBehaviour
 				if (basicShipMenu) {
 					label = 0;
 					for (int i = 0; i < secondaryUpgradeStrings.Length; i++) {
-						if (GameControllerScript.Instance.hasObtainedUpgrade [(4 * label) + i]) {
+						if (GameControllerScript.Instance.hasObtainedUpgrade [(3 * label) + i]) {
 							secondaryUpgradeStrings [i] = "Already Obtained";
 							upgradeCosts [i] = 1000;
 						} else {
 							secondaryUpgradeStrings [i] = basicShipMenuStrings [i] + " :: COST = " + basicShipMenuCosts [i];
-							upgradeCosts = basicShipMenuCosts;
+							upgradeCosts[i] = basicShipMenuCosts[i];
 						}
 					}
 				} else if (fighterShipMenu) {
 					label = 1;
 					for (int i = 0; i < secondaryUpgradeStrings.Length; i++) {
-						if (GameControllerScript.Instance.hasObtainedUpgrade [(4 * label) + i]) {
+						if (GameControllerScript.Instance.hasObtainedUpgrade [(3 * label) + i]) {
 							secondaryUpgradeStrings [i] = "Already Obtained";
 							upgradeCosts [i] = 1000;
 						} else {
 							secondaryUpgradeStrings [i] = fighterShipMenuStrings [i] + " :: COST = " + fighterShipMenuCosts [i];
-							upgradeCosts = fighterShipMenuCosts;
+							upgradeCosts[i] = fighterShipMenuCosts[i];
 						}
 					}
 				} else if (stealthShipMenu) {
 					label = 2;
 					for (int i = 0; i < secondaryUpgradeStrings.Length; i++) {
-						if (GameControllerScript.Instance.hasObtainedUpgrade [(4 * label) + i]) {
+						if (GameControllerScript.Instance.hasObtainedUpgrade [(3 * label) + i]) {
 							secondaryUpgradeStrings [i] = "Already Obtained";
 							upgradeCosts [i] = 1000;
 						} else {
 							secondaryUpgradeStrings [i] = stealthShipMenuStrings [i] + " :: COST = " + stealthShipMenuCosts [i];
-							upgradeCosts = stealthShipMenuCosts;
+							upgradeCosts[i] = stealthShipMenuCosts[i];
 						}
 					}
 				} else if (mothershipMenu) {
 					label = 3;
 					for (int i = 0; i < secondaryUpgradeStrings.Length; i++) {
-						if (GameControllerScript.Instance.hasObtainedUpgrade [(4 * label) + i]) {
+						if (GameControllerScript.Instance.hasObtainedUpgrade [(3 * label) + i]) {
 							secondaryUpgradeStrings [i] = "Already Obtained";
 							upgradeCosts [i] = 1000;
 						} else {
 							secondaryUpgradeStrings [i] = motherShipMenuStrings [i] + " :: COST = " + motherShipMenuCosts [i];
-							upgradeCosts = motherShipMenuCosts;
+							upgradeCosts[i] = motherShipMenuCosts[i];
 						}
 					}
 				}
 				int tempInt = GUI.SelectionGrid (new Rect (.2f * Screen.width, .4f * Screen.height, .6f * Screen.width, .4f * Screen.height), secondaryUpgradeInt, secondaryUpgradeStrings, secondaryUpgradeStrings.Length / 3);
 				//This if statement is used to prevent us from running the remaining logic too often, especially in OnGUI.
 				if (tempInt != secondaryUpgradeInt) {
-					if (GameControllerScript.Instance.getScore () > upgradeCosts [tempInt]) {
+					if (GameControllerScript.Instance.getScore () >= upgradeCosts [tempInt]) {
 						GameControllerScript.Instance.setScore (GameControllerScript.Instance.getScore () - upgradeCosts [tempInt]);
 						upgrade = tempInt;
-						GameControllerScript.Instance.hasObtainedUpgrade [(4 * label) + upgrade] = true;
+						GameControllerScript.Instance.hasObtainedUpgrade [(3 * label) + upgrade] = true;
 					} else if(upgradeCosts[tempInt] == 1000){
 						text = "You've already purchased that upgrade!";
 					} else {

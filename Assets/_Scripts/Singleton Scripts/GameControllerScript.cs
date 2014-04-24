@@ -43,47 +43,46 @@ public class GameControllerScript : Singleton<GameControllerScript>
 		StartCoroutine("GetShips");
 		
 		//Check PlayerPrefs to see if the three main things are saved. If not, set them to default levels.
-		if(PlayerPrefs.HasKey("Score")){
+		if(PlayerPrefs.HasKey("Score") && false){
 			score = PlayerPrefs.GetFloat("Score");
 		} else{
-			score = 10;
+			score = 5;
 		}
-		if(PlayerPrefs.HasKey("Volume")){
+		if(PlayerPrefs.HasKey("Volume") && false){
 			gameVolume = PlayerPrefs.GetFloat("Volume");
 		} else{
 			gameVolume = 0.5f;
 		}
-		if(PlayerPrefs.HasKey("CurrentUnlockedLevel")){
+		if(PlayerPrefs.HasKey("CurrentUnlockedLevel") && false){
 			currentUnlockedLevel = PlayerPrefs.GetInt("CurrentUnlockedLevel");
 		} else{
 			currentUnlockedLevel = 1;
 		}
-		if(PlayerPrefs.HasKey("CurrentLevel")){
+		if(PlayerPrefs.HasKey("CurrentLevel") && false){
 			currentLevel = PlayerPrefs.GetInt("CurrentLevel");
 		} else {
 			currentLevel = 0;
 		}
-		if(PlayerPrefs.HasKey("BasicShipUpgrades")){
+		if(PlayerPrefs.HasKey("BasicShipUpgrades") && false){
 			basicShipUpgrade = PlayerPrefs.GetInt("BasicShipUpgrades");
 		} else {
 			basicShipUpgrade = 0;
 		}
-		if(PlayerPrefs.HasKey("FighterShipUpgrades")){
+		if(PlayerPrefs.HasKey("FighterShipUpgrades") && false){
 			fighterShipUpgrade = PlayerPrefs.GetInt("FighterShipUpgrades");
 		} else {
 			fighterShipUpgrade = 0;
 		}
-		if(PlayerPrefs.HasKey("StealthShipUpgrades")){
+		if(PlayerPrefs.HasKey("StealthShipUpgrades") && false){
 			stealthShipUpgrade = PlayerPrefs.GetInt("StealthShipUpgrades");
 		} else {
 			stealthShipUpgrade = 0;
 		}
-		if(PlayerPrefs.HasKey("MotherShipUpgrades")){
+		if(PlayerPrefs.HasKey("MotherShipUpgrades") && false){
 			motherShipUpgrade = PlayerPrefs.GetInt("MotherShipUpgrades");
 		} else {
 			motherShipUpgrade = 0;
 		}
-
 
 		canSetUpShipsNow = true;
 		LoadSettings();
@@ -177,6 +176,10 @@ public class GameControllerScript : Singleton<GameControllerScript>
 	{
 		currentUnlockedLevel = L;
 		PlayerPrefs.SetInt("CurrentUnlockedLevel", currentUnlockedLevel);
+	}
+	public void prefIncreaseScore(float ins){
+		score += ins;
+		PlayerPrefs.SetFloat("Score", score);
 	}
 	public void prefSetScore(float s)
 	{

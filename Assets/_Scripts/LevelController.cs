@@ -244,6 +244,7 @@ public class LevelController : MonoBehaviour
 			//or the enemy's mothership is dead, you win!
 			GameObject.Find ("GuiTextObjects").transform.Find ("WinText").gameObject.SetActive (true);
 			playerVictory = true;
+			GameControllerScript.Instance.prefIncreaseScore(8);
 			button.gameOver = true;
 		} else {
 			

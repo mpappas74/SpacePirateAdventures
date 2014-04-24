@@ -22,7 +22,7 @@ public class MothershipScript : ShipHandler
 		scoreValue = 0;
 		turnsAroundOnCollision = false;
 	
-		if(GameControllerScript.Instance.mothershipHealth){
+		if(GameControllerScript.Instance.mothershipHealth && gameObject.tag == "Player"){
 			shipHealth += 15;
 		}
 

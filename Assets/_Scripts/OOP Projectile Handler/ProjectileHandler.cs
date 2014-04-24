@@ -90,7 +90,7 @@ public class ProjectileHandler : MonoBehaviour
 						Destroy(gameObject);
 					} else {
 						if(explodes){
-							Instantiate (explosion, transform.position, transform.rotation);
+							Instantiate (explosion, transform.position, transform.rotation);						
 						}
 						other.gameObject.GetComponent<ShipHandler> ().DecreaseHealth (damageDone);
 						Destroy (gameObject);
