@@ -19,6 +19,9 @@ public class Level_Controller : MonoBehaviour
 	public float[] health;
 	public float[] shieldHealth;
 	public float[] score;
+	public float[] waveDifficultyVariable;
+	public float[] levelDifficultyVariable;
+	public int[] numWavesBeforeIncrement;
 	
 	public virtual void Start ()
 	{
@@ -76,6 +79,15 @@ public class Level_Controller : MonoBehaviour
 		//Then, we will infinitely send out new waves.
 		do{
 			goneWaves [j]++;
+
+			if(goneWaves[j] % Mathf.Abs(numWavesBeforeIncrement[j]) == 0){
+				spawnWait[j] *= waveDifficultyVariable[j];
+				waveWait[j] *= levelDifficultyVariable[j];
+				if(numWavesBeforeIncrement[j] < 0){
+					numWavesBeforeIncrement[j] *= 2;
+				}
+			}
+
 			//Send out each hazard in the wave one at a time.
 			for (int i = 0; i < hazardCount[j]; i++) {
 				//We spawn them at a range of z values, but always at the given x and y values. Note that Random.Range is inclusive on the lower end (-2), but not on the upper end. So it will return -2, -1, 0, 1, or 2.

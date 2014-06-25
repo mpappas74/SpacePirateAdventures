@@ -21,7 +21,11 @@ public class Level2Controller : Level_Controller
 		lanes = new int[1]{-2};
 		health = new float[1]{2};
 		shieldHealth = new float[1]{0};
-		score = new float[1]{5};		
+		score = new float[1]{5};	
+
+		waveDifficultyVariable = new float[1]{1};
+		levelDifficultyVariable = new float[1]{1};
+		numWavesBeforeIncrement = new int[1]{1000};	
 
 		base.Start();
 	}

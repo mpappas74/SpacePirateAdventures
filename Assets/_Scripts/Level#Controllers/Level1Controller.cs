@@ -21,6 +21,10 @@ public class Level1Controller : Level_Controller
 		shieldHealth = new float[1]{0};
 		score = new float[1]{10};
 
+		waveDifficultyVariable = new float[1]{1};
+		levelDifficultyVariable = new float[1]{1};
+		numWavesBeforeIncrement = new int[1]{1000};
+
 		base.Start();
 	}
 	
