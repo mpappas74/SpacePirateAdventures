@@ -17,6 +17,7 @@ public class Level2Controller : Level_Controller
 		spawnWait = new float[1]{1.5f};
 		waveWait = new float[1]{5};
 		numberWaves = new int[1]{300};
+		startStreamNow = new int[1]{0}
 
 		lanes = new int[1]{-2};
 		health = new float[1]{2};
