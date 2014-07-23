@@ -39,7 +39,7 @@ public class LevelController : MonoBehaviour
 	private GameObject specialBar;
 	private float specialBarInitialHeight;
 	private bool amITheRightTint;
-	private bool[] busyBuildSite;	
+	private bool[] busyBuildSite;
 	public bool amTutorial = false;
 	public float SpecialBarRecoveryTime;
 
@@ -66,9 +66,9 @@ public class LevelController : MonoBehaviour
 		//Slowly heal level score.
 		StartCoroutine (GrowLevelScore ());
 
-		specialBar = GameObject.Find("SpecialLoadingBar");
+		specialBar = GameObject.Find ("SpecialLoadingBar");
 		specialBarInitialHeight = specialBar.transform.localScale.x;
-		StartCoroutine (RecoverSpecialBar());
+		StartCoroutine (RecoverSpecialBar ());
 
 		mothership = GameObject.Find ("Mothership").GetComponent<ShipHandler> ();
 		enemyMothership = GameObject.Find ("EnemyMothership").GetComponent<ShipHandler> ();
@@ -77,15 +77,15 @@ public class LevelController : MonoBehaviour
 	
 	IEnumerator GrowLevelScore ()
 	{
-		if(GameControllerScript.Instance.IncreasedStartingScore){
+		if (GameControllerScript.Instance.IncreasedStartingScore) {
 			levelScore += 30;
 		}
 		int mult = 1;
-		if(GameControllerScript.Instance.IncreasedScoreRate){
+		if (GameControllerScript.Instance.IncreasedScoreRate) {
 			mult = 2;
 		}
 		while (!button.gameOver) {
-			levelScore += scoreRegenMag*mult;
+			levelScore += scoreRegenMag * mult;
 			yield return new WaitForSeconds (scoreRegenTime);
 		}
 	}
@@ -124,7 +124,7 @@ public class LevelController : MonoBehaviour
 						break;
 					}
 				}
-				if (!amTutorial && !foundClickedShip && currentClickPos.x > Screen.width * .2f && specialBar.transform.localScale.x >= specialBarInitialHeight/6f) {
+				if (!amTutorial && !foundClickedShip && currentClickPos.x > Screen.width * .2f && specialBar.transform.localScale.x >= specialBarInitialHeight / 6f) {
 					GameObject theBolt = (GameObject)Instantiate (specialBolt, new Vector3 (6.5f, 0, 0), specialBolt.transform.rotation);
 					theBolt.transform.localScale *= 2;
 					theBolt.GetComponent<ProjectileHandler> ().speed *= 10;
@@ -134,7 +134,7 @@ public class LevelController : MonoBehaviour
 					Vector3 _direction = (pos - theBolt.transform.position).normalized;
 					//create the rotation we need to be in to look at the target
 					theBolt.transform.rotation = Quaternion.LookRotation (_direction);
-					specialBar.transform.localScale += new Vector3 (-specialBarInitialHeight/4f, 0, 0);
+					specialBar.transform.localScale += new Vector3 (-specialBarInitialHeight / 4f, 0, 0);
 					amITheRightTint = false;
 				}
 			}
@@ -153,20 +153,20 @@ public class LevelController : MonoBehaviour
 		position.y = 0;
 		float rotation = laneRotations [laneID];
 
-		while(busyBuildSite[laneID]){
-			yield return new WaitForSeconds(0.3f);
+		while (busyBuildSite[laneID]) {
+			yield return new WaitForSeconds (0.3f);
 		}
 
 		//Keep one placingBox visible to show that the ship is being built. Hold it for one minute, then replace it with a ship.
 		//We rotate both the placingBox and the ship by the movementAngle about the y axis.
 		GameObject block = (GameObject)Instantiate (GameControllerScript.Instance.getLoadingBar (), new Vector3 (10.5f, -10, position.z), Quaternion.Euler (new Vector3 (0.0f, rotation, 0.0f)));
 		float initialHeight = block.transform.localScale.z;
-		busyBuildSite[laneID] = true;
+		busyBuildSite [laneID] = true;
 		for (int i = 0; i < 5; i++) {
 			yield return new WaitForSeconds (0.2f);
 			block.transform.localScale = new Vector3 (block.transform.localScale.x, block.transform.localScale.y, initialHeight * (5f - i) / 5f);
 		}
-		busyBuildSite[laneID] = false;
+		busyBuildSite [laneID] = false;
 		Destroy (block);
 
 		GameObject theShip = (GameObject)Instantiate (curShip, position, curShip.transform.rotation);
@@ -201,13 +201,13 @@ public class LevelController : MonoBehaviour
 					specialBar.renderer.material.SetColor ("_TintColor", new Color (t.r, t.g, t.b, 1));
 					canUseSpecial = true;
 					amITheRightTint = true;
-				} else if(!amITheRightTint){
+				} else if (!amITheRightTint) {
 					Color t = specialBar.renderer.material.GetColor ("_TintColor");
 					specialBar.renderer.material.SetColor ("_TintColor", new Color (t.r, t.g, t.b, 0.1f));
 					amITheRightTint = true;
 				}
 			} else {
-				specialBar.transform.localScale = new Vector3(specialBarInitialHeight, specialBar.transform.localScale.y, specialBar.transform.localScale.z);
+				specialBar.transform.localScale = new Vector3 (specialBarInitialHeight, specialBar.transform.localScale.y, specialBar.transform.localScale.z);
 			}
 		}
 		
@@ -219,17 +219,24 @@ public class LevelController : MonoBehaviour
 		amITheRightTint = false;
 		specialBar.transform.localScale += new Vector3 (-specialBarInitialHeight, 0, 0);
 		float time = Time.time;
-		while (Time.time < time + 5) {
-			for (int i = 0; i < 4; i++) {
-				int zWay = 2 * Random.Range (0, 2);
-				GameObject go = (GameObject)Instantiate (specialBolt, new Vector3 (1f * Random.Range (10, 70), 0.0f, (1 - zWay) * 10f), specialBolt.transform.rotation);
-				go.transform.Rotate (Vector3.up * 180 * ((2 - zWay) / 2f));
-				go.layer = LayerMask.NameToLayer ("PlayerAttacks");
-				go.GetComponent<ProjectileHandler> ().damageDone = 1f;
-				go.GetComponent<ProjectileHandler> ().doesSingleShotDamage = true;
-				go.GetComponent<ProjectileHandler> ().speed = 10;
+		ShipHandler theMotherShip = GameObject.Find ("Mothership").GetComponent<ShipHandler> ();
+		
+		if (!theMotherShip.SpecialAvailable ()) {
+			theMotherShip.deboard ();
+		} else {
+
+			while (Time.time < time + 5) {
+				for (int i = 0; i < 4; i++) {
+					int zWay = 2 * Random.Range (0, 2);
+					GameObject go = (GameObject)Instantiate (specialBolt, new Vector3 (1f * Random.Range (10, 70), 0.0f, (1 - zWay) * 10f), specialBolt.transform.rotation);
+					go.transform.Rotate (Vector3.up * 180 * ((2 - zWay) / 2f));
+					go.layer = LayerMask.NameToLayer ("PlayerAttacks");
+					go.GetComponent<ProjectileHandler> ().damageDone = 1f;
+					go.GetComponent<ProjectileHandler> ().doesSingleShotDamage = true;
+					go.GetComponent<ProjectileHandler> ().speed = 10;
+				}
+				yield return new WaitForSeconds (0.3f);
 			}
-			yield return new WaitForSeconds (0.3f);
 		}
 	}
 
@@ -244,7 +251,7 @@ public class LevelController : MonoBehaviour
 			//or the enemy's mothership is dead, you win!
 			GameObject.Find ("GuiTextObjects").transform.Find ("WinText").gameObject.SetActive (true);
 			playerVictory = true;
-			GameControllerScript.Instance.prefIncreaseScore(8);
+			GameControllerScript.Instance.prefIncreaseScore (8);
 			button.gameOver = true;
 		} else {
 			
@@ -267,8 +274,8 @@ public class LevelController : MonoBehaviour
 					//Buttons 2 and 3 build tinyShips and crazyShips, respectively. 
 					if (button.pressed2) {
 						button.pressed2 = false;
-						currentShip = GameControllerScript.Instance.getBasicShip();
-						currentNeutralShip = GameControllerScript.Instance.getBasicShip();
+						currentShip = GameControllerScript.Instance.getBasicShip ();
+						currentNeutralShip = GameControllerScript.Instance.getBasicShip ();
 						
 						//OK, so first, we need the position of the click so we can start dragging.
 						//We also need to disable various elements of the neutralShip to keep it from firing or exploding.
@@ -492,10 +499,10 @@ public class LevelController : MonoBehaviour
 			//	Application.LoadLevel ("MainMenu");
 			//} 
 			if (Application.loadedLevel < 6) {
-				GameControllerScript.Instance.setCurrentUnlockedLevel (Mathf.Max(GameControllerScript.Instance.getCurrentUnlockedLevel (), Application.loadedLevel-1));
+				GameControllerScript.Instance.setCurrentUnlockedLevel (Mathf.Max (GameControllerScript.Instance.getCurrentUnlockedLevel (), Application.loadedLevel - 1));
 			}
 			if (GUI.Button (new Rect (.5f * Screen.width - 100, .55f * Screen.height, 200, .13f * Screen.height), "Upgrades")) {
-				Application.LoadLevel("Upgrades");
+				Application.LoadLevel ("Upgrades");
 			} 
 			if (GUI.Button (new Rect (.5f * Screen.width - 100, .4f * Screen.height, 200, .13f * Screen.height), "Next Level")) {
 				//Be careful here if we change the scene order!!!!

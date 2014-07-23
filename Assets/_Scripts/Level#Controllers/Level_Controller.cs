@@ -22,6 +22,7 @@ public class Level_Controller : MonoBehaviour
 	public float[] waveDifficultyVariable;
 	public float[] levelDifficultyVariable;
 	public int[] numWavesBeforeIncrement;
+	public int thisWaveNow = 0;
 	
 	public virtual void Start ()
 	{
@@ -74,7 +75,12 @@ public class Level_Controller : MonoBehaviour
 	IEnumerator SpawnWaves (int j)
 	{
 		//First, wait until the first wave is meant to start.
-		yield return new WaitForSeconds (startWait [j]);
+		while(true){
+		//yield return new WaitForSeconds (startWait [j]);
+		yield return new WaitForSeconds(0.5f);
+		if(thisWaveNow == j)
+			break;
+		}
 		
 		//Then, we will infinitely send out new waves.
 		do{
@@ -117,7 +123,8 @@ public class Level_Controller : MonoBehaviour
 			//Now wait until the next wave should happen.
 			yield return new WaitForSeconds (waveWait [j]);
 			
-		} while (goneWaves[j] < 100*numberWaves[j]);
+		} while (goneWaves[j] < numberWaves[j]);
+		thisWaveNow++;
 		//Once the waves are over, start checking to see if the enemy has run out of ships.
 		while (AreGameObjectsWithLayer(LayerMask.NameToLayer("EnemyShips"))) {
 			yield return new WaitForSeconds (1);

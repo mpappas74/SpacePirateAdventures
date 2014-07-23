@@ -75,6 +75,14 @@ public class MothershipScript : ShipHandler
 		}
 	}
 
+	public override bool SpecialAvailable(){
+		return numBoarded==0;
+	}
+
+	public override void deboard(){
+		numBoarded = 0;
+	}
+
 	public override void ActivateUpgrades(int UpgradeInt){
 		//Do Nothing.
 	}

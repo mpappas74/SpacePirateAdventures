@@ -251,6 +251,15 @@ public class ShipHandler : MonoBehaviour
 		//Do nothing.
 	}
 
+	public virtual bool SpecialAvailable(){
+		//Do nothing.
+		return false;
+	}
+
+	public virtual void deboard(){
+		//Do nothing.
+	}
+
 	public virtual void ActivateUpgrades(int UpgradeInt){
 		//Do Nothing.
 	}

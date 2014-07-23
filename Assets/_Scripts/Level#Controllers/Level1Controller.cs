@@ -14,7 +14,7 @@ public class Level1Controller : Level_Controller
 		hazardNames = new string[1]{"EnemyBasicShip"};
 		spawnWait = new float[1]{1.5f};
 		waveWait = new float[1]{5};
-		numberWaves = new int[1]{1};
+		numberWaves = new int[1]{100};
 		
 		lanes = new int[1]{-2};
 		health = new float[1]{2};
