@@ -15,6 +15,7 @@ public class Level_Controller : MonoBehaviour
 	private int[] goneWaves;	//How many attack waves have happened so far?
 	private LevelController lc;
 	private float[] startPos;
+	public int[] startStreamNow;
 	public int[] lanes;
 	public float[] health;
 	public float[] shieldHealth;
@@ -75,12 +76,14 @@ public class Level_Controller : MonoBehaviour
 	IEnumerator SpawnWaves (int j)
 	{
 		//First, wait until the first wave is meant to start.
+		
 		while(true){
-		//yield return new WaitForSeconds (startWait [j]);
 		yield return new WaitForSeconds(0.5f);
-		if(thisWaveNow == j)
+		if(thisWaveNow == startStreamNow[j])
 			break;
 		}
+
+		yield return new WaitForSeconds (startWait [j]);
 		
 		//Then, we will infinitely send out new waves.
 		do{

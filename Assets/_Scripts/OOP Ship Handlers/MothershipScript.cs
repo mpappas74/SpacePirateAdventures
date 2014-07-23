@@ -81,6 +81,7 @@ public class MothershipScript : ShipHandler
 
 	public override void deboard(){
 		numBoarded = 0;
+		shipHealthText.text = shipHealth.ToString () + "/" + numBoarded.ToString();
 	}
 
 	public override void ActivateUpgrades(int UpgradeInt){
