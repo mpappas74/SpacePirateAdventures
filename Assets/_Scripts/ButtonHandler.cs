@@ -37,6 +37,7 @@ public class ButtonHandler : MonoBehaviour
 	public bool shipRepeater = false;
 
 	private float theTimeScale;
+	private bool specialBool;
 
 	private Vector2 pos;
 	private Vector2 delta;
@@ -91,7 +92,7 @@ public class ButtonHandler : MonoBehaviour
 				Application.LoadLevel ("MainMenu");
 			} 
 		} else {
-			if (!paused) {
+			if (!paused && !specialBool) {
 				//The main, non-paused menu is the basic in-game menu. The top button is the pause button, and the remaining allow you to select various ships.
 				if (GUI.Button (new Rect (.03f * Screen.height, .03f * Screen.height, .2f * Screen.height, .13f * Screen.height), "Pause")) {
 					theTimeScale = Time.timeScale;
@@ -123,12 +124,22 @@ public class ButtonHandler : MonoBehaviour
 				if (GUI.RepeatButton (new Rect  (0.03f*Screen.height, 0.51f * Screen.height, .2f * Screen.height, .13f * Screen.height), "Thief")) {
 					pressed4 = true;
 				} 
-				if (GUI.Button (new Rect  (0.03f*Screen.height, 0.67f * Screen.height, .2f * Screen.height, .13f * Screen.height), "Hell")) {
-					pressed1 = true;
+				if (GUI.Button (new Rect  (0.03f*Screen.height, 0.67f * Screen.height, .2f * Screen.height, .13f * Screen.height), "Special")) {
+					specialBool = true;
 				} 
 			//	GUI.EndScrollView();
 
-			} else {
+			} else if(!paused && specialBool){
+				if (GUI.RepeatButton (new Rect (0.03f*Screen.height, 0.19f * Screen.height, .2f * Screen.height, .13f * Screen.height), "Swarm")) {
+					pressed1 = true;
+					specialBool = false;
+				}
+				if (GUI.RepeatButton (new Rect  (0.03f*Screen.height, 0.35f * Screen.height, .2f * Screen.height, .13f * Screen.height), "Purge")) {
+					pressed5 = true;
+					specialBool = false;
+				} 
+			
+			}	else {
 				//We also now how speed up/slow down buttons that allow you to change the speed of the game.
 				//Time.timeScale changes how the game processes time in terms of coroutines and the like, while
 				//Time.fixedDeltaTime changes how the game processes physics.

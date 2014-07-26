@@ -219,25 +219,33 @@ public class LevelController : MonoBehaviour
 		amITheRightTint = false;
 		specialBar.transform.localScale += new Vector3 (-specialBarInitialHeight, 0, 0);
 		float time = Time.time;
+
+		while (Time.time < time + 5) {
+			for (int i = 0; i < 4; i++) {
+				int zWay = 2 * Random.Range (0, 2);
+				GameObject go = (GameObject)Instantiate (specialBolt, new Vector3 (1f * Random.Range (10, 70), 0.0f, (1 - zWay) * 10f), specialBolt.transform.rotation);
+				go.transform.Rotate (Vector3.up * 180 * ((2 - zWay) / 2f));
+				go.layer = LayerMask.NameToLayer ("PlayerAttacks");
+				go.GetComponent<ProjectileHandler> ().damageDone = 1f;
+				go.GetComponent<ProjectileHandler> ().doesSingleShotDamage = true;
+				go.GetComponent<ProjectileHandler> ().speed = 10;
+			}
+			yield return new WaitForSeconds (0.3f);
+		}
+		
+	}
+
+	IEnumerator SpecialDefense ()
+	{
+		yield return new WaitForSeconds (0.5f);
+		amITheRightTint = false;
+		specialBar.transform.localScale += new Vector3 (-specialBarInitialHeight, 0, 0);
+		float time = Time.time;
 		ShipHandler theMotherShip = GameObject.Find ("Mothership").GetComponent<ShipHandler> ();
 		
 		if (!theMotherShip.SpecialAvailable ()) {
 			theMotherShip.deboard ();
-		} else {
-
-			while (Time.time < time + 5) {
-				for (int i = 0; i < 4; i++) {
-					int zWay = 2 * Random.Range (0, 2);
-					GameObject go = (GameObject)Instantiate (specialBolt, new Vector3 (1f * Random.Range (10, 70), 0.0f, (1 - zWay) * 10f), specialBolt.transform.rotation);
-					go.transform.Rotate (Vector3.up * 180 * ((2 - zWay) / 2f));
-					go.layer = LayerMask.NameToLayer ("PlayerAttacks");
-					go.GetComponent<ProjectileHandler> ().damageDone = 1f;
-					go.GetComponent<ProjectileHandler> ().doesSingleShotDamage = true;
-					go.GetComponent<ProjectileHandler> ().speed = 10;
-				}
-				yield return new WaitForSeconds (0.3f);
-			}
-		}
+		} 
 	}
 
 	void Update ()
@@ -314,26 +322,16 @@ public class LevelController : MonoBehaviour
 						mustAddBoxes = true;
 						input.setBegan (false);
 					}
-					/*//Button 4 generates bomb ships, and button 5 generates shield ships.
-					if (button.pressed4) {
-						button.pressed4 = false;
-						currentShip = GameControllerScript.Instance.getBombShip ();
-						currentNeutralShip = GameControllerScript.Instance.getBombShip ();
 
-						Vector3 pos = new Vector3 (input.startPos ().x, input.startPos ().y, 10.0f);
-						pos = Camera.main.ScreenToWorldPoint (pos);
+					if (button.pressed5) {
+						button.pressed5 = false;
+						if (levelScore >= 20 && canUseSpecial) {
+							StartCoroutine ("SpecialDefense");
+							canUseSpecial = false;
+							levelScore -= 20;
+						}
 						
-						placingShipObjects [0] = (GameObject)Instantiate (currentNeutralShip, pos, currentNeutralShip.transform.rotation);
-						placingShipObjects [0].SetActive (true);
-						placingShipObjects [0].GetComponent<ShipHandler> ().enabled = false;
-						placingShipObjects [0].GetComponent<SphereCollider> ().enabled = false;
-						placingShipObjects [0].transform.Find ("HealthBar").gameObject.GetComponent<MeshRenderer> ().enabled = false;
-						
-						isPlacingShip = true;
-						button.canCancelShip = true;
-						mustAddBoxes = true;
-						input.setBegan (false);
-					}
+					}/*
 					if (button.pressed5) {
 						button.pressed5 = false;
 						currentShip = GameControllerScript.Instance.getShieldShip ();

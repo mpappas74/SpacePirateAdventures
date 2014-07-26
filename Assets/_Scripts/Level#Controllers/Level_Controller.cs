@@ -52,8 +52,8 @@ public class Level_Controller : MonoBehaviour
 			sh.energyShieldHealth = shieldHealth [i];
 			sh.scoreValue = score [i];
 		}	
-			hazard [i].layer = LayerMask.NameToLayer ("EnemyShips");
-			StartCoroutine (SpawnWaves (i));
+		hazard [i].layer = LayerMask.NameToLayer ("EnemyShips");
+		StartCoroutine (SpawnWaves (i));
 	}
 	
 	//Determine if there are any GameObjects left in a certain physics layer (we will use this to tell if any enemies are left.)
@@ -78,9 +78,9 @@ public class Level_Controller : MonoBehaviour
 		//First, wait until the first wave is meant to start.
 		
 		while(true){
-		yield return new WaitForSeconds(0.5f);
-		if(thisWaveNow == startStreamNow[j])
-			break;
+			yield return new WaitForSeconds(0.5f);
+			if(thisWaveNow == startStreamNow[j])
+				break;
 		}
 
 		yield return new WaitForSeconds (startWait [j]);
